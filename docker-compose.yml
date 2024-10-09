@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  frontend:
+    image: node:16
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    command: >
+      sh -c "npm install && npm run dev
