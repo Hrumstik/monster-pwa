@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import MonsterDropdown from "../../shared/elements/Dropdown/Dropdown";
-import useAuth from "../../shared/hooks/useAuth";
+import { createAuthProvider } from "../../middlewares/authProvider";
 
 const Header = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout } = createAuthProvider();
 
   const handleLogout = () => {
     logout();
