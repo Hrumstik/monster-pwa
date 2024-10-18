@@ -7,6 +7,7 @@ import { useAuth } from "../middlewares/authProvider";
 
 const Layout = () => {
   const { isLogged } = useAuth();
+
   const navigate = useNavigate();
 
   useEffect(() => {

@@ -14,16 +14,19 @@ export const createAuthProvider = () => {
   };
 
   const useAuth = () => {
-    const [isLogged, setIsLogged] = useState(tokenProvider.isLoggedIn());
+    const [isLogged, setIsLogged] = useState(
+      !!localStorage.getItem("REACT_TOKEN_AUTH")
+    );
 
     useEffect(() => {
-      const listener = (newIsLogged: boolean) => {
-        setIsLogged(newIsLogged);
+      const handleStorageChange = () => {
+        const token = localStorage.getItem("REACT_TOKEN_AUTH");
+        setIsLogged(!!token);
       };
+      window.addEventListener("storage", handleStorageChange);
 
-      tokenProvider.subscribe(listener);
       return () => {
-        tokenProvider.unsubscribe(listener);
+        window.removeEventListener("storage", handleStorageChange);
       };
     }, []);
 
