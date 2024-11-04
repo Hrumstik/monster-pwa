@@ -11,8 +11,11 @@ import { BsGraphUpArrow } from "react-icons/bs";
 import { Button } from "antd";
 import MonsterDropdown from "../../shared/elements/Dropdown/Dropdown";
 import { useNavigate } from "react-router-dom";
+import { useGetAllPwaContentQuery } from "@store/slices/pwaApi";
 
 const MyPWAs = () => {
+  const { data } = useGetAllPwaContentQuery();
+  console.log(data);
   const navigate = useNavigate();
 
   const [currentTab, setCurrentTab] = useState(MyPWAsTabs.All);

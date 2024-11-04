@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import MenuItem from "./MenuItem";
 
-const Sliderbar = () => {
+const Sidebar = () => {
   const navigate = useNavigate();
   return (
     <div className="min-w-[250px] h-full bg-[#121320] pt-[70px] px-5">
@@ -13,4 +13,4 @@ const Sliderbar = () => {
   );
 };
 
-export default Sliderbar;
+export default Sidebar;

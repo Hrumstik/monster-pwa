@@ -1,10 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "./slices/authApi";
+import { filesSlice } from "./slices/filesApi";
+import { pwaSlice } from "./slices/pwaApi";
 
 const store = configureStore({
   reducer: {},
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authSlice.middleware),
+    getDefaultMiddleware()
+      .concat(authSlice.middleware)
+      .concat(filesSlice.middleware)
+      .concat(pwaSlice.middleware),
 });
 
 export default store;

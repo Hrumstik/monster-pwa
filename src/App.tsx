@@ -5,19 +5,26 @@ import LoginPage from "./Routes/Login/Login";
 import EditorPWA from "./Routes/EditorPWA/EditorPWA";
 import { Provider } from "react-redux";
 import store from "./store/store";
+import ProtectedRoutes from "./Routes/protected-routes";
 
 function App() {
   const router = createBrowserRouter([
     {
-      element: <Layout />,
+      path: "/",
+      element: <ProtectedRoutes />,
       children: [
         {
-          path: "/",
-          element: <MyPWAs />,
-        },
-        {
-          path: "/create-PWA",
-          element: <EditorPWA />,
+          element: <Layout />,
+          children: [
+            {
+              path: "/",
+              element: <MyPWAs />,
+            },
+            {
+              path: "/create-PWA",
+              element: <EditorPWA />,
+            },
+          ],
         },
       ],
     },
