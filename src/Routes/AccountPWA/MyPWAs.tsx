@@ -126,7 +126,7 @@ const MyPWAs = () => {
       return;
     }
 
-    const filteredPWAs = availablePWAs.filter((pwa) =>
+    const filteredPWAs = preparePwaData().filter((pwa) =>
       pwa.name.toLowerCase().includes(e.target.value.toLowerCase()),
     );
 
@@ -244,7 +244,7 @@ const MyPWAs = () => {
                   </tr>
                 ))
               ) : (
-                <div
+                <tr
                   style={{
                     display: "flex",
                     justifyContent: "center",
@@ -253,8 +253,8 @@ const MyPWAs = () => {
                     color: "#FFFFFF",
                   }}
                 >
-                  ; (
-                </div>
+                  <td>; (</td>
+                </tr>
               )}
             </tbody>
           </table>
