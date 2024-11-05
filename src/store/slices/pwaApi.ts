@@ -15,6 +15,18 @@ export const pwaSlice = createApi({
         body: data,
       }),
     }),
+    deletePwaContent: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/pwa-content/${id}`,
+        method: "DELETE",
+      }),
+    }),
+    copyPwaContent: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/pwa-content/${id}/copy`,
+        method: "POST",
+      }),
+    }),
     getAllPwaContent: builder.query<PwaContent[], void>({
       query: () => "/pwa-content",
     }),
@@ -24,5 +36,9 @@ export const pwaSlice = createApi({
   }),
 });
 
-export const { useCreatePwaContentMutation, useGetAllPwaContentQuery } =
-  pwaSlice;
+export const {
+  useCreatePwaContentMutation,
+  useGetAllPwaContentQuery,
+  useDeletePwaContentMutation,
+  useCopyPwaContentMutation,
+} = pwaSlice;
