@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getTabText, mokePWA_Data, MyPWAsTabs, PWAData } from "./MyPWAsHelpers";
+import { getTabText, MyPWAsTabs, PWAData } from "./MyPWAsHelpers";
 import MonsterInput from "../../shared/elements/MonsterInput/MonsterInput";
 import { SettingFilled, MoreOutlined } from "@ant-design/icons";
 import moment from "moment";
@@ -8,52 +8,78 @@ import { FiCopy } from "react-icons/fi";
 import { VscPreview } from "react-icons/vsc";
 import { BsGraphUpArrow } from "react-icons/bs";
 
-import { Button } from "antd";
+import { Button, Spin } from "antd";
 import MonsterDropdown from "../../shared/elements/Dropdown/Dropdown";
 import { useNavigate } from "react-router-dom";
-import { useGetAllPwaContentQuery } from "@store/slices/pwaApi";
+import {
+  useGetAllPwaContentQuery,
+  useDeletePwaContentMutation,
+  useCopyPwaContentMutation,
+} from "@store/slices/pwaApi";
 
 const MyPWAs = () => {
-  const { data } = useGetAllPwaContentQuery();
-  console.log(data);
+  const { data, refetch, isLoading, isFetching } = useGetAllPwaContentQuery();
+  const [deletePwaContent, { isLoading: deletePwaLoading }] =
+    useDeletePwaContentMutation();
+  const [copyPwaContent, { isLoading: copyPwaLoading }] =
+    useCopyPwaContentMutation();
+
   const navigate = useNavigate();
 
   const [currentTab, setCurrentTab] = useState(MyPWAsTabs.All);
-  const [availablePWAs, setAvailablePWAs] = useState(mokePWA_Data);
+  const [availablePWAs, setAvailablePWAs] = useState([]);
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deletePwaContent(id).then(refetch);
+    } catch (error) {
+      console.error("Failed to delete PWA content:", error);
+    }
+  };
+
+  const handleCopy = async (id: string) => {
+    try {
+      await copyPwaContent(id).then(refetch);
+    } catch (error) {
+      console.error("Failed to delete PWA content:", error);
+    }
+  };
+
+  const preparePwaData = () =>
+    (data || []).map(({ appName, _id, createdAt }) => ({
+      name: appName,
+      domain: "–",
+      geo: "–",
+      createdAt: new Date(createdAt),
+      status: "–",
+      id: _id,
+    }));
 
   useEffect(() => {
     switch (currentTab) {
       case MyPWAsTabs.All:
-        setAvailablePWAs(mokePWA_Data);
+        setAvailablePWAs(preparePwaData);
         break;
       case MyPWAsTabs.Active:
-        setAvailablePWAs(mokePWA_Data.filter((pwa) => pwa.status === "Active"));
+        setAvailablePWAs([]);
         break;
       case MyPWAsTabs.Draft:
-        setAvailablePWAs(mokePWA_Data.filter((pwa) => pwa.status === "Draft"));
+        setAvailablePWAs([]);
         break;
       case MyPWAsTabs.Stopped:
-        setAvailablePWAs(
-          mokePWA_Data.filter((pwa) => pwa.status === "Stopped")
-        );
+        setAvailablePWAs([]);
         break;
       case MyPWAsTabs.CreatedAt:
-        setAvailablePWAs(
-          mokePWA_Data.sort(
-            (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
-          )
-        );
+        setAvailablePWAs([]);
         break;
       case MyPWAsTabs.Status:
-        setAvailablePWAs(
-          mokePWA_Data.sort((a, b) => a.status.localeCompare(b.status))
-        );
+        setAvailablePWAs([]);
         break;
       default:
-        setAvailablePWAs(mokePWA_Data);
+        setAvailablePWAs(preparePwaData);
         break;
     }
-  }, [currentTab]);
+  }, [currentTab, data]);
 
   const generateDropDownItems = (pwa: PWAData) => {
     return [
@@ -71,7 +97,7 @@ const MyPWAs = () => {
         label: <span className="text-xs text-white">Дублировать</span>,
         key: "copy",
         icon: <FiCopy style={{ color: "white" }} />,
-        onClick: () => duplicatePWA(pwa),
+        onClick: () => handleCopy(pwa.id),
       },
       {
         label: <span className="text-xs text-white">Предпросмотр</span>,
@@ -88,33 +114,23 @@ const MyPWAs = () => {
         key: "delete",
         icon: <MdDelete />,
         danger: true,
-        onClick: () => deletePWA(pwa),
+        onClick: () => handleDelete(pwa.id),
       },
     ];
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value === "") setAvailablePWAs(mokePWA_Data);
+    if (!e.target.value.trimEnd()) {
+      setAvailablePWAs(preparePwaData);
 
-    const filteredPWAs = mokePWA_Data.filter((pwa) =>
-      pwa.name.toLowerCase().includes(e.target.value.toLowerCase())
+      return;
+    }
+
+    const filteredPWAs = preparePwaData().filter((pwa) =>
+      pwa.name.toLowerCase().includes(e.target.value.toLowerCase()),
     );
+
     setAvailablePWAs(filteredPWAs);
-  };
-
-  const duplicatePWA = (pwaToDuplicate: PWAData) => {
-    const newPWA = {
-      ...pwaToDuplicate,
-      name: `${pwaToDuplicate.name} (Копия)`,
-    };
-    setAvailablePWAs([...availablePWAs, newPWA]);
-  };
-
-  const deletePWA = (pwaToDelete: PWAData) => {
-    const newPWAs = availablePWAs.filter(
-      (pwa) => pwa.name !== pwaToDelete.name
-    );
-    setAvailablePWAs(newPWAs);
   };
 
   return (
@@ -149,71 +165,100 @@ const MyPWAs = () => {
         </div>
         <div className="p-3 flex justify-start">
           <MonsterInput
-            onChange={(e) => handleSearch(e)}
+            onChange={handleSearch}
             className="w-[338px] h-10"
             placeholder="Поиск по названию, id или домену "
           />
         </div>
 
-        <table className="table-fixed bg-transparent border-collapse w-full">
-          <thead>
-            <tr>
-              <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white">
-                Название
-              </th>
-              <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white">
-                Домен
-              </th>
-              <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white">
-                ГЕО
-              </th>
-              <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white">
-                Дата создания
-              </th>
-              <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white">
-                Статус
-              </th>
-              <th className="bg-[#515ACA] px-8 py-3"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {availablePWAs.map((pwa) => (
-              <tr
-                key={pwa.name}
-                className="hover:bg-[#383B66] h-14 focus:bg-gray-300 w-full text-white cursor-pointer"
-              >
-                <td className="px-8 py-3">{pwa.name}</td>
-                <td className="px-8 py-3">{pwa.domain}</td>
-                <td className="px-8 py-3">{pwa.geo}</td>
-                <td className="px-8 py-3">{moment().format("DD.MM.YYYY")}</td>
-                <td className="px-8 py-3">{pwa.status}</td>
-                <td className="px-8 py-3 flex gap-[10px]">
-                  <Button
-                    icon={
-                      <SettingFilled
-                        style={{ color: "white", fontSize: "15px" }}
-                      />
-                    }
-                    className="bg-transparent border-none hover:!bg-[#5f6280]"
-                  />
-                  <MonsterDropdown
-                    trigger={["click"]}
-                    menu={{ items: generateDropDownItems(pwa) }}
-                  >
-                    <Button
-                      icon={
-                        <MoreOutlined
-                          style={{ color: "white", fontSize: "15px" }}
-                        />
-                      }
-                      className="bg-transparent border-none hover:!bg-[#5f6280]"
-                    />
-                  </MonsterDropdown>
-                </td>
+        {isLoading || deletePwaLoading || copyPwaLoading || isFetching ? (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: "20px",
+            }}
+          >
+            <Spin />
+          </div>
+        ) : (
+          <table className="table-fixed bg-transparent border-collapse w-full">
+            <thead>
+              <tr>
+                <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white">
+                  Название
+                </th>
+                <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white">
+                  Домен
+                </th>
+                <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white">
+                  ГЕО
+                </th>
+                <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white">
+                  Дата создания
+                </th>
+                <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white">
+                  Статус
+                </th>
+                <th className="bg-[#515ACA] px-8 py-3"></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {availablePWAs.length ? (
+                availablePWAs.map((pwa) => (
+                  <tr
+                    key={pwa.id}
+                    className="hover:bg-[#383B66] h-14 focus:bg-gray-300 w-full text-white cursor-pointer"
+                  >
+                    <td className="px-8 py-3">{pwa.name}</td>
+                    <td className="px-8 py-3">{pwa.domain}</td>
+                    <td className="px-8 py-3">{pwa.geo}</td>
+                    <td className="px-8 py-3">
+                      {moment(pwa.createdAt).format("DD.MM.YYYY")}
+                    </td>
+                    <td className="px-8 py-3">{pwa.status}</td>
+                    <td className="px-8 py-3 flex gap-[10px]">
+                      {/*<Button*/}
+                      {/*  icon={*/}
+                      {/*    <SettingFilled*/}
+                      {/*      style={{ color: "white", fontSize: "15px" }}*/}
+                      {/*    />*/}
+                      {/*  }*/}
+                      {/*  className="bg-transparent border-none hover:!bg-[#5f6280]"*/}
+                      {/*/>*/}
+                      <MonsterDropdown
+                        trigger={["click"]}
+                        menu={{ items: generateDropDownItems(pwa) }}
+                      >
+                        <Button
+                          icon={
+                            <MoreOutlined
+                              style={{ color: "white", fontSize: "15px" }}
+                            />
+                          }
+                          className="bg-transparent border-none hover:!bg-[#5f6280]"
+                        />
+                      </MonsterDropdown>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    padding: "20px",
+                    color: "#FFFFFF",
+                  }}
+                >
+                  <td>; (</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

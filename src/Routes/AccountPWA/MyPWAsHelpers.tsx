@@ -30,6 +30,7 @@ export interface PWAData {
   geo: string;
   createdAt: Date;
   status: "Active" | "Draft" | "Stopped";
+  id: string;
 }
 
 export const mokePWA_Data: PWAData[] = [
@@ -39,6 +40,7 @@ export const mokePWA_Data: PWAData[] = [
     geo: "RU",
     createdAt: new Date(),
     status: "Active",
+    id: "1",
   },
   {
     name: "Nine casino",
@@ -46,6 +48,7 @@ export const mokePWA_Data: PWAData[] = [
     geo: "RU",
     createdAt: new Date(),
     status: "Draft",
+    id: "2",
   },
   {
     name: "Casino 7771",
@@ -53,6 +56,7 @@ export const mokePWA_Data: PWAData[] = [
     geo: "RU",
     createdAt: new Date(),
     status: "Stopped",
+    id: "3",
   },
   {
     name: "Best slots 2",
@@ -60,6 +64,7 @@ export const mokePWA_Data: PWAData[] = [
     geo: "RU",
     createdAt: new Date(),
     status: "Active",
+    id: "4",
   },
   {
     name: "Nine casino 9",
@@ -67,6 +72,7 @@ export const mokePWA_Data: PWAData[] = [
     geo: "RU",
     createdAt: new Date(),
     status: "Draft",
+    id: "5",
   },
   {
     name: "Casino 777",
@@ -74,5 +80,6 @@ export const mokePWA_Data: PWAData[] = [
     geo: "RU",
     createdAt: new Date(),
     status: "Stopped",
+    id: "6",
   },
 ];
