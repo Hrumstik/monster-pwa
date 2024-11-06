@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Picture } from "@models/pwa";
 import { Form, FormInstance, Input, Upload } from "antd";
 import { Review } from "@models/review";
 import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
@@ -76,7 +75,10 @@ const ReviewItem = ({
     }
   };
 
-  const [reviewAuthorIcon, setReviewAuthorIcon] = useState<Picture>({
+  const [reviewAuthorIcon, setReviewAuthorIcon] = useState<{
+    file: File | null;
+    preview: string | null;
+  }>({
     file: null,
     preview: null,
   });

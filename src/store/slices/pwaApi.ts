@@ -1,14 +1,13 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import baseQuery from "../../middlewares/authBaseQuery";
 import { PwaContent } from "@models/pwa";
-import { get } from "http";
 
 export const pwaSlice = createApi({
   reducerPath: "pwaApi",
   baseQuery: baseQuery,
   refetchOnFocus: true,
   endpoints: (builder) => ({
-    createPwaContent: builder.mutation<null, PwaContent>({
+    createPwaContent: builder.mutation<PwaContent, PwaContent>({
       query: (data) => ({
         url: "/pwa-content",
         method: "POST",
@@ -33,6 +32,19 @@ export const pwaSlice = createApi({
     getPwaContentById: builder.query<PwaContent, string>({
       query: (id) => `/pwa-content/${id}`,
     }),
+
+    buildPwaContent: builder.query<{ jobId: string }, string>({
+      query: (id) => ({
+        url: `/pwa-content/${id}/build`,
+        method: "GET",
+      }),
+    }),
+    getPwaContentStatus: builder.query<
+      { status: string; url?: string },
+      string
+    >({
+      query: (jobId) => `/pwa-content/status/${jobId}`,
+    }),
   }),
 });
 
@@ -41,4 +53,6 @@ export const {
   useGetAllPwaContentQuery,
   useDeletePwaContentMutation,
   useCopyPwaContentMutation,
+  useLazyGetPwaContentStatusQuery,
+  useLazyBuildPwaContentQuery,
 } = pwaSlice;

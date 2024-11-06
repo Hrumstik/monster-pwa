@@ -36,4 +36,5 @@ export interface PwaContent {
   version: string;
   sliders: number[];
   id?: string;
+  _id?: string;
 }
