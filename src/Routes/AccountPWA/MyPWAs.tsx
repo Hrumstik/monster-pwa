@@ -55,6 +55,8 @@ const MyPWAs = () => {
       id: _id,
     }));
 
+  console.log('test');
+
   useEffect(() => {
     switch (currentTab) {
       case MyPWAsTabs.All:
