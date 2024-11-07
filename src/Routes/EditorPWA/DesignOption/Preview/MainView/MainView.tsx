@@ -20,6 +20,7 @@ const MainView = ({
   tags,
   sliders,
   reviews,
+  myPWAsPage,
 }: {
   previewPwaContent: PreviewPwaContent;
   setView: (view: PwaViews) => void;
@@ -28,6 +29,7 @@ const MainView = ({
   tags: string[];
   sliders: number[];
   reviews: Review[];
+  myPWAsPage?: boolean;
 }) => {
   const defaultReview = [
     {
@@ -55,7 +57,7 @@ const MainView = ({
       : defaultReview;
 
   return (
-    <div className="pt-5 px-6">
+    <div className={myPWAsPage ? "p-0" : "pt-5 px-6"}>
       <div className="flex mb-4">
         <div className="relative block overflow-hidden w-[70px] h-[70px] rounded-lg mr-5">
           {appIcon.url ? (

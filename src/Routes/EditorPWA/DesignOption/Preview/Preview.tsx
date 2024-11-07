@@ -13,6 +13,7 @@ const Preview = ({
   tags,
   sliders,
   reviews,
+  myPWAsPage,
 }: {
   previewPwaContent: PreviewPwaContent;
   appIcon: Picture;
@@ -20,6 +21,7 @@ const Preview = ({
   tags: string[];
   sliders: number[];
   reviews: Review[];
+  myPWAsPage?: boolean;
 }) => {
   const [view, setView] = useState<PwaViews>(PwaViews.Main);
 
@@ -29,6 +31,7 @@ const Preview = ({
     case PwaViews.Main:
       currentView = (
         <MainView
+          myPWAsPage={myPWAsPage}
           appIcon={appIcon}
           screens={screens}
           previewPwaContent={previewPwaContent}

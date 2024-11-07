@@ -8,7 +8,7 @@ import { FiCopy } from "react-icons/fi";
 import { VscPreview } from "react-icons/vsc";
 import { BsGraphUpArrow } from "react-icons/bs";
 
-import { Button, Spin } from "antd";
+import { Button, Modal, Spin, Tooltip } from "antd";
 import MonsterDropdown from "../../shared/elements/Dropdown/Dropdown";
 import { useNavigate } from "react-router-dom";
 import {
@@ -16,6 +16,7 @@ import {
   useDeletePwaContentMutation,
   useCopyPwaContentMutation,
 } from "@store/slices/pwaApi";
+import Preview from "../EditorPWA/DesignOption/Preview/Preview.tsx";
 
 const MyPWAs = () => {
   const { data, refetch, isLoading, isFetching } = useGetAllPwaContentQuery();
@@ -28,6 +29,7 @@ const MyPWAs = () => {
 
   const [currentTab, setCurrentTab] = useState(MyPWAsTabs.All);
   const [availablePWAs, setAvailablePWAs] = useState([]);
+  const [previewPwa, setPreviewPwa] = useState();
 
   const handleDelete = async (id: string) => {
     try {
@@ -79,15 +81,15 @@ const MyPWAs = () => {
         setAvailablePWAs(preparePwaData);
         break;
     }
-  }, [currentTab, data]);
+  }, [currentTab, data]); // don't change
 
   const generateDropDownItems = (pwa: PWAData) => {
     return [
-      {
-        label: <span className="text-xs text-white">Запустить</span>,
-        key: "start",
-        icon: <MdOutlineRocketLaunch style={{ color: "white" }} />,
-      },
+      // {
+      //   label: <span className="text-xs text-white">Запустить</span>,
+      //   key: "start",
+      //   icon: <MdOutlineRocketLaunch style={{ color: "white" }} />,
+      // },
       {
         label: <span className="text-xs text-white">Редактировать</span>,
         key: "edit",
@@ -103,12 +105,17 @@ const MyPWAs = () => {
         label: <span className="text-xs text-white">Предпросмотр</span>,
         key: "preview",
         icon: <VscPreview style={{ color: "white" }} />,
+        onClick: () => {
+          const preview = (data || []).find(({ _id }) => _id === pwa.id);
+          console.log(preview);
+          setPreviewPwa(preview);
+        },
       },
-      {
-        label: <span className="text-xs text-white">Статистика</span>,
-        key: "statistics",
-        icon: <BsGraphUpArrow style={{ color: "white" }} />,
-      },
+      // {
+      //   label: <span className="text-xs text-white">Статистика</span>,
+      //   key: "statistics",
+      //   icon: <BsGraphUpArrow style={{ color: "white" }} />,
+      // },
       {
         label: <span className="text-xs text-red">Удалить</span>,
         key: "delete",
@@ -134,7 +141,7 @@ const MyPWAs = () => {
   };
 
   return (
-    <div className="px-[50px] pt-[110px]">
+    <div className="px-[50px] pt-[110px] pb-[40px]">
       <div className="flex justify-between items-center mb-7">
         <span className="text-xl font-bold leading-8 text-white">Мои PWA</span>
         <span
@@ -147,15 +154,19 @@ const MyPWAs = () => {
       <div className="rounded-lg w-full min-h-40 bg-[#20223B]">
         <div className="text-sm font-medium text-center text-white border-b border-[#161724]">
           <ul className="flex flex-wrap -mb-px px-7">
-            {Object.values(MyPWAsTabs).map((tab) => (
+            {Object.values(MyPWAsTabs).map((tab, index) => (
               <li key={tab} className="me-12">
                 <div
-                  className={`cursor-pointer inline-block p-4 border-b-2 ${
+                  className={`inline-block p-4 border-b-2 ${
                     tab === currentTab
                       ? "border-[#00FF11]"
                       : "border-transparent hover:border-[#515ACA]"
-                  } rounded-t-lg`}
-                  onClick={() => setCurrentTab(tab)}
+                  } rounded-t-lg ${
+                    index
+                      ? "text-gray-500 cursor-not-allowed"
+                      : "cursor-pointer"
+                  }`}
+                  onClick={index ? undefined : () => setCurrentTab(tab)}
                 >
                   {getTabText(tab)}
                 </div>
@@ -211,7 +222,11 @@ const MyPWAs = () => {
                     key={pwa.id}
                     className="hover:bg-[#383B66] h-14 focus:bg-gray-300 w-full text-white cursor-pointer"
                   >
-                    <td className="px-8 py-3">{pwa.name}</td>
+                    <Tooltip color="grey" placement="topRight" title={pwa.name}>
+                      <td className="px-8 py-3 truncate overflow-hidden whitespace-nowrap">
+                        {pwa.name}
+                      </td>
+                    </Tooltip>
                     <td className="px-8 py-3">{pwa.domain}</td>
                     <td className="px-8 py-3">{pwa.geo}</td>
                     <td className="px-8 py-3">
@@ -260,6 +275,41 @@ const MyPWAs = () => {
           </table>
         )}
       </div>
+
+      <Modal
+        open={previewPwa}
+        footer={[]}
+        className="w-[360px] h-[671px] rounded-[32px] box-border border-[9px] border-solid border-[#515ACA] bg-white overflow-auto"
+        style={{
+          overflow: "scroll",
+          maxHeight: "80vh",
+          maxWidth: "360px",
+          paddingBottom: 0,
+          padding: 0,
+        }}
+        onCancel={() => setPreviewPwa(null)}
+      >
+        {previewPwa && (
+          <Preview
+            myPWAsPage
+            sliders={previewPwa.sliders}
+            previewPwaContent={{
+              appName: previewPwa.appName,
+              developerName: previewPwa.developerName,
+              countOfDownloads: previewPwa.countOfDownloads,
+              countOfReviews: previewPwa.countOfReviews,
+              verified: previewPwa.verified,
+              rating: previewPwa.rating,
+              countOfReviewsFull: previewPwa.countOfReviewsFull,
+              description: previewPwa.description,
+            }}
+            appIcon={{ url: previewPwa.appIcon, preview: null }}
+            screens={previewPwa.images}
+            tags={previewPwa.tags}
+            reviews={previewPwa.reviews}
+          />
+        )}
+      </Modal>
     </div>
   );
 };
