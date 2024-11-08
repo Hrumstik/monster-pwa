@@ -13,16 +13,4 @@ export default defineConfig({
       "@models": path.resolve(__dirname, "src/models"),
     },
   },
-  server: {
-    port: 3080,
-    cors: true,
-    proxy: {
-      "/api": {
-        target: "https://pwac.world",
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api/, ""),
-      },
-    },
-  },
 });
