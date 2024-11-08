@@ -753,30 +753,8 @@ const DesignOption = () => {
         </div>
       </Form>
 
-      {isLoading && (
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            backdropFilter: "blur(24px)",
-            zIndex: "100",
-            width: "100%",
-            height: "100%",
-            transform: "translate(-50%, -50%)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            flexDirection: "column",
-            gap: "40px",
-            color: "#FFFFFF",
-            letterSpacing: "1.1px",
-            textAlign: "center",
-            fontWeight: "bold",
-            fontSize: "28px",
-            padding: "20px",
-          }}
-        >
+      {true && (
+        <div className="absolute top-1/2 left-1/2 w-full h-full z-[100] flex flex-col items-center justify-center gap-10 text-[#00FF11] font-bold text-[28px] text-center tracking-[1.1px] transform -translate-x-1/2 -translate-y-1/2 p-5 backdrop-blur-[24px]">
           <Hourglass
             visible
             height="140"
