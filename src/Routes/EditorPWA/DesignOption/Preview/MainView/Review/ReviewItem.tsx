@@ -33,7 +33,11 @@ const ReviewItem: React.FC<ReviewProps> = ({
           </div>
         </div>
         <div className="flex gap-[0.5em] items-center">
-          <Rate value={stars} style={{ color: "#1357CD", fontSize: "14px" }} />
+          <Rate
+            value={stars}
+            style={{ color: "#1357CD", fontSize: "14px" }}
+            disabled
+          />
           <div className="leading-[1rem] text-[0.75em]">{date}</div>
         </div>
         <div

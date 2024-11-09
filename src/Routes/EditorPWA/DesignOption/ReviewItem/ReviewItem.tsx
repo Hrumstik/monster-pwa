@@ -126,7 +126,7 @@ const ReviewItem = ({
               beforeUpload={beforeUpload}
             >
               {reviewAuthorIcon.preview || reviewContent?.reviewAuthorIcon ? (
-                <div className="relative w-[50px] h-[50px] group">
+                <div className="relative w-[50px] h-[50px]  group">
                   <img
                     src={
                       reviewContent?.reviewAuthorIcon
@@ -134,7 +134,7 @@ const ReviewItem = ({
                         : reviewAuthorIcon.preview!
                     }
                     alt="Uploaded"
-                    className="w-[50px] h-[50px] object-contain rounded-lg"
+                    className="w-[50px] h-[50px] object-fill rounded-full"
                   />
                   <button
                     className={`absolute  opacity-0 top-0 right-0 group-hover:opacity-100  text-white rounded-full w-4 h-4 flex justify-center items-center ${

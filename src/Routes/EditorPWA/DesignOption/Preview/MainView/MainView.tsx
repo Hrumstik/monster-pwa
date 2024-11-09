@@ -171,6 +171,7 @@ const MainView = ({
           <Rate
             value={Number(previewPwaContent.rating)}
             style={{ color: "#1357CD", fontSize: "14px" }}
+            disabled
           />
         </div>
         <div

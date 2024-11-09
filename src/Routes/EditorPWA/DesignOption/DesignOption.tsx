@@ -1,4 +1,4 @@
-import { Form, Input, Spin, Upload } from "antd";
+import { Form, Input, Upload } from "antd";
 import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
 import DropdownIcon from "@shared/icons/DropdownIcon";
 import MonsterSelect from "@shared/elements/Select/MonsterSelect";
@@ -126,11 +126,11 @@ const DesignOption = () => {
   };
 
   const [screens, setScreens] = useState<Picture[]>(
-    Array.from({ length: 4 }, () => ({ url: null, preview: null })),
+    Array.from({ length: 4 }, () => ({ url: null, preview: null }))
   );
 
   const removeAppIcon = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
     setAppIcon({ url: null, preview: null });
@@ -170,7 +170,7 @@ const DesignOption = () => {
     const screen = screens[index];
 
     const handleRemoveScreen = (
-      e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
       e.stopPropagation();
       setScreens((prev) => {
@@ -186,7 +186,7 @@ const DesignOption = () => {
         beforeUpload={(file) => handleBeforeScreensUpload(file, index)}
       >
         {screen.preview ? (
-          <div className="relative w-[100px] h-[100px] group">
+          <div className="relative w-[100px] h-[160px] group">
             <img
               src={screen.preview}
               alt={`Uploaded ${index}`}
@@ -202,7 +202,7 @@ const DesignOption = () => {
         ) : (
           <button
             onClick={(e) => e.preventDefault()}
-            className="border-none hover:border-[#36395a] hover:border hover:border-solid bg-[#161724] rounded-lg w-[100px] h-[160px] flex justify-center items-center cursor-pointer relative"
+            className="border-none hover:border-[#36395a] hover:border hover:border-solid bg-[#161724] h-[160px] rounded-lg w-[100px]  flex justify-center items-center cursor-pointer relative"
           >
             <UploadImageIcon />
           </button>
@@ -233,7 +233,7 @@ const DesignOption = () => {
           clearInterval(interval);
         }
       } catch (error) {
-        console.error(error.message || error);
+        console.error(error);
         clearInterval(interval);
         setIsLoading(false);
       }
@@ -753,17 +753,16 @@ const DesignOption = () => {
         </div>
       </Form>
 
-      {true && (
-        <div className="absolute top-1/2 left-1/2 w-full h-full z-[100] flex flex-col items-center justify-center gap-10 text-[#00FF11] font-bold text-[28px] text-center tracking-[1.1px] transform -translate-x-1/2 -translate-y-1/2 p-5 backdrop-blur-[24px]">
+      {isLoading && (
+        <div className="absolute top-1/2 left-1/2 w-full h-full z-[100] flex flex-col items-center justify-center gap-10 text-[#00FF11] font-bold text-[28px] text-center tracking-[1.1px] transform -translate-x-1/2 -translate-y-1/2 p-5 backdrop-blur-[40px]">
           <Hourglass
             visible
             height="140"
             width="140"
-            ariaLabel="hourglass-loading"
-            colors={["red", "yellow"]}
+            colors={["#515ACA", "#E3CC02"]}
           />
-          Your PWA is being crafted. Sit tight – it will download automatically
-          once it’s ready!
+          Ваше PWA-приложение создается. Пожалуйста, подождите – оно загрузится
+          автоматически, как только будет готово!
         </div>
       )}
     </>
