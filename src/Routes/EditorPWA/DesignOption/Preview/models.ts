@@ -17,11 +17,11 @@ export interface PreviewPwaContent {
   developerName?: string;
   countOfDownloads?: string;
   countOfReviews?: string;
-  //   size: string;
+  size: string;
   verified: boolean;
   //   tags: string[];
-  //   securityUI: boolean;
-  //   lastUpdate: string;
+  securityUI: boolean;
+  lastUpdate: string;
   //   pwaLink: string;
   rating: string;
   description: string;
@@ -38,6 +38,6 @@ export interface PreviewPwaContent {
   //     reviewText: string;
   //     reviewDate: string;
   //   }[];
-  //   version: string;
+  version: string;
   //   sliders: number[];
 }

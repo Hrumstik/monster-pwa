@@ -44,12 +44,21 @@ const Preview = ({
       break;
     case PwaViews.About:
       currentView = (
-        <AboutView setView={setView} previewPwaContent={previewPwaContent} />
+        <AboutView
+          setView={setView}
+          previewPwaContent={previewPwaContent}
+          appIcon={appIcon.url}
+        />
       );
       break;
     case PwaViews.Reviews:
       currentView = (
-        <ReviewsView previewPwaContent={previewPwaContent} setView={setView} />
+        <ReviewsView
+          previewPwaContent={previewPwaContent}
+          setView={setView}
+          appIcon={appIcon.url}
+          reviews={reviews}
+        />
       );
       break;
   }

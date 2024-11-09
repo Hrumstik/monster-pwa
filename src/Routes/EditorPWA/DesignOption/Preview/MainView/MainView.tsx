@@ -31,7 +31,7 @@ const MainView = ({
   reviews: Review[];
   myPWAsPage?: boolean;
 }) => {
-  const defaultReview = [
+  const defaultReview: Review[] = [
     {
       reviewAuthorIcon: "",
       reviewAuthorName: "Jacob Smith",
@@ -47,6 +47,7 @@ const MainView = ({
       reviewText:
         "A wonderful application. I love all games,  especially this one",
       reviewDate: "09/04/24",
+      reviewIconColor: "",
     },
   ];
   const actualReviews =
@@ -212,6 +213,7 @@ const MainView = ({
               stars={review.reviewAuthorRating}
               text={review.reviewText}
               date={review.reviewDate}
+              iconColor={review.reviewIconColor}
             />
           );
         })}
@@ -219,70 +221,80 @@ const MainView = ({
       <div className="text-[#1357CD] leading-5 text-[14px] font-medium hover:underline cursor-pointer pb-[30px]">
         Все отзывы
       </div>
-      <div className="flex justify-between items-center cursor-pointer mb-3">
-        <span className="text-[#605D64] leading-6 font-medium text-base">
-          Безопасность данных
-        </span>
-        <ArrowRightOutlined />
-      </div>
-      <div className="text-[#605D64] text-[13px] leading-4 mb-[14px]">
-        Чтобы контролировать безопасность, нужно знать, как разработчики
-        собирают ваши данные и передают их третьим лицам. Методы обеспечения
-        безопасности и конфиденциальности могут зависеть от того, как вы
-        используете приложение, а также от вашего региона и возраста. Информация
-        ниже предоставлена разработчиком и в будущем может измениться.
-      </div>
-      <div className="rounded-lg border border-solid border-[#E6E0E9] pt-5 pl-5 pr-3 pb-5">
-        <div className="flex flex-col gap-4 mb-[23px]">
-          <div className="flex gap-4">
-            <img
-              className="w-5 h-5"
-              src={thirdPartyIcon}
-              alt="third party icon"
-            />
-            <div className="text-[#605D64] text-[13px] leading-4">
-              Это приложение может передавать указанные типы данных третьим
-              лицам
-              <span className="text-[11px]">
-                {" "}
-                Местоположение, Сведения о приложении и его производительности и
-                Идентификаторы устройства или другие идентификаторы
-              </span>
-            </div>
+      {previewPwaContent.securityUI && (
+        <>
+          <div className="flex justify-between items-center cursor-pointer mb-3">
+            <span className="text-[#605D64] leading-6 font-medium text-base">
+              Безопасность данных
+            </span>
           </div>
-          <div className="flex gap-4">
-            <img
-              className="w-5 h-5"
-              src={dataCollecting}
-              alt="third party icon"
-            />
-            <div className="text-[#605D64] text-[13px] leading-4">
-              <div>Данные не собираются</div>
-              <div className="text-[11px]">
-                Подробнее о том,{" "}
-                <span className="underline cursor-pointer">
-                  как разработчики заявляют о сборе данных...
-                </span>
+          <div className="text-[#605D64] text-[13px] leading-4 mb-[14px]">
+            Чтобы контролировать безопасность, нужно знать, как разработчики
+            собирают ваши данные и передают их третьим лицам. Методы обеспечения
+            безопасности и конфиденциальности могут зависеть от того, как вы
+            используете приложение, а также от вашего региона и возраста.
+            Информация ниже предоставлена разработчиком и в будущем может
+            измениться.
+          </div>
+          <div className="rounded-lg border border-solid border-[#E6E0E9] pt-5 pl-5 pr-3 pb-5">
+            <div className="flex flex-col gap-4 mb-[23px]">
+              <div className="flex gap-4">
+                <img
+                  className="w-5 h-5"
+                  src={thirdPartyIcon}
+                  alt="third party icon"
+                />
+                <div className="text-[#605D64] text-[13px] leading-4">
+                  Это приложение может передавать указанные типы данных третьим
+                  лицам
+                  <span className="text-[11px]">
+                    {" "}
+                    Местоположение, Сведения о приложении и его
+                    производительности и Идентификаторы устройства или другие
+                    идентификаторы
+                  </span>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <img
+                  className="w-5 h-5"
+                  src={dataCollecting}
+                  alt="third party icon"
+                />
+                <div className="text-[#605D64] text-[13px] leading-4">
+                  <div>Данные не собираются</div>
+                  <div className="text-[11px]">
+                    Подробнее о том,{" "}
+                    <span className="underline cursor-pointer">
+                      как разработчики заявляют о сборе данных...
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <img
+                  className="w-5 h-5"
+                  src={stopIcon}
+                  alt="third party icon"
+                />
+                <div className="text-[#605D64] text-[13px] leading-4">
+                  Данные не шифруются.
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <img
+                  className="w-5 h-5"
+                  src={stopIcon}
+                  alt="third party icon"
+                />
+                <div className="text-[#605D64] text-[13px] leading-4">
+                  Удалить данные невозможно.
+                </div>
               </div>
             </div>
           </div>
-          <div className="flex gap-4">
-            <img className="w-5 h-5" src={stopIcon} alt="third party icon" />
-            <div className="text-[#605D64] text-[13px] leading-4">
-              Данные не шифруются.
-            </div>
-          </div>
-          <div className="flex gap-4">
-            <img className="w-5 h-5" src={stopIcon} alt="third party icon" />
-            <div className="text-[#605D64] text-[13px] leading-4">
-              Удалить данные невозможно.
-            </div>
-          </div>
-        </div>
-        <div className="text-[#1357CD] font-medium leading-4 text-xs cursor-pointer">
-          Подробнее
-        </div>
-      </div>
+        </>
+      )}
       <div className="h-[30px]"></div>
     </div>
   );

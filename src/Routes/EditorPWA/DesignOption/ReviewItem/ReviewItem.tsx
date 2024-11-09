@@ -26,7 +26,8 @@ const ReviewItem = ({
   const [uploadIcon] = useUploadImagesMutation();
   useWatch(`reviewAuthorRating${reviewContent.id}`, form);
 
-  const editReview = () => {
+  const editReview = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
     setAllReviews(
       allReviews.map((review) => {
         if (review.id === reviewContent.id) {
@@ -47,10 +48,9 @@ const ReviewItem = ({
         `reviewText${reviewContent.id}`,
         `reviewAuthorName${reviewContent.id}`,
       ]);
-      if (!reviewAuthorIcon.file) return;
-      const uploadIconResponse = await uploadIcon([
-        reviewAuthorIcon.file,
-      ]).unwrap();
+      const uploadIconResponse = reviewAuthorIcon.file
+        ? await uploadIcon([reviewAuthorIcon.file]).unwrap()
+        : { imageUrls: [reviewContent.reviewAuthorIcon!] };
       const updatedReviews = allReviews.map((review) => {
         if (review.id === reviewContent?.id) {
           return {
@@ -64,9 +64,11 @@ const ReviewItem = ({
               `reviewAuthorRating${reviewContent.id}`
             ),
             reviewText: form.getFieldValue(`reviewText${reviewContent.id}`),
-            reviewDate: form
-              .getFieldValue(`reviewDate${reviewContent.id}`)
-              .format("DD.MM.YYYY"),
+            reviewDate: form.getFieldValue(`reviewDate${reviewContent.id}`)
+              ? form
+                  .getFieldValue(`reviewDate${reviewContent.id}`)
+                  .toISOString()
+              : dayjs().toISOString(),
           };
         } else return review;
       });
@@ -108,11 +110,13 @@ const ReviewItem = ({
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
+    e.preventDefault();
     if (!reviewContent.isActive) return;
     setReviewAuthorIcon({ file: null, preview: null });
   };
 
-  const removeReview = () => {
+  const removeReview = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
     setAllReviews(allReviews.filter((review) => review !== reviewContent));
   };
 
@@ -159,7 +163,7 @@ const ReviewItem = ({
             <Form.Item
               name={`reviewAuthorName${reviewContent.id}`}
               rules={[requiredValidator("Укажите автора")]}
-              validateTrigger={["onBlur", "onSubmit"]}
+              validateTrigger={["onChange"]}
             >
               <MonsterInput
                 className="max-w-[240px] !h-[42px]"
@@ -225,7 +229,12 @@ const ReviewItem = ({
               />
             </Form.Item>
           </div>
-          <button className="flex items-center gap-2.5 cursor-not-allowed group">
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+            }}
+            className="flex items-center gap-2.5 cursor-not-allowed group"
+          >
             <GptIcon />
             <span className="group-hover:underline text-white text-base leading-[18px] font-bold">
               Сгенерировать комментарий

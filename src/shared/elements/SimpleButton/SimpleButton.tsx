@@ -1,8 +1,10 @@
+import { MouseEventHandler } from "react";
+
 interface SimpleButtonProps {
   text: string;
   icon?: React.ReactNode;
   disabled?: boolean;
-  onClick?: () => void;
+  onClick?: MouseEventHandler<HTMLButtonElement> | undefined;
   color?: string;
   textColor?: string;
   htmlType?: "button" | "submit" | "reset";

@@ -1,4 +1,4 @@
-import { Form, Input, Upload } from "antd";
+import { Form, Input, Spin, Upload } from "antd";
 import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
 import DropdownIcon from "@shared/icons/DropdownIcon";
 import MonsterSelect from "@shared/elements/Select/MonsterSelect";
@@ -24,12 +24,14 @@ import {
   useLazyBuildPwaContentQuery,
   useCreatePwaContentMutation,
   useLazyGetPwaContentStatusQuery,
-  useLazyGetPwaContentByIdQuery,
+  useDeletePwaContentMutation,
+  useGetPwaContentByIdQuery,
 } from "@store/slices/pwaApi";
 import { PreviewPwaContent } from "./Preview/models";
 import Preview from "./Preview/Preview";
 import { Hourglass } from "react-loader-spinner";
 import { useNavigate, useParams } from "react-router-dom";
+import dayjs from "dayjs";
 
 interface DesignOptionFormValues {
   appName: string;
@@ -48,6 +50,7 @@ interface DesignOptionFormValues {
   countOfStars: number;
   fullDescription: string;
   version: string;
+  appIcon: string;
 }
 
 const { TextArea } = Input;
@@ -56,70 +59,79 @@ const DesignOption = () => {
   const navigate = useNavigate();
   const [createPwaContent] = useCreatePwaContentMutation();
   const [buildPwaContent] = useLazyBuildPwaContentQuery();
-  const [getPwaContent] = useLazyGetPwaContentByIdQuery();
   const { id } = useParams();
+  const { data: fetchedPwaContent, isLoading: pwaContentIsLoading } =
+    useGetPwaContentByIdQuery(id!, {
+      skip: !id,
+    });
+  const [deletePwaContent] = useDeletePwaContentMutation();
 
   useEffect(() => {
-    if (!id) return;
+    if (!id || !fetchedPwaContent) return;
     const fetchPwaContent = async () => {
-      const pwaContent = await getPwaContent(id).unwrap();
-      const updatedReviews = pwaContent.reviews.map((review) => ({
+      const updatedReviews = fetchedPwaContent.reviews.map((review) => ({
         ...review,
         id: uuidv4(),
       }));
+
       form.setFieldsValue({
-        appName: pwaContent.appName,
-        developerName: pwaContent.developerName,
-        countOfDownloads: pwaContent.countOfDownloads,
-        countOfReviews: pwaContent.countOfReviews,
-        size: pwaContent.size,
-        verified: pwaContent.verified,
-        tags: pwaContent.tags,
-        securityUI: pwaContent.securityUI,
-        lastUpdate: pwaContent.lastUpdate,
-        pwaLink: pwaContent.pwaLink,
-        rating: pwaContent.rating,
-        description: pwaContent.description,
-        countOfReviewsFull: pwaContent.countOfReviewsFull,
-        countOfStars: pwaContent.countOfStars,
-        version: pwaContent.version,
+        appName: fetchedPwaContent.appName,
+        developerName: fetchedPwaContent.developerName,
+        countOfDownloads: fetchedPwaContent.countOfDownloads,
+        countOfReviews: fetchedPwaContent.countOfReviews,
+        size: fetchedPwaContent.size,
+        verified: fetchedPwaContent.verified,
+        tags: fetchedPwaContent.tags,
+        securityUI: fetchedPwaContent.securityUI,
+        lastUpdate: fetchedPwaContent.lastUpdate,
+        pwaLink: fetchedPwaContent.pwaLink,
+        rating: fetchedPwaContent.rating,
+        description: fetchedPwaContent.description,
+        countOfReviewsFull: fetchedPwaContent.countOfReviewsFull,
+        countOfStars: fetchedPwaContent.countOfStars,
+        version: fetchedPwaContent.version,
+        fullDescription: fetchedPwaContent.description,
+        appIcon: fetchedPwaContent.appIcon,
       });
       setPreviewContent({
-        appName: pwaContent.appName,
-        developerName: pwaContent.developerName,
-        countOfDownloads: pwaContent.countOfDownloads,
-        countOfReviews: pwaContent.countOfReviews,
-        verified: pwaContent.verified,
-        rating: pwaContent.rating,
-        description: pwaContent.description,
-        countOfReviewsFull: pwaContent.countOfReviewsFull,
+        appName: fetchedPwaContent.appName,
+        developerName: fetchedPwaContent.developerName,
+        countOfDownloads: fetchedPwaContent.countOfDownloads,
+        countOfReviews: fetchedPwaContent.countOfReviews,
+        verified: fetchedPwaContent.verified,
+        rating: fetchedPwaContent.rating,
+        description: fetchedPwaContent.description,
+        countOfReviewsFull: fetchedPwaContent.countOfReviewsFull,
+        version: fetchedPwaContent.version,
+        size: fetchedPwaContent.size,
+        lastUpdate: fetchedPwaContent.lastUpdate,
+        securityUI: fetchedPwaContent.securityUI,
       });
       updatedReviews.forEach((review) => {
         form.setFieldsValue({
           [`reviewAuthorName${review.id}`]: review.reviewAuthorName,
           [`reviewAuthorRating${review.id}`]: review.reviewAuthorRating,
           [`reviewText${review.id}`]: review.reviewText,
-          [`reviewDate${review.id}`]: review.reviewDate,
+          [`reviewDate${review.id}`]: dayjs(review.reviewDate),
           [`reviewAuthorIcon${review.id}`]: review.reviewAuthorIcon,
         });
       });
       setAppIcon({
-        url: pwaContent.appIcon,
-        preview: pwaContent.appIcon,
+        url: fetchedPwaContent.appIcon,
+        preview: fetchedPwaContent.appIcon,
       });
-      setTags(pwaContent.tags);
+      setTags(fetchedPwaContent.tags);
       setReviews(updatedReviews);
-
-      setSliders(pwaContent.sliders);
+      setSliders(fetchedPwaContent.sliders);
       setScreens(
-        pwaContent.images.map((image) => ({
+        fetchedPwaContent.images.map((image) => ({
           url: image.url,
           preview: image.url,
         }))
       );
     };
     fetchPwaContent();
-  }, []);
+  }, [fetchedPwaContent]);
 
   const [form] = Form.useForm<DesignOptionFormValues>();
   const [uploadImages] = useUploadImagesMutation();
@@ -140,8 +152,12 @@ const DesignOption = () => {
     verified: true,
     rating: "4.8",
     countOfReviewsFull: "30,301",
+    version: "1.63.1",
     description:
       "Обновление и опыт быть самым богатым! Не сдавайся до конца, ты можешь стать победителем",
+    lastUpdate: "07.11.2024",
+    size: "15 МБ",
+    securityUI: true,
   });
   const [checkStatus] = useLazyGetPwaContentStatusQuery();
 
@@ -155,10 +171,17 @@ const DesignOption = () => {
       rating: form.getFieldValue("countOfStars").toString(),
       description: form.getFieldValue("fullDescription"),
       countOfReviewsFull: form.getFieldValue("countOfReviews"),
+      version: form.getFieldValue("version"),
+      lastUpdate: form.getFieldValue("lastUpdate"),
+      size: form.getFieldValue("size"),
+      securityUI: form.getFieldValue("securityUI"),
     });
   };
 
-  const addEmptyReview = () => {
+  const addEmptyReview = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
     setReviews((prev) => [
       ...prev,
       {
@@ -209,6 +232,7 @@ const DesignOption = () => {
         url: response.imageUrls[0],
         preview: reader.result as string,
       });
+      form.setFieldValue("appIcon", response.imageUrls[0]);
     };
     reader.readAsDataURL(file);
     return false;
@@ -296,6 +320,7 @@ const DesignOption = () => {
           }
         } else if (statusData?.status === "failed") {
           clearInterval(interval);
+          setIsLoading(false);
         }
       } catch (error) {
         console.error(error);
@@ -344,12 +369,18 @@ const DesignOption = () => {
       };
 
       const pwaContent = await createPwaContent(payload).unwrap();
+      if (id) deletePwaContent(id);
       const buildResponse = await buildPwaContent(pwaContent._id!).unwrap();
-      console.log(buildResponse);
       const jobId = buildResponse.jobId;
       setTimeout(() => startPolling(jobId), 10000);
     } catch (error) {
-      console.error("Ошибка при сохранении формы:", error);
+      if (error && typeof error === "object" && "errorFields" in error) {
+        onFinishFailed(
+          error as { errorFields: { name: (string | number)[] }[] }
+        );
+      } else {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -360,6 +391,11 @@ const DesignOption = () => {
       behavior: "smooth",
       block: "center",
     });
+  };
+
+  const generateTags = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+    setTags(["Casino", "Slots", "Online", "Offline"]);
   };
 
   return (
@@ -488,7 +524,7 @@ const DesignOption = () => {
               <Form.Item
                 name="appIcon"
                 className="mb-0 max-w-[100px]"
-                valuePropName="fileList"
+                valuePropName="appIcon"
                 validateTrigger="onChange"
                 rules={[
                   {
@@ -496,9 +532,6 @@ const DesignOption = () => {
                     message: "Загрузите иконку",
                   },
                 ]}
-                getValueFromEvent={(e) =>
-                  Array.isArray(e) ? e : e && e.fileList
-                }
               >
                 <Upload showUploadList={false} beforeUpload={beforeUpload}>
                   {appIcon.preview ? (
@@ -694,7 +727,7 @@ const DesignOption = () => {
                 <SimpleButton
                   text="Выбрать случайные теги"
                   icon={<RestoreIcon />}
-                  disabled
+                  onClick={generateTags}
                 />
               </div>
             </div>
@@ -789,6 +822,7 @@ const DesignOption = () => {
                       />
                     )}
                     <SimpleButton
+                      disabled
                       icon={<GptIcon />}
                       text="Сгенерить с ChatGPT"
                     />
@@ -809,7 +843,7 @@ const DesignOption = () => {
           </div>
           <div>
             <SimpleButton
-              htmlType="submit"
+              onClick={onFinish}
               text="Сохранить и продолжить"
               color="bg-[white]"
               textColor="text-[#121320]"
@@ -817,6 +851,7 @@ const DesignOption = () => {
           </div>
         </div>
       </Form>
+      <Spin spinning={pwaContentIsLoading} fullscreen></Spin>
 
       {isLoading && (
         <div className="absolute top-1/2 left-1/2 w-full h-full z-[100] flex flex-col items-center justify-center gap-10 text-[#00FF11] font-bold text-[28px] text-center tracking-[1.1px] transform -translate-x-1/2 -translate-y-1/2 p-5 backdrop-blur-[40px]">
