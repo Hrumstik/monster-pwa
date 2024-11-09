@@ -94,6 +94,7 @@ const MyPWAs = () => {
         label: <span className="text-xs text-white">Редактировать</span>,
         key: "edit",
         icon: <MdOutlineEdit style={{ color: "white" }} />,
+        onClick: () => navigate(`/edit-PWA/${pwa.id}`),
       },
       {
         label: <span className="text-xs text-white">Дублировать</span>,
@@ -134,7 +135,7 @@ const MyPWAs = () => {
     }
 
     const filteredPWAs = preparePwaData().filter((pwa) =>
-      pwa.name.toLowerCase().includes(e.target.value.toLowerCase()),
+      pwa.name.toLowerCase().includes(e.target.value.toLowerCase())
     );
 
     setAvailablePWAs(filteredPWAs);

@@ -58,4 +58,5 @@ export const {
   useCopyPwaContentMutation,
   useLazyGetPwaContentStatusQuery,
   useLazyBuildPwaContentQuery,
+  useLazyGetPwaContentByIdQuery,
 } = pwaSlice;

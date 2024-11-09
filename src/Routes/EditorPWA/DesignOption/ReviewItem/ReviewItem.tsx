@@ -41,6 +41,7 @@ const ReviewItem = ({
 
   const saveReview = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+
     try {
       await form.validateFields([
         `reviewText${reviewContent.id}`,
@@ -63,9 +64,9 @@ const ReviewItem = ({
               `reviewAuthorRating${reviewContent.id}`
             ),
             reviewText: form.getFieldValue(`reviewText${reviewContent.id}`),
-            reviewDate:
-              form.getFieldValue(`reviewDate${reviewContent.id}`) ??
-              dayjs().format("DD.MM.YYYY"),
+            reviewDate: form
+              .getFieldValue(`reviewDate${reviewContent.id}`)
+              .format("DD.MM.YYYY"),
           };
         } else return review;
       });
@@ -214,6 +215,7 @@ const ReviewItem = ({
           <div className="mb-5">
             <Form.Item
               rules={[requiredValidator("Укажите комментарий")]}
+              validateTrigger={["onChange"]}
               name={`reviewText${reviewContent.id}`}
             >
               <TextArea

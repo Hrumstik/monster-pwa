@@ -24,6 +24,10 @@ function App() {
               path: "/create-PWA",
               element: <EditorPWA />,
             },
+            {
+              path: "/edit-PWA/:id",
+              element: <EditorPWA />,
+            },
           ],
         },
       ],

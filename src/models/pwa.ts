@@ -6,8 +6,8 @@ export interface Picture {
 export interface PwaContent {
   appName: string;
   developerName: string;
-  countOfDownloads: number;
-  countOfReviews: number;
+  countOfDownloads: string;
+  countOfReviews: string;
   size: string;
   verified: boolean;
   tags: string[];
@@ -16,7 +16,7 @@ export interface PwaContent {
   pwaLink: string;
   rating: string;
   description: string;
-  countOfReviewsFull: number;
+  countOfReviewsFull: string;
   countOfStars: number;
   appIcon: string;
   languages?: string[];

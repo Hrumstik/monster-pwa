@@ -4,7 +4,7 @@ import DropdownIcon from "@shared/icons/DropdownIcon";
 import MonsterSelect from "@shared/elements/Select/MonsterSelect";
 import { categories, languages } from "./DesignOptionHelpers";
 import UploadImageIcon from "@shared/icons/UploadImageIcon";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MonsterSwitch from "@shared/elements/Switch/MonsterSwitch";
 import MonsterRate from "@shared/elements/Rate/MonsterRate";
 import RestoreIcon from "@shared/icons/RestoreIcon";
@@ -24,11 +24,12 @@ import {
   useLazyBuildPwaContentQuery,
   useCreatePwaContentMutation,
   useLazyGetPwaContentStatusQuery,
+  useLazyGetPwaContentByIdQuery,
 } from "@store/slices/pwaApi";
 import { PreviewPwaContent } from "./Preview/models";
 import Preview from "./Preview/Preview";
 import { Hourglass } from "react-loader-spinner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface DesignOptionFormValues {
   appName: string;
@@ -55,6 +56,70 @@ const DesignOption = () => {
   const navigate = useNavigate();
   const [createPwaContent] = useCreatePwaContentMutation();
   const [buildPwaContent] = useLazyBuildPwaContentQuery();
+  const [getPwaContent] = useLazyGetPwaContentByIdQuery();
+  const { id } = useParams();
+
+  useEffect(() => {
+    if (!id) return;
+    const fetchPwaContent = async () => {
+      const pwaContent = await getPwaContent(id).unwrap();
+      const updatedReviews = pwaContent.reviews.map((review) => ({
+        ...review,
+        id: uuidv4(),
+      }));
+      form.setFieldsValue({
+        appName: pwaContent.appName,
+        developerName: pwaContent.developerName,
+        countOfDownloads: pwaContent.countOfDownloads,
+        countOfReviews: pwaContent.countOfReviews,
+        size: pwaContent.size,
+        verified: pwaContent.verified,
+        tags: pwaContent.tags,
+        securityUI: pwaContent.securityUI,
+        lastUpdate: pwaContent.lastUpdate,
+        pwaLink: pwaContent.pwaLink,
+        rating: pwaContent.rating,
+        description: pwaContent.description,
+        countOfReviewsFull: pwaContent.countOfReviewsFull,
+        countOfStars: pwaContent.countOfStars,
+        version: pwaContent.version,
+      });
+      setPreviewContent({
+        appName: pwaContent.appName,
+        developerName: pwaContent.developerName,
+        countOfDownloads: pwaContent.countOfDownloads,
+        countOfReviews: pwaContent.countOfReviews,
+        verified: pwaContent.verified,
+        rating: pwaContent.rating,
+        description: pwaContent.description,
+        countOfReviewsFull: pwaContent.countOfReviewsFull,
+      });
+      updatedReviews.forEach((review) => {
+        form.setFieldsValue({
+          [`reviewAuthorName${review.id}`]: review.reviewAuthorName,
+          [`reviewAuthorRating${review.id}`]: review.reviewAuthorRating,
+          [`reviewText${review.id}`]: review.reviewText,
+          [`reviewDate${review.id}`]: review.reviewDate,
+          [`reviewAuthorIcon${review.id}`]: review.reviewAuthorIcon,
+        });
+      });
+      setAppIcon({
+        url: pwaContent.appIcon,
+        preview: pwaContent.appIcon,
+      });
+      setTags(pwaContent.tags);
+      setReviews(updatedReviews);
+
+      setSliders(pwaContent.sliders);
+      setScreens(
+        pwaContent.images.map((image) => ({
+          url: image.url,
+          preview: image.url,
+        }))
+      );
+    };
+    fetchPwaContent();
+  }, []);
 
   const [form] = Form.useForm<DesignOptionFormValues>();
   const [uploadImages] = useUploadImagesMutation();

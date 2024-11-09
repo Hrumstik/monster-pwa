@@ -1,11 +1,10 @@
 export interface Review {
   reviewAuthorName: string;
-  reviewAuthorIcon: string;
+  reviewAuthorIcon?: string;
   reviewAuthorRating: number;
-  reviewIconColor: string;
-  avatarTitle: string;
+  reviewIconColor?: string;
   reviewText: string;
   reviewDate: string;
-  id: string;
+  id?: string;
   isActive?: boolean;
 }
