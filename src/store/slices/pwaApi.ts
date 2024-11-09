@@ -43,7 +43,10 @@ export const pwaSlice = createApi({
       { status: string; url?: string },
       string
     >({
-      query: (jobId) => `/pwa-content/status/${jobId}`,
+      query: (jobId) => ({
+        url: `/pwa-content/status/${jobId}`,
+        method: "GET",
+      }),
     }),
   }),
 });

@@ -27,6 +27,8 @@ import {
 } from "@store/slices/pwaApi";
 import { PreviewPwaContent } from "./Preview/models";
 import Preview from "./Preview/Preview";
+import { Hourglass } from "react-loader-spinner";
+import { useNavigate } from "react-router-dom";
 
 interface DesignOptionFormValues {
   appName: string;
@@ -50,6 +52,7 @@ interface DesignOptionFormValues {
 const { TextArea } = Input;
 
 const DesignOption = () => {
+  const navigate = useNavigate();
   const [createPwaContent] = useCreatePwaContentMutation();
   const [buildPwaContent] = useLazyBuildPwaContentQuery();
 
@@ -123,11 +126,11 @@ const DesignOption = () => {
   };
 
   const [screens, setScreens] = useState<Picture[]>(
-    Array.from({ length: 4 }, () => ({ url: null, preview: null }))
+    Array.from({ length: 4 }, () => ({ url: null, preview: null })),
   );
 
   const removeAppIcon = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.stopPropagation();
     setAppIcon({ url: null, preview: null });
@@ -167,7 +170,7 @@ const DesignOption = () => {
     const screen = screens[index];
 
     const handleRemoveScreen = (
-      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     ) => {
       e.stopPropagation();
       setScreens((prev) => {
@@ -224,16 +227,17 @@ const DesignOption = () => {
             link.click();
             document.body.removeChild(link);
             setIsLoading(false);
+            navigate("/");
           }
         } else if (statusData?.status === "failed") {
           clearInterval(interval);
         }
       } catch (error) {
-        console.error("Ошибка в процессе polling:", error);
+        console.error(error.message || error);
         clearInterval(interval);
         setIsLoading(false);
       }
-    }, 3000);
+    }, 15000);
   };
 
   const onFinish = async () => {
@@ -278,7 +282,7 @@ const DesignOption = () => {
       const buildResponse = await buildPwaContent(pwaContent._id!).unwrap();
       console.log(buildResponse);
       const jobId = buildResponse.jobId;
-      startPolling(jobId);
+      setTimeout(() => startPolling(jobId), 10000);
     } catch (error) {
       console.error("Ошибка при сохранении формы:", error);
     }
@@ -748,7 +752,20 @@ const DesignOption = () => {
           </div>
         </div>
       </Form>
-      <Spin spinning={isLoading} fullscreen />
+
+      {true && (
+        <div className="absolute top-1/2 left-1/2 w-full h-full z-[100] flex flex-col items-center justify-center gap-10 text-[#00FF11] font-bold text-[28px] text-center tracking-[1.1px] transform -translate-x-1/2 -translate-y-1/2 p-5 backdrop-blur-[24px]">
+          <Hourglass
+            visible
+            height="140"
+            width="140"
+            ariaLabel="hourglass-loading"
+            colors={["red", "yellow"]}
+          />
+          Your PWA is being crafted. Sit tight – it will download automatically
+          once it’s ready!
+        </div>
+      )}
     </>
   );
 };
