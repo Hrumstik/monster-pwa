@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { getTabText, MyPWAsTabs, PWAData } from "./MyPWAsHelpers";
+import { getTabText, MyPWAsTabs } from "./MyPWAsHelpers";
 import MonsterInput from "../../shared/elements/MonsterInput/MonsterInput";
-import { SettingFilled, MoreOutlined } from "@ant-design/icons";
+import { MoreOutlined } from "@ant-design/icons";
 import moment from "moment";
-import { MdOutlineRocketLaunch, MdOutlineEdit, MdDelete } from "react-icons/md";
+import { MdOutlineEdit, MdDelete } from "react-icons/md";
 import { FiCopy } from "react-icons/fi";
 import { VscPreview } from "react-icons/vsc";
-import { BsGraphUpArrow } from "react-icons/bs";
 
 import { Button, Modal, Spin, Tooltip } from "antd";
 import MonsterDropdown from "../../shared/elements/Dropdown/Dropdown";
@@ -17,6 +16,8 @@ import {
   useCopyPwaContentMutation,
 } from "@store/slices/pwaApi";
 import Preview from "../EditorPWA/DesignOption/Preview/Preview.tsx";
+import { PreparedPWADataItem, PwaContent } from "@models/pwa.ts";
+import { PreviewPwaContent } from "Routes/EditorPWA/DesignOption/Preview/models.ts";
 
 const MyPWAs = () => {
   const { data, refetch, isLoading, isFetching } = useGetAllPwaContentQuery();
@@ -28,8 +29,8 @@ const MyPWAs = () => {
   const navigate = useNavigate();
 
   const [currentTab, setCurrentTab] = useState(MyPWAsTabs.All);
-  const [availablePWAs, setAvailablePWAs] = useState([]);
-  const [previewPwa, setPreviewPwa] = useState();
+  const [availablePWAs, setAvailablePWAs] = useState<PreparedPWADataItem[]>([]);
+  const [previewPwa, setPreviewPwa] = useState<PwaContent | null>();
 
   const handleDelete = async (id: string) => {
     try {
@@ -48,14 +49,14 @@ const MyPWAs = () => {
   };
 
   const preparePwaData = () =>
-    (data || []).map(({ appName, _id, createdAt }) => ({
+    data?.map(({ appName, _id, createdAt }) => ({
       name: appName,
       domain: "–",
       geo: "–",
       createdAt: new Date(createdAt),
       status: "–",
       id: _id,
-    }));
+    })) || [];
 
   useEffect(() => {
     switch (currentTab) {
@@ -81,9 +82,10 @@ const MyPWAs = () => {
         setAvailablePWAs(preparePwaData);
         break;
     }
-  }, [currentTab, data]); // don't change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTab, data]);
 
-  const generateDropDownItems = (pwa: PWAData) => {
+  const generateDropDownItems = (pwa: PreparedPWADataItem) => {
     return [
       // {
       //   label: <span className="text-xs text-white">Запустить</span>,
@@ -100,7 +102,7 @@ const MyPWAs = () => {
         label: <span className="text-xs text-white">Дублировать</span>,
         key: "copy",
         icon: <FiCopy style={{ color: "white" }} />,
-        onClick: () => handleCopy(pwa.id),
+        onClick: () => handleCopy(pwa.id as string),
       },
       {
         label: <span className="text-xs text-white">Предпросмотр</span>,
@@ -108,7 +110,7 @@ const MyPWAs = () => {
         icon: <VscPreview style={{ color: "white" }} />,
         onClick: () => {
           const preview = (data || []).find(({ _id }) => _id === pwa.id);
-          console.log(preview);
+
           setPreviewPwa(preview);
         },
       },
@@ -122,7 +124,7 @@ const MyPWAs = () => {
         key: "delete",
         icon: <MdDelete />,
         danger: true,
-        onClick: () => handleDelete(pwa.id),
+        onClick: () => handleDelete(pwa.id as string),
       },
     ];
   };
@@ -278,7 +280,7 @@ const MyPWAs = () => {
       </div>
 
       <Modal
-        open={previewPwa}
+        open={!!previewPwa}
         footer={[]}
         className="w-[360px] h-[671px] rounded-[32px] box-border border-[9px] border-solid border-[#515ACA] bg-white overflow-auto"
         style={{
@@ -294,18 +296,23 @@ const MyPWAs = () => {
           <Preview
             myPWAsPage
             sliders={previewPwa.sliders}
-            previewPwaContent={{
-              appName: previewPwa.appName,
-              developerName: previewPwa.developerName,
-              countOfDownloads: previewPwa.countOfDownloads,
-              countOfReviews: previewPwa.countOfReviews,
-              verified: previewPwa.verified,
-              rating: previewPwa.rating,
-              countOfReviewsFull: previewPwa.countOfReviewsFull,
-              description: previewPwa.description,
-            }}
+            previewPwaContent={
+              {
+                appName: previewPwa.appName,
+                developerName: previewPwa.developerName,
+                countOfDownloads: previewPwa.countOfDownloads,
+                countOfReviews: previewPwa.countOfReviews,
+                verified: previewPwa.verified,
+                rating: previewPwa.rating,
+                countOfReviewsFull: previewPwa.countOfReviewsFull,
+                description: previewPwa.description,
+              } as PreviewPwaContent
+            }
             appIcon={{ url: previewPwa.appIcon, preview: null }}
-            screens={previewPwa.images}
+            screens={previewPwa.images?.map(({ url }) => ({
+              url,
+              preview: null,
+            }))}
             tags={previewPwa.tags}
             reviews={previewPwa.reviews}
           />

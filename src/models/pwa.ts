@@ -35,6 +35,16 @@ export interface PwaContent {
   }[];
   version: string;
   sliders: number[];
+  createdAt: string;
   id?: string;
   _id?: string;
 }
+
+export interface PreparedPWADataItem {
+  name: string;
+  domain: string;
+  geo: string;
+  createdAt: Date;
+  status: string;
+  id: string | undefined;
+};
