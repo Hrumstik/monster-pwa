@@ -4,6 +4,7 @@ import DropdownIcon from "@shared/icons/DropdownIcon";
 import MonsterSelect from "@shared/elements/Select/MonsterSelect";
 import { categories, languages } from "./DesignOptionHelpers";
 import UploadImageIcon from "@shared/icons/UploadImageIcon";
+import { IoAddOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import MonsterSwitch from "@shared/elements/Switch/MonsterSwitch";
 import MonsterRate from "@shared/elements/Rate/MonsterRate";
@@ -11,7 +12,6 @@ import RestoreIcon from "@shared/icons/RestoreIcon";
 import MonsterSlider from "@shared/elements/Slider/MonsterSlider";
 import PlusIcon from "@shared/icons/PlusIcon";
 import GptIcon from "@shared/icons/GptIcon";
-import ArrowIcon from "@shared/icons/ArrowIcon";
 import { Review } from "@models/review";
 import SimpleButton from "@shared/elements/SimpleButton/SimpleButton";
 import { Picture } from "@models/pwa";
@@ -134,7 +134,8 @@ const DesignOption = () => {
   }, [fetchedPwaContent]);
 
   const [form] = Form.useForm<DesignOptionFormValues>();
-  const [uploadImages] = useUploadImagesMutation();
+  const [uploadImages, { isLoading: areImagesLoading }] =
+    useUploadImagesMutation();
   useWatch("countOfStars", form);
   const [appIcon, setAppIcon] = useState<Picture>({
     url: null,
@@ -185,13 +186,14 @@ const DesignOption = () => {
     setReviews((prev) => [
       ...prev,
       {
-        reviewAuthorName: "",
+        reviewAuthorName: "Без имени",
         reviewAuthorIcon: "",
-        reviewAuthorRating: 2,
-        reviewIconColor: "blue",
-        avatarTitle: "PL",
-        reviewText: "",
-        reviewDate: "",
+        reviewAuthorRating: 5,
+        reviewIconColor: "",
+        avatarTitle: "",
+        reviewText:
+          "Комментарий пока не сохранен. Введите данные и сохраните его.",
+        reviewDate: new Date().toISOString(),
         isActive: true,
         id: uuidv4(),
       },
@@ -291,7 +293,7 @@ const DesignOption = () => {
         ) : (
           <button
             onClick={(e) => e.preventDefault()}
-            className="border-none hover:border-[#36395a] hover:border hover:border-solid bg-[#161724] h-[160px] rounded-lg w-[100px]  flex justify-center items-center cursor-pointer relative"
+            className="border-none hover:border-[#36395a] hover:border hover:border-solid bg-[#161724] h-[166px] rounded-lg w-[100px]  flex justify-center items-center cursor-pointer relative"
           >
             <UploadImageIcon />
           </button>
@@ -328,6 +330,19 @@ const DesignOption = () => {
         setIsLoading(false);
       }
     }, 15000);
+  };
+
+  const addEmptyScreen = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    setScreens((prev) => [
+      ...prev,
+      {
+        url: null,
+        preview: null,
+      },
+    ]);
   };
 
   const onFinish = async () => {
@@ -669,6 +684,14 @@ const DesignOption = () => {
                 {screens.map((_, index) => (
                   <div key={index}>{generateScreen(index)}</div>
                 ))}
+                {!screens.some((screen) => screen.url === null) ? (
+                  <button
+                    onClick={addEmptyScreen}
+                    className="border-none hover:border-[#36395a] hover:border hover:border-solid bg-[#161724] h-[166px] rounded-lg w-[100px]  flex justify-center items-center cursor-pointer relative"
+                  >
+                    <IoAddOutline color="white" />
+                  </button>
+                ) : null}
               </div>
             }
           </div>
@@ -794,14 +817,6 @@ const DesignOption = () => {
                   <div className="text-white font-bold text-base leading-[18px] mb-5">
                     Комментарии
                   </div>
-                  <div className="flex flex-col">
-                    <div className="text-[#D9D9D9] font-bold text-base italic">
-                      Справа превью
-                    </div>
-                    <div className="flex justify-end">
-                      <ArrowIcon />
-                    </div>
-                  </div>
                 </div>
                 {reviews.map((review, index) => (
                   <ReviewItem
@@ -851,7 +866,10 @@ const DesignOption = () => {
           </div>
         </div>
       </Form>
-      <Spin spinning={pwaContentIsLoading} fullscreen></Spin>
+      <Spin
+        spinning={pwaContentIsLoading || areImagesLoading}
+        fullscreen
+      ></Spin>
 
       {isLoading && (
         <div className="absolute top-1/2 left-1/2 w-full h-full z-[100] flex flex-col items-center justify-center gap-10 text-[#00FF11] font-bold text-[28px] text-center tracking-[1.1px] transform -translate-x-1/2 -translate-y-1/2 p-5 backdrop-blur-[40px]">

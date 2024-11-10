@@ -2,7 +2,7 @@ import { Picture } from "@models/pwa";
 
 const ScreensSlider = ({ screens }: { screens: Picture[] }) => {
   return (
-    <div className="slider-container mb-6 overflow-x-auto whitespace-nowrap scroll-smooth">
+    <div className="slider-container no-scrollbar mb-6 overflow-x-auto whitespace-nowrap scroll-smooth">
       <div className="flex space-x-4">
         {screens.map((screen, index) => (
           <div

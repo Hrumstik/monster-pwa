@@ -84,7 +84,7 @@ const MainView = ({
                 ? previewPwaContent.developerName
                 : "Supercent, Inc."}
             </div>
-            {<VerifiedIcon />}
+            {previewPwaContent.verified && <VerifiedIcon />}
           </div>
         </div>
       </div>

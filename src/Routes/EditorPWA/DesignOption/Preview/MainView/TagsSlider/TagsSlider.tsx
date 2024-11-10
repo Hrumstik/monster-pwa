@@ -3,7 +3,7 @@ const TagsSlider = ({ tags }: { tags: string[] }) => {
     tags.length > 0 ? tags : ["Casino", "Slots", "Online", "Offline"];
 
   return (
-    <div className="slider-container  overflow-x-auto whitespace-nowrap scroll-smooth mb-7">
+    <div className="slider-container no-scrollbar  overflow-x-auto whitespace-nowrap scroll-smooth mb-7">
       <div className="flex space-x-4">
         {actualTags.map((tag, index) => (
           <div
