@@ -7,7 +7,7 @@ import { MdOutlineEdit, MdDelete } from "react-icons/md";
 import { FiCopy } from "react-icons/fi";
 import { VscPreview } from "react-icons/vsc";
 
-import { Button, Modal, Spin, Tooltip } from "antd";
+import { Button, Modal, Spin, Tooltip, Empty, Typography } from "antd";
 import MonsterDropdown from "../../shared/elements/Dropdown/Dropdown";
 import { useNavigate } from "react-router-dom";
 import {
@@ -137,7 +137,7 @@ const MyPWAs = () => {
     }
 
     const filteredPWAs = preparePwaData().filter((pwa) =>
-      pwa.name.toLowerCase().includes(e.target.value.toLowerCase())
+      pwa.name.toLowerCase().includes(e.target.value.toLowerCase()),
     );
 
     setAvailablePWAs(filteredPWAs);
@@ -154,7 +154,7 @@ const MyPWAs = () => {
           + Создать PWA
         </span>
       </div>
-      <div className="rounded-lg w-full min-h-40 bg-[#20223B]">
+      <div className="rounded-lg w-full min-h-[62vh] bg-[#20223B]">
         <div className="text-sm font-medium text-center text-white border-b border-[#161724]">
           <ul className="flex flex-wrap -mb-px px-7">
             {Object.values(MyPWAsTabs).map((tab, index) => (
@@ -196,7 +196,7 @@ const MyPWAs = () => {
           >
             <Spin />
           </div>
-        ) : (
+        ) : Boolean(availablePWAs.length) ? (
           <table className="table-fixed bg-transparent border-collapse w-full">
             <thead>
               <tr>
@@ -219,7 +219,7 @@ const MyPWAs = () => {
               </tr>
             </thead>
             <tbody>
-              {availablePWAs.length ? (
+              {!!availablePWAs.length &&
                 availablePWAs.map((pwa) => (
                   <tr
                     key={pwa.id}
@@ -260,22 +260,15 @@ const MyPWAs = () => {
                       </MonsterDropdown>
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    padding: "20px",
-                    color: "#FFFFFF",
-                  }}
-                >
-                  <td>; (</td>
-                </tr>
-              )}
+                ))}
             </tbody>
           </table>
+        ) : (
+          <Empty
+            description={<span style={{ color: "white" }}>No items</span>}
+            className="p-[40px]"
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+          />
         )}
       </div>
 

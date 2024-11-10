@@ -60,23 +60,13 @@ const DesignOption = () => {
   const navigate = useNavigate();
   const [createPwaContent] = useCreatePwaContentMutation();
   const [buildPwaContent] = useLazyBuildPwaContentQuery();
-  const [api] = notification.useNotification();
+  const [api, contextHolder] = notification.useNotification();
   const { id } = useParams();
   const { data: fetchedPwaContent, isLoading: pwaContentIsLoading } =
     useGetPwaContentByIdQuery(id!, {
       skip: !id,
     });
   const [deletePwaContent] = useDeletePwaContentMutation();
-
-  const openNotification = (message: string) => {
-    api.error({
-      message: "Error",
-      description: message,
-      placement: "topRight",
-    });
-  };
-
-  openNotification('Message');
 
   useEffect(() => {
     if (!id || !fetchedPwaContent) return;
@@ -139,7 +129,7 @@ const DesignOption = () => {
         fetchedPwaContent.images.map((image) => ({
           url: image.url,
           preview: image.url,
-        }))
+        })),
       );
     };
     fetchPwaContent();
@@ -193,7 +183,7 @@ const DesignOption = () => {
   };
 
   const addEmptyReview = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.preventDefault();
     setReviews((prev) => [
@@ -229,11 +219,11 @@ const DesignOption = () => {
   };
 
   const [screens, setScreens] = useState<Picture[]>(
-    Array.from({ length: 4 }, () => ({ url: null, preview: null }))
+    Array.from({ length: 4 }, () => ({ url: null, preview: null })),
   );
 
   const removeAppIcon = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.stopPropagation();
     setAppIcon({ url: null, preview: null });
@@ -274,7 +264,7 @@ const DesignOption = () => {
     const screen = screens[index];
 
     const handleRemoveScreen = (
-      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     ) => {
       e.stopPropagation();
       setScreens((prev) => {
@@ -316,7 +306,6 @@ const DesignOption = () => {
   };
 
   const [isLoading, setIsLoading] = useState(false);
-  const [buildPWAError, setBuildPWAError] = useState<string | undefined>('Oops. Error occured during build');
 
   const startPolling = (jobId: string) => {
     const interval = setInterval(async () => {
@@ -336,7 +325,12 @@ const DesignOption = () => {
           }
         } else if (statusData?.status === "failed") {
           clearInterval(interval);
-          setBuildPWAError(statusData?.body);
+          api.error({
+            message: "Error",
+            description: statusData?.body,
+            placement: "topRight",
+            duration: 60,
+          });
           setIsLoading(false);
         }
       } catch (error) {
@@ -348,7 +342,7 @@ const DesignOption = () => {
   };
 
   const addEmptyScreen = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.preventDefault();
     setScreens((prev) => [
@@ -406,7 +400,7 @@ const DesignOption = () => {
     } catch (error) {
       if (error && typeof error === "object" && "errorFields" in error) {
         onFinishFailed(
-          error as { errorFields: { name: (string | number)[] }[] }
+          error as { errorFields: { name: (string | number)[] }[] },
         );
       } else {
         setIsLoading(false);
@@ -430,6 +424,7 @@ const DesignOption = () => {
 
   return (
     <>
+      {contextHolder}
       <Form
         form={form}
         onFinish={onFinish}

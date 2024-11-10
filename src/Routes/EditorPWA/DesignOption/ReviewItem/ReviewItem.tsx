@@ -37,7 +37,7 @@ const ReviewItem = ({
             isActive: true,
           };
         } else return review;
-      })
+      }),
     );
   };
 
@@ -58,11 +58,11 @@ const ReviewItem = ({
             ...review,
             isActive: false,
             reviewAuthorName: form.getFieldValue(
-              `reviewAuthorName${reviewContent.id}`
+              `reviewAuthorName${reviewContent.id}`,
             ),
             reviewAuthorIcon: uploadIconResponse.imageUrls[0],
             reviewAuthorRating: form.getFieldValue(
-              `reviewAuthorRating${reviewContent.id}`
+              `reviewAuthorRating${reviewContent.id}`,
             ),
             reviewText: form.getFieldValue(`reviewText${reviewContent.id}`),
             reviewDate: form.getFieldValue(`reviewDate${reviewContent.id}`)
@@ -108,7 +108,7 @@ const ReviewItem = ({
   };
 
   const removeReviewIcon = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.stopPropagation();
     e.preventDefault();
@@ -126,7 +126,7 @@ const ReviewItem = ({
       <Spin spinning={isIconUploading} fullscreen></Spin>
       <div className="pt-5 mb-[35px]">
         <div className="flex justify-between items-center mb-[30px]">
-          <div className="flex">
+          <div className="flex flex-wrap">
             <div className="pt-[20px] mr-[19px]">
               <Upload
                 disabled={!reviewContent.isActive}
@@ -255,7 +255,8 @@ const ReviewItem = ({
                 <TextArea
                   style={{ resize: "none" }}
                   rows={6}
-                  disabled={!reviewContent.isActive}
+                  //disabled={!reviewContent.isActive}
+                  disabled
                 />
               </Form.Item>
             </div>
