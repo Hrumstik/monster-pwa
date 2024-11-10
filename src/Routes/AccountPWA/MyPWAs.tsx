@@ -7,7 +7,7 @@ import { MdOutlineEdit, MdDelete } from "react-icons/md";
 import { FiCopy } from "react-icons/fi";
 import { VscPreview } from "react-icons/vsc";
 
-import { Button, Modal, Spin, Tooltip, Empty, Typography } from "antd";
+import { Button, Modal, Spin, Tooltip, Empty } from "antd";
 import MonsterDropdown from "../../shared/elements/Dropdown/Dropdown";
 import { useNavigate } from "react-router-dom";
 import {
@@ -137,7 +137,7 @@ const MyPWAs = () => {
     }
 
     const filteredPWAs = preparePwaData().filter((pwa) =>
-      pwa.name.toLowerCase().includes(e.target.value.toLowerCase()),
+      pwa.name.toLowerCase().includes(e.target.value.toLowerCase())
     );
 
     setAvailablePWAs(filteredPWAs);
