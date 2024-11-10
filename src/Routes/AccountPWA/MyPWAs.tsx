@@ -53,7 +53,7 @@ const MyPWAs = () => {
       name: appName,
       domain: "–",
       geo: "–",
-      createdAt: new Date(createdAt),
+      createdAt: new Date(createdAt as string),
       status: "–",
       id: _id,
     })) || [];

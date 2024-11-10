@@ -40,7 +40,7 @@ export const pwaSlice = createApi({
       }),
     }),
     getPwaContentStatus: builder.query<
-      { status: string; url?: string },
+      { status: string; url?: string, body?: string; },
       string
     >({
       query: (jobId) => ({

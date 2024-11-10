@@ -20,6 +20,7 @@ import { useWatch } from "antd/es/form/Form";
 import { v4 as uuidv4 } from "uuid";
 import { requiredValidator } from "@shared/form/validators/validators";
 import { useUploadImagesMutation } from "@store/slices/filesApi";
+import { notification } from "antd";
 import {
   useLazyBuildPwaContentQuery,
   useCreatePwaContentMutation,
@@ -59,12 +60,23 @@ const DesignOption = () => {
   const navigate = useNavigate();
   const [createPwaContent] = useCreatePwaContentMutation();
   const [buildPwaContent] = useLazyBuildPwaContentQuery();
+  const [api] = notification.useNotification();
   const { id } = useParams();
   const { data: fetchedPwaContent, isLoading: pwaContentIsLoading } =
     useGetPwaContentByIdQuery(id!, {
       skip: !id,
     });
   const [deletePwaContent] = useDeletePwaContentMutation();
+
+  const openNotification = (message: string) => {
+    api.error({
+      message: "Error",
+      description: message,
+      placement: "topRight",
+    });
+  };
+
+  openNotification('Message');
 
   useEffect(() => {
     if (!id || !fetchedPwaContent) return;
@@ -131,6 +143,7 @@ const DesignOption = () => {
       );
     };
     fetchPwaContent();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchedPwaContent]);
 
   const [form] = Form.useForm<DesignOptionFormValues>();
@@ -303,6 +316,7 @@ const DesignOption = () => {
   };
 
   const [isLoading, setIsLoading] = useState(false);
+  const [buildPWAError, setBuildPWAError] = useState<string | undefined>('Oops. Error occured during build');
 
   const startPolling = (jobId: string) => {
     const interval = setInterval(async () => {
@@ -322,6 +336,7 @@ const DesignOption = () => {
           }
         } else if (statusData?.status === "failed") {
           clearInterval(interval);
+          setBuildPWAError(statusData?.body);
           setIsLoading(false);
         }
       } catch (error) {

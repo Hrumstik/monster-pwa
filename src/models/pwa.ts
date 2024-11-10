@@ -35,7 +35,7 @@ export interface PwaContent {
   }[];
   version: string;
   sliders: number[];
-  createdAt: string;
+  createdAt?: string;
   id?: string;
   _id?: string;
 }
