@@ -24,8 +24,9 @@ export interface PreviewPwaContent {
   lastUpdate: string;
   //   pwaLink: string;
   rating: string;
-  description: string;
   countOfReviewsFull: string;
+  shortDescription: string;
+  fullDescription: string;
   //   languages?: string[];
   //   images: {
   //     url: string;

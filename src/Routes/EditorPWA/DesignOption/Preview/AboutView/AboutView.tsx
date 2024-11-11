@@ -40,7 +40,7 @@ const AboutView: React.FC<Props> = ({
           Описание
         </div>
         <div className="text-sm whitespace-pre-wrap relative text-justify text-[#605D64]">
-          {previewPwaContent.description}
+          {previewPwaContent.fullDescription}
         </div>
       </section>
       <div className="bg-[#C6C6C6] h-[1px] w-full" />

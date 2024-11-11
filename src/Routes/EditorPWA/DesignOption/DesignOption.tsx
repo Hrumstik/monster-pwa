@@ -50,6 +50,7 @@ interface DesignOptionFormValues {
   countOfReviewsFull: string;
   countOfStars: number;
   fullDescription: string;
+  shortDescription: string;
   version: string;
   appIcon: string;
 }
@@ -88,11 +89,10 @@ const DesignOption = () => {
         lastUpdate: fetchedPwaContent.lastUpdate,
         pwaLink: fetchedPwaContent.pwaLink,
         rating: fetchedPwaContent.rating,
-        description: fetchedPwaContent.description,
         countOfReviewsFull: fetchedPwaContent.countOfReviewsFull,
         countOfStars: fetchedPwaContent.countOfStars,
         version: fetchedPwaContent.version,
-        fullDescription: fetchedPwaContent.description,
+        fullDescription: fetchedPwaContent.fullDescription,
         appIcon: fetchedPwaContent.appIcon,
       });
       setPreviewContent({
@@ -102,7 +102,8 @@ const DesignOption = () => {
         countOfReviews: fetchedPwaContent.countOfReviews,
         verified: fetchedPwaContent.verified,
         rating: fetchedPwaContent.rating,
-        description: fetchedPwaContent.description,
+        shortDescription: fetchedPwaContent.shortDescription,
+        fullDescription: fetchedPwaContent.fullDescription,
         countOfReviewsFull: fetchedPwaContent.countOfReviewsFull,
         version: fetchedPwaContent.version,
         size: fetchedPwaContent.size,
@@ -129,7 +130,7 @@ const DesignOption = () => {
         fetchedPwaContent.images.map((image) => ({
           url: image.url,
           preview: image.url,
-        })),
+        }))
       );
     };
     fetchPwaContent();
@@ -157,10 +158,12 @@ const DesignOption = () => {
     rating: "4.8",
     countOfReviewsFull: "30,301",
     version: "1.63.1",
-    description:
+    shortDescription:
       "Обновление и опыт быть самым богатым! Не сдавайся до конца, ты можешь стать победителем",
     lastUpdate: "07.11.2024",
     size: "15 МБ",
+    fullDescription:
+      "Обновление и опыт быть самым богатым! Не сдавайся до конца, ты можешь стать победителем",
     securityUI: true,
   });
   const [checkStatus] = useLazyGetPwaContentStatusQuery();
@@ -173,7 +176,8 @@ const DesignOption = () => {
       countOfReviews: form.getFieldValue("countOfReviews"),
       verified: form.getFieldValue("verified"),
       rating: form.getFieldValue("countOfStars").toString(),
-      description: form.getFieldValue("fullDescription"),
+      shortDescription: form.getFieldValue("shortDescription"),
+      fullDescription: form.getFieldValue("fullDescription"),
       countOfReviewsFull: form.getFieldValue("countOfReviews"),
       version: form.getFieldValue("version"),
       lastUpdate: form.getFieldValue("lastUpdate"),
@@ -183,7 +187,7 @@ const DesignOption = () => {
   };
 
   const addEmptyReview = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
     setReviews((prev) => [
@@ -219,11 +223,11 @@ const DesignOption = () => {
   };
 
   const [screens, setScreens] = useState<Picture[]>(
-    Array.from({ length: 4 }, () => ({ url: null, preview: null })),
+    Array.from({ length: 4 }, () => ({ url: null, preview: null }))
   );
 
   const removeAppIcon = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
     setAppIcon({ url: null, preview: null });
@@ -264,7 +268,7 @@ const DesignOption = () => {
     const screen = screens[index];
 
     const handleRemoveScreen = (
-      e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
       e.stopPropagation();
       setScreens((prev) => {
@@ -342,7 +346,7 @@ const DesignOption = () => {
   };
 
   const addEmptyScreen = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
     setScreens((prev) => [
@@ -370,7 +374,7 @@ const DesignOption = () => {
         securityUI: form.getFieldValue("securityUI"),
         lastUpdate: new Date().toISOString(),
         pwaLink: form.getFieldValue("pwaLink"),
-        rating: "4.9",
+        rating: form.getFieldValue("rating"),
         description: form.getFieldValue("fullDescription"),
         countOfReviewsFull: form.getFieldValue("countOfReviews"),
         appIcon: appIcon.url!,
@@ -388,6 +392,8 @@ const DesignOption = () => {
           reviewText: review.reviewText,
           reviewDate: review.reviewDate,
         })),
+        shortDescription: form.getFieldValue("shortDescription"),
+        fullDescription: form.getFieldValue("fullDescription"),
         version: "1.0",
         sliders,
       };
@@ -400,7 +406,7 @@ const DesignOption = () => {
     } catch (error) {
       if (error && typeof error === "object" && "errorFields" in error) {
         onFinishFailed(
-          error as { errorFields: { name: (string | number)[] }[] },
+          error as { errorFields: { name: (string | number)[] }[] }
         );
       } else {
         setIsLoading(false);
@@ -715,15 +721,30 @@ const DesignOption = () => {
             <div className="flex gap-[30px]">
               <div className="flex-1">
                 <div className="text-sm leading-[14px] text-white mb-[10px]">
-                  Описание:
+                  Заголовок (превью описания)
                 </div>
+                <Form.Item
+                  name="shortDescription"
+                  className="mb-4"
+                  validateTrigger="onChange"
+                  rules={[requiredValidator("Укажите превью")]}
+                >
+                  <MonsterInput
+                    placeholder="Введите заголовок"
+                    className="h-10"
+                  />
+                </Form.Item>
                 <Form.Item
                   name="fullDescription"
                   className="mb-[25px]"
                   validateTrigger="onChange"
                   rules={[requiredValidator("Укажите описание приложения")]}
                 >
-                  <TextArea rows={6} className="resize-none" />
+                  <TextArea
+                    rows={6}
+                    className="resize-none"
+                    placeholder="Введите описание приложения:"
+                  />
                 </Form.Item>
                 <button className="text-white underline leading-[18px] text-base">
                   Сгенерить описание при помощи ChatGPT

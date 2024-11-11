@@ -134,7 +134,7 @@ const MainView = ({
           <ArrowRightOutlined />
         </div>
         <div className="text-[#605D64] text-[14px] leading-5">
-          {previewPwaContent.description}
+          {previewPwaContent.shortDescription}
         </div>
       </div>
       <TagsSlider tags={tags} />

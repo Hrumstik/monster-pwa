@@ -15,7 +15,8 @@ export interface PwaContent {
   lastUpdate: string;
   pwaLink: string;
   rating: string;
-  description: string;
+  shortDescription: string;
+  fullDescription: string;
   countOfReviewsFull: string;
   countOfStars: number;
   appIcon: string;
@@ -47,4 +48,4 @@ export interface PreparedPWADataItem {
   createdAt: Date;
   status: string;
   id: string | undefined;
-};
+}

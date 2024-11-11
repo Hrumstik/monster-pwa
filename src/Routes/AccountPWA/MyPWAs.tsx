@@ -196,7 +196,7 @@ const MyPWAs = () => {
           >
             <Spin />
           </div>
-        ) : Boolean(availablePWAs.length) ? (
+        ) : availablePWAs.length ? (
           <table className="table-fixed bg-transparent border-collapse w-full">
             <thead>
               <tr>
@@ -298,7 +298,8 @@ const MyPWAs = () => {
                 verified: previewPwa.verified,
                 rating: previewPwa.rating,
                 countOfReviewsFull: previewPwa.countOfReviewsFull,
-                description: previewPwa.description,
+                shortDescription: previewPwa.shortDescription,
+                fullDescription: previewPwa.fullDescription,
               } as PreviewPwaContent
             }
             appIcon={{ url: previewPwa.appIcon, preview: null }}
