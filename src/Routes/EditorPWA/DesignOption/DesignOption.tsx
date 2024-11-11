@@ -10,7 +10,6 @@ import MonsterSwitch from "@shared/elements/Switch/MonsterSwitch";
 import MonsterRate from "@shared/elements/Rate/MonsterRate";
 import RestoreIcon from "@shared/icons/RestoreIcon";
 import MonsterSlider from "@shared/elements/Slider/MonsterSlider";
-import PlusIcon from "@shared/icons/PlusIcon";
 import GptIcon from "@shared/icons/GptIcon";
 import { Review } from "@models/review";
 import SimpleButton from "@shared/elements/SimpleButton/SimpleButton";
@@ -495,13 +494,6 @@ const DesignOption = () => {
                 <div className="text-base text-orangeSubtitle leading-[18px] font-bold mb-[15px]">
                   Язык и категория PWA
                 </div>
-                <div className="text-xs italic text-[#8F919D] leading-[14px]">
-                  Выберите основной язык, на котором будут отображаться все
-                  системные надписи на странице установки PWA. Выбранная
-                  категория будет влиять на некоторые надписи на странице
-                  установки, а также на стиль и тематику при генерации описания
-                  и комментариев.
-                </div>
               </div>
               <div>
                 <div className="text-orangeSubtitle text-xs leading-[14px] font-bold mb-[17px]">
@@ -786,8 +778,8 @@ const DesignOption = () => {
               </div>
             </div>
           </div>
-          <div className="flex gap-[30px] mb-[30px]">
-            <div className="bg-cardColor rounded-lg px-[50px] pt-7 pb-[35px] flex-1 flex flex-col justify-between">
+          <div className="flex gap-[30px] mb-[30px] relative ">
+            <div className="bg-cardColor rounded-lg h-fit px-[50px] pt-7 pb-[35px] flex-1 flex flex-col gap-5">
               <div className="flex">
                 <div className="flex-1">
                   <div className="Оценки и отзывы font-bold text-base leading-[18px] text-orangeSubtitle mb-[25px]">
@@ -861,11 +853,12 @@ const DesignOption = () => {
                 <div className="flex justify-between gap-[52px]">
                   <div className="flex gap-[30px]">
                     {reviews.some((review) => review.isActive) ? null : (
-                      <SimpleButton
-                        icon={<PlusIcon />}
-                        text="Добавить комментарий"
+                      <button
+                        className="text-sm uppercase hover:underline text-[#02E314] flex gap-2 leading-4 items-center font-bold"
                         onClick={addEmptyReview}
-                      />
+                      >
+                        + добавить
+                      </button>
                     )}
                     <SimpleButton
                       disabled
@@ -876,7 +869,7 @@ const DesignOption = () => {
                 </div>
               </div>
             </div>
-            <div className="w-[360px] h-[671px] rounded-[32px] box-border border-[9px] border-solid border-[#515ACA] bg-white overflow-auto ">
+            <div className="w-[360px] sticky top-0 right-0 h-[671px] rounded-[32px] box-border border-[9px] border-solid border-[#515ACA] bg-white overflow-auto ">
               <Preview
                 sliders={sliders}
                 previewPwaContent={previewContent}

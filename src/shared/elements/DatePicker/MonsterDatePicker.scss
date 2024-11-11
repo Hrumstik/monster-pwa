@@ -122,3 +122,60 @@
   background-color: #161724;
   border-color: #383b66;
 }
+
+:where(.css-dev-only-do-not-override-11lehqq).ant-picker-dropdown
+  .ant-picker-panel-container {
+  background-color: #161724;
+}
+
+:where(.css-dev-only-do-not-override-11lehqq).ant-picker-dropdown
+  .ant-picker-cell-in-view.ant-picker-cell-selected:not(
+    .ant-picker-cell-disabled
+  )
+  .ant-picker-cell-inner,
+:where(.css-dev-only-do-not-override-11lehqq).ant-picker-dropdown
+  .ant-picker-cell-in-view.ant-picker-cell-range-start:not(
+    .ant-picker-cell-disabled
+  )
+  .ant-picker-cell-inner,
+:where(.css-dev-only-do-not-override-11lehqq).ant-picker-dropdown
+  .ant-picker-cell-in-view.ant-picker-cell-range-end:not(
+    .ant-picker-cell-disabled
+  )
+  .ant-picker-cell-inner {
+  background-color: #515aca;
+}
+
+:where(.css-dev-only-do-not-override-11lehqq).ant-picker-dropdown
+  .ant-picker-cell
+  .ant-picker-cell-inner {
+  color: white;
+}
+
+:where(.css-dev-only-do-not-override-11lehqq).ant-picker-dropdown
+  .ant-picker-header-view
+  > button {
+  color: white;
+}
+
+:where(.css-dev-only-do-not-override-11lehqq).ant-picker-dropdown
+  .ant-picker-header
+  button {
+  color: white;
+}
+
+:where(.css-dev-only-do-not-override-11lehqq).ant-picker-dropdown
+  .ant-picker-header
+  > button:hover {
+  color: white;
+}
+
+:where(.css-dev-only-do-not-override-11lehqq).ant-picker-dropdown
+  .ant-picker-content
+  th {
+  color: white;
+}
+
+:where(.css-dev-only-do-not-override-11lehqq) a:hover {
+  color: white;
+}

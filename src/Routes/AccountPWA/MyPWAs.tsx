@@ -7,7 +7,7 @@ import { MdOutlineEdit, MdDelete } from "react-icons/md";
 import { FiCopy } from "react-icons/fi";
 import { VscPreview } from "react-icons/vsc";
 
-import { Button, Modal, Spin, Tooltip, Empty } from "antd";
+import { Modal, Spin, Tooltip, Empty } from "antd";
 import MonsterDropdown from "../../shared/elements/Dropdown/Dropdown";
 import { useNavigate } from "react-router-dom";
 import {
@@ -223,7 +223,7 @@ const MyPWAs = () => {
                 availablePWAs.map((pwa) => (
                   <tr
                     key={pwa.id}
-                    className="hover:bg-[#383B66] h-14 focus:bg-gray-300 w-full text-white cursor-pointer"
+                    className="hover:bg-[#383B66] group h-14 focus:bg-gray-300 w-full text-white cursor-pointer"
                   >
                     <Tooltip color="grey" placement="topRight" title={pwa.name}>
                       <td className="px-8 py-3 truncate overflow-hidden whitespace-nowrap">
@@ -237,26 +237,15 @@ const MyPWAs = () => {
                     </td>
                     <td className="px-8 py-3">{pwa.status}</td>
                     <td className="px-8 py-3 flex gap-[10px]">
-                      {/*<Button*/}
-                      {/*  icon={*/}
-                      {/*    <SettingFilled*/}
-                      {/*      style={{ color: "white", fontSize: "15px" }}*/}
-                      {/*    />*/}
-                      {/*  }*/}
-                      {/*  className="bg-transparent border-none hover:!bg-[#5f6280]"*/}
-                      {/*/>*/}
                       <MonsterDropdown
                         trigger={["click"]}
                         menu={{ items: generateDropDownItems(pwa) }}
                       >
-                        <Button
-                          icon={
-                            <MoreOutlined
-                              style={{ color: "white", fontSize: "15px" }}
-                            />
-                          }
-                          className="bg-transparent border-none hover:!bg-[#5f6280]"
-                        />
+                        <button className="hover:bg-[#20223B] rounded flex items-center justify-center w-[30px] h-[30px] border-none bg-[#383B66] group-hover:bg-[#20223B]">
+                          <MoreOutlined
+                            style={{ color: "white", fontSize: "15px" }}
+                          />
+                        </button>
                       </MonsterDropdown>
                     </td>
                   </tr>

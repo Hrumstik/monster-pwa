@@ -9,6 +9,7 @@ import GptIcon from "@icons/GptIcon";
 import { useUploadImagesMutation } from "@store/slices/filesApi";
 import { useWatch } from "antd/es/form/Form";
 import { requiredValidator } from "@shared/form/validators/validators";
+import RemoveIcon from "@icons/RemoveIcon";
 
 const { TextArea } = Input;
 
@@ -37,7 +38,7 @@ const ReviewItem = ({
             isActive: true,
           };
         } else return review;
-      }),
+      })
     );
   };
 
@@ -58,11 +59,11 @@ const ReviewItem = ({
             ...review,
             isActive: false,
             reviewAuthorName: form.getFieldValue(
-              `reviewAuthorName${reviewContent.id}`,
+              `reviewAuthorName${reviewContent.id}`
             ),
             reviewAuthorIcon: uploadIconResponse.imageUrls[0],
             reviewAuthorRating: form.getFieldValue(
-              `reviewAuthorRating${reviewContent.id}`,
+              `reviewAuthorRating${reviewContent.id}`
             ),
             reviewText: form.getFieldValue(`reviewText${reviewContent.id}`),
             reviewDate: form.getFieldValue(`reviewDate${reviewContent.id}`)
@@ -108,7 +109,7 @@ const ReviewItem = ({
   };
 
   const removeReviewIcon = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
     e.preventDefault();
@@ -124,7 +125,13 @@ const ReviewItem = ({
   return (
     <>
       <Spin spinning={isIconUploading} fullscreen></Spin>
-      <div className="pt-5 mb-[35px]">
+      <div
+        className={`pt-5 mb-2 box-border pb-7 ${
+          reviewContent.isActive
+            ? ""
+            : " border-0 border-b border-solid border-[#383B66]"
+        }`}
+      >
         <div className="flex justify-between items-center mb-[30px]">
           <div className="flex flex-wrap">
             <div className="pt-[20px] mr-[19px]">
@@ -208,12 +215,20 @@ const ReviewItem = ({
             </div>
           </div>
           {reviewContent?.isActive && (
-            <button
-              onClick={removeReview}
-              className="text-[#F56060] text-base leading-[18px] cursor-pointer hover:underline"
-            >
-              Удалить этот комментарий
-            </button>
+            <div className="flex gap-5">
+              <button
+                onClick={saveReview}
+                className="bg-[#02E314] text-[#161724] flex items-center justify-center px-3 rounded box-border h-[42px]"
+              >
+                Сохранить
+              </button>
+              <button
+                onClick={removeReview}
+                className="w-[42px] bg-[#F56060] h-[42px] flex items-center justify-center rounded cursor-pointer"
+              >
+                <RemoveIcon />
+              </button>
+            </div>
           )}
         </div>
         <div className="flex gap-[30px]">
@@ -238,10 +253,10 @@ const ReviewItem = ({
               onClick={(e) => {
                 e.preventDefault();
               }}
-              className="flex items-center gap-2.5 cursor-not-allowed group"
+              className="flex items-center gap-2.5 cursor-not-allowed group opacity-50"
             >
               <GptIcon />
-              <span className="group-hover:underline text-white text-base leading-[18px] font-bold">
+              <span className="group-hover:underline text-white text-sm leading-[18px] font-medium">
                 Сгенерировать комментарий
               </span>
             </button>
@@ -261,24 +276,16 @@ const ReviewItem = ({
               </Form.Item>
             </div>
             <div className="flex justify-between items-center">
-              <div className="flex justify-between items-center gap-2.5 cursor-not-allowed group">
+              <button
+                className="opacity-50 flex justify-between items-center gap-2.5 cursor-not-allowed group"
+                onClick={(e) => e.preventDefault()}
+              >
                 <GptIcon />
-                <span className="group-hover:underline text-white text-base leading-[18px] font-bold ">
+                <span className="group-hover:underline text-white text-sm leading-[18px] font-medium ">
                   Сгенерировать ответ
                 </span>
-              </div>
-              {reviewContent.isActive ? (
-                <button
-                  onClick={saveReview}
-                  className={`text-[#02E314] font-bold hover:underline text-base ${
-                    reviewContent.isActive
-                      ? "cursor-pointer"
-                      : "cursor-not-allowed"
-                  } `}
-                >
-                  Сохранить комментарий
-                </button>
-              ) : (
+              </button>
+              {!reviewContent.isActive && (
                 <button
                   onClick={editReview}
                   className="text-[#E3CC02] font-bold hover:underline text-base cursor-pointer"

@@ -14,16 +14,19 @@ const EditorPWA = () => {
         <div className="flex items-center"></div>
         <div className="flex gap-5">
           <IconButton
+            disabled
             icon={<MdOutlineNotStarted color="white" />}
             text="Запустить"
             onclick={() => {}}
           />
           <IconButton
+            disabled
             icon={<VscPreview color="white" />}
             text="Предпросмотр"
             onclick={() => {}}
           />
           <IconButton
+            disabled
             icon={<FaSave color="white" />}
             text="Сохранить"
             onclick={() => {}}
