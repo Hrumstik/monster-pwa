@@ -14,6 +14,13 @@ export const pwaSlice = createApi({
         body: data,
       }),
     }),
+    updatePwaContent: builder.mutation<PwaContent, PwaContent>({
+      query: (data) => ({
+        url: `/pwa-content/${data.id}`,
+        method: "PATCH",
+        body: { ...data, id: undefined },
+      }),
+    }),
     deletePwaContent: builder.mutation<void, string>({
       query: (id) => ({
         url: `/pwa-content/${id}`,
@@ -40,7 +47,7 @@ export const pwaSlice = createApi({
       }),
     }),
     getPwaContentStatus: builder.query<
-      { status: string; url?: string, body?: string; },
+      { status: string; url?: string; body?: string },
       string
     >({
       query: (jobId) => ({
@@ -53,6 +60,7 @@ export const pwaSlice = createApi({
 
 export const {
   useCreatePwaContentMutation,
+  useUpdatePwaContentMutation,
   useGetAllPwaContentQuery,
   useDeletePwaContentMutation,
   useCopyPwaContentMutation,

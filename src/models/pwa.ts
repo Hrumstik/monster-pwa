@@ -5,6 +5,7 @@ export interface Picture {
 
 export interface PwaContent {
   appName: string;
+  pwaName?: string;
   developerName: string;
   countOfDownloads: string;
   countOfReviews: string;
@@ -43,6 +44,7 @@ export interface PwaContent {
 
 export interface PreparedPWADataItem {
   name: string;
+  appName?: string;
   domain: string;
   geo: string;
   createdAt: Date;

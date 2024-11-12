@@ -16,6 +16,30 @@
   }
 }
 
+.rename-field-input {
+  background: rgb(32 34 59 / 0.9) !important;
+  color: #6b7280 !important;
+}
+
+.ant-modal-content,
+.ant-modal-title {
+  background: #515aca !important;
+}
+
+.ant-modal-footer button.ant-btn-primary {
+  background: #00ff11;
+}
+
+:where(.css-dev-only-do-not-override-11lehqq).ant-btn-default:not(:disabled):not(.ant-btn-disabled):hover {
+  color: #00ff11;
+  border-color: #00ff11;
+}
+
+:where(.css-dev-only-do-not-override-11lehqq).ant-btn-primary:not(:disabled):not(.ant-btn-disabled):hover {
+  background: #00ff11;
+  opacity: 0.8;
+}
+
 html {
   overflow: hidden;
 }
