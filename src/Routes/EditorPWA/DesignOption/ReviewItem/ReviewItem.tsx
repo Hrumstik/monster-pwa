@@ -214,22 +214,6 @@ const ReviewItem = ({
               </div>
             </div>
           </div>
-          {reviewContent?.isActive && (
-            <div className="flex gap-5">
-              <button
-                onClick={saveReview}
-                className="bg-[#02E314] text-[#161724] flex items-center justify-center px-3 rounded box-border h-[42px]"
-              >
-                Сохранить
-              </button>
-              <button
-                onClick={removeReview}
-                className="w-[42px] bg-[#F56060] h-[42px] flex items-center justify-center rounded cursor-pointer"
-              >
-                <RemoveIcon />
-              </button>
-            </div>
-          )}
         </div>
         <div className="flex gap-[30px]">
           <div className="flex-1">
@@ -253,10 +237,10 @@ const ReviewItem = ({
               onClick={(e) => {
                 e.preventDefault();
               }}
-              className="flex items-center gap-2.5 cursor-not-allowed group opacity-50"
+              className="flex uppercase h-[42px] underline items-center gap-2.5 cursor-not-allowed group opacity-50"
             >
               <GptIcon />
-              <span className="group-hover:underline text-white text-sm leading-[18px] font-medium">
+              <span className="underline text-white text-sm leading-[18px] font-medium">
                 Сгенерировать комментарий
               </span>
             </button>
@@ -275,16 +259,32 @@ const ReviewItem = ({
                 />
               </Form.Item>
             </div>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center gap-5">
               <button
-                className="opacity-50 flex justify-between items-center gap-2.5 cursor-not-allowed group"
+                className="opacity-50  flex justify-between items-center gap-2.5 cursor-not-allowed group"
                 onClick={(e) => e.preventDefault()}
               >
                 <GptIcon />
-                <span className="group-hover:underline text-white text-sm leading-[18px] font-medium ">
+                <span className="underline uppercase text-white text-sm leading-[18px] font-medium truncate ...">
                   Сгенерировать ответ
                 </span>
               </button>
+              {reviewContent?.isActive && (
+                <div className="flex gap-5">
+                  <button
+                    onClick={saveReview}
+                    className="bg-[#02E314] text-[#161724] flex items-center justify-center px-3 rounded box-border h-[42px]"
+                  >
+                    Сохранить
+                  </button>
+                  <button
+                    onClick={removeReview}
+                    className="w-[42px] bg-[#F56060] h-[42px] flex items-center justify-center rounded cursor-pointer"
+                  >
+                    <RemoveIcon />
+                  </button>
+                </div>
+              )}
               {!reviewContent.isActive && (
                 <button
                   onClick={editReview}

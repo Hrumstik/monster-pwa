@@ -93,6 +93,7 @@ const DesignOption = () => {
         version: fetchedPwaContent.version,
         fullDescription: fetchedPwaContent.fullDescription,
         appIcon: fetchedPwaContent.appIcon,
+        shortDescription: fetchedPwaContent.shortDescription,
       });
       setPreviewContent({
         appName: fetchedPwaContent.appName,
@@ -360,6 +361,7 @@ const DesignOption = () => {
   const onFinish = async () => {
     try {
       await form.validateFields();
+
       setIsLoading(true);
 
       const payload = {
@@ -373,8 +375,7 @@ const DesignOption = () => {
         securityUI: form.getFieldValue("securityUI"),
         lastUpdate: new Date().toISOString(),
         pwaLink: form.getFieldValue("pwaLink"),
-        rating: form.getFieldValue("rating"),
-        description: form.getFieldValue("fullDescription"),
+        rating: "4.9",
         countOfReviewsFull: form.getFieldValue("countOfReviews"),
         appIcon: appIcon.url!,
         countOfStars: form.getFieldValue("countOfStars"),
@@ -396,7 +397,6 @@ const DesignOption = () => {
         version: "1.0",
         sliders,
       };
-
       const pwaContent = await createPwaContent(payload).unwrap();
       if (id) deletePwaContent(id);
       const buildResponse = await buildPwaContent(pwaContent._id!).unwrap();
@@ -408,6 +408,7 @@ const DesignOption = () => {
           error as { errorFields: { name: (string | number)[] }[] }
         );
       } else {
+        console.error(error);
         setIsLoading(false);
       }
     }

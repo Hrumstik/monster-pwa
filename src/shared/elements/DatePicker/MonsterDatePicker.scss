@@ -179,3 +179,7 @@
 :where(.css-dev-only-do-not-override-11lehqq) a:hover {
   color: white;
 }
+
+:where(.css-11lehqq).ant-picker-outlined:hover {
+  background-color: #161724 !important;
+}
