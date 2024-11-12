@@ -118,6 +118,7 @@ const DesignOption = () => {
           [`reviewDate${review.id}`]: dayjs(review.reviewDate),
           [`reviewAuthorIcon${review.id}`]: review.reviewAuthorIcon,
           [`reviewIconColor${review.devResponse}`]: review.devResponse,
+          [`devResponse${review.id}`]: review.devResponse,
         });
       });
       setAppIcon({
