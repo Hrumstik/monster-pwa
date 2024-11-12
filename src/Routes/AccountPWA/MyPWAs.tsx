@@ -243,7 +243,11 @@ const MyPWAs = () => {
                     key={pwa.id}
                     className="hover:bg-[#383B66] group h-14 focus:bg-gray-300 w-full text-white cursor-pointer"
                   >
-                    <Tooltip color="grey" placement="topRight" title={pwa.name}>
+                    <Tooltip
+                      color="grey"
+                      placement="topRight"
+                      title={pwa.appName || pwa.name}
+                    >
                       <td className="px-8 py-3 truncate overflow-hidden whitespace-nowrap">
                         {pwa.appName || pwa.name}
                       </td>
