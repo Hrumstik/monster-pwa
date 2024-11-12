@@ -191,6 +191,7 @@ const ReviewItem = ({
                   className="w-[130px] !h-[42px]"
                   readOnly={!reviewContent.isActive}
                   disabled={!reviewContent.isActive}
+                  style={{ backgroundColor: "#161724", color: "white" }}
                 />
               </Form.Item>
             </div>
