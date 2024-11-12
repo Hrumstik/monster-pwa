@@ -33,6 +33,7 @@ export interface PwaContent {
     reviewIconColor?: string;
     reviewText: string;
     reviewDate: string;
+    devResponse?: string;
   }[];
   version: string;
   sliders: number[];

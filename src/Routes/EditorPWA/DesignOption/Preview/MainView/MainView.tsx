@@ -214,6 +214,8 @@ const MainView = ({
               text={review.reviewText}
               date={review.reviewDate}
               iconColor={review.reviewIconColor}
+              devResponse={review.devResponse}
+              developerName={previewPwaContent.developerName}
             />
           );
         })}

@@ -117,6 +117,7 @@ const DesignOption = () => {
           [`reviewText${review.id}`]: review.reviewText,
           [`reviewDate${review.id}`]: dayjs(review.reviewDate),
           [`reviewAuthorIcon${review.id}`]: review.reviewAuthorIcon,
+          [`reviewIconColor${review.devResponse}`]: review.devResponse,
         });
       });
       setAppIcon({
@@ -391,6 +392,7 @@ const DesignOption = () => {
           reviewAuthorRating: review.reviewAuthorRating,
           reviewText: review.reviewText,
           reviewDate: review.reviewDate,
+          devResponse: review.devResponse,
         })),
         shortDescription: form.getFieldValue("shortDescription"),
         fullDescription: form.getFieldValue("fullDescription"),
@@ -559,11 +561,11 @@ const DesignOption = () => {
               >
                 <Upload showUploadList={false} beforeUpload={beforeUpload}>
                   {appIcon.preview ? (
-                    <div className="relative w-[100px] h-[100px] group">
+                    <div className="relative w-[100px] h-[100px] group rounded-xl overflow-hidden">
                       <img
                         src={appIcon.preview}
                         alt="Uploaded"
-                        className="w-[100px] h-[100px] object-contain rounded-lg"
+                        className="w-[100px] h-[100px] object-fill "
                       />
                       <button
                         className="absolute  opacity-0 top-0 right-0 group-hover:opacity-100  text-white rounded-full w-4 h-4 flex justify-center items-center"
@@ -735,7 +737,7 @@ const DesignOption = () => {
                 >
                   <TextArea
                     rows={6}
-                    className="resize-none"
+                    className="resize-none scrollbar-hidden"
                     placeholder="Введите описание приложения:"
                   />
                 </Form.Item>
@@ -747,15 +749,13 @@ const DesignOption = () => {
                 <div className="text-sm text-white leading-[14px] mb-[10px]">
                   Теги к описанию: (напишите тег и нажмите Enter)
                 </div>
-                <div className="border-[rgb(22,23,36)] bg-[#161724] border border-solid hover:border-[#383B66] rounded-lg cursor-text p-3 mb-[30px]">
+                <div className="border-[rgb(22,23,36)]  bg-[#161724] border border-solid hover:border-[#383B66] rounded-lg cursor-text p-3 mb-[30px]">
                   {tags.map((tag, index) => (
                     <div
                       key={index}
                       className="bg-[#E3CC02] inline-flex items-center h-[22px] pl-2 pr-0.5 py-0.5 rounded-lg mx-2.5 cursor-pointer"
                     >
-                      <span className="text-[#161724] text-xs leading-[14px] mr-2">
-                        {tag}
-                      </span>
+                      <span className="text-[#161724] text-xs mr-2">{tag}</span>
                       <span
                         className="bg-[#FFFBD8] text-[#161724] rounded-full w-[18px] h-[18px] flex justify-center items-center"
                         onClick={() => removeTag(tag)}
@@ -870,7 +870,7 @@ const DesignOption = () => {
                 </div>
               </div>
             </div>
-            <div className="w-[360px] sticky top-0 right-0 h-[671px] rounded-[32px] box-border border-[9px] border-solid border-[#515ACA] bg-white overflow-auto ">
+            <div className="w-[360px] sticky top-4 right-0 h-[671px] rounded-[32px] box-border border-[9px] border-solid border-[#515ACA] bg-white overflow-auto scrollbar-hidden">
               <Preview
                 sliders={sliders}
                 previewPwaContent={previewContent}

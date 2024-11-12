@@ -5,7 +5,6 @@ import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
 import MonsterDatePicker from "@shared/elements/DatePicker/MonsterDatePicker";
 import dayjs from "dayjs";
 import MonsterRate from "@shared/elements/Rate/MonsterRate";
-import GptIcon from "@icons/GptIcon";
 import { useUploadImagesMutation } from "@store/slices/filesApi";
 import { useWatch } from "antd/es/form/Form";
 import { requiredValidator } from "@shared/form/validators/validators";
@@ -66,6 +65,7 @@ const ReviewItem = ({
               `reviewAuthorRating${reviewContent.id}`
             ),
             reviewText: form.getFieldValue(`reviewText${reviewContent.id}`),
+            devResponse: form.getFieldValue(`devResponse${reviewContent.id}`),
             reviewDate: form.getFieldValue(`reviewDate${reviewContent.id}`)
               ? form
                   .getFieldValue(`reviewDate${reviewContent.id}`)
@@ -228,47 +228,28 @@ const ReviewItem = ({
               >
                 <TextArea
                   rows={6}
+                  className="scrollbar-hidden"
                   style={{ resize: "none" }}
                   disabled={!reviewContent.isActive}
                 />
               </Form.Item>
             </div>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-              }}
-              className="flex uppercase h-[42px] underline items-center gap-2.5 cursor-not-allowed group opacity-50"
-            >
-              <GptIcon />
-              <span className="underline text-white text-sm leading-[18px] font-medium">
-                Сгенерировать комментарий
-              </span>
-            </button>
           </div>
           <div className="flex-1">
             <div className="mb-[9px] text-[#8F919D] text-xs leading-[14px]">
               Ответ разразработчика
             </div>
             <div className="mb-5">
-              <Form.Item name={`developerResponse${reviewContent.id}`}>
+              <Form.Item name={`devResponse${reviewContent.id}`}>
                 <TextArea
                   style={{ resize: "none" }}
+                  className="scrollbar-hidden"
                   rows={6}
-                  //disabled={!reviewContent.isActive}
-                  disabled
+                  disabled={!reviewContent.isActive}
                 />
               </Form.Item>
             </div>
-            <div className="flex justify-between items-center gap-5">
-              <button
-                className="opacity-50  flex justify-between items-center gap-2.5 cursor-not-allowed group"
-                onClick={(e) => e.preventDefault()}
-              >
-                <GptIcon />
-                <span className="underline uppercase text-white text-sm leading-[18px] font-medium truncate ...">
-                  Сгенерировать ответ
-                </span>
-              </button>
+            <div className="flex justify-end items-center gap-5">
               {reviewContent?.isActive && (
                 <div className="flex gap-5">
                   <button
