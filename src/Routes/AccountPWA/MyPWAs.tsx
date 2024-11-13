@@ -4,7 +4,7 @@ import MonsterInput from "../../shared/elements/MonsterInput/MonsterInput";
 import { MoreOutlined } from "@ant-design/icons";
 import moment from "moment";
 import { MdOutlineEdit, MdDelete } from "react-icons/md";
-import { FiCopy } from "react-icons/fi";
+import { FiCopy, FiFileText } from "react-icons/fi";
 import { VscPreview } from "react-icons/vsc";
 
 import { Modal, Spin, Tooltip, Empty } from "antd";
@@ -14,6 +14,7 @@ import {
   useGetAllPwaContentQuery,
   useDeletePwaContentMutation,
   useCopyPwaContentMutation,
+  useUpdatePwaContentMutation,
 } from "@store/slices/pwaApi";
 import Preview from "../EditorPWA/DesignOption/Preview/Preview.tsx";
 import { PreparedPWADataItem, PwaContent } from "@models/pwa.ts";
@@ -25,12 +26,15 @@ const MyPWAs = () => {
     useDeletePwaContentMutation();
   const [copyPwaContent, { isLoading: copyPwaLoading }] =
     useCopyPwaContentMutation();
+  const [updatePwaContent, { isLoading: updatePwaLoading }] =
+    useUpdatePwaContentMutation();
 
   const navigate = useNavigate();
 
   const [currentTab, setCurrentTab] = useState(MyPWAsTabs.All);
   const [availablePWAs, setAvailablePWAs] = useState<PreparedPWADataItem[]>([]);
   const [previewPwa, setPreviewPwa] = useState<PwaContent | null>();
+  const [renamePwa, setRenamePwa] = useState<PwaContent | null>();
 
   const handleDelete = async (id: string) => {
     try {
@@ -49,8 +53,9 @@ const MyPWAs = () => {
   };
 
   const preparePwaData = () =>
-    data?.map(({ appName, _id, createdAt }) => ({
+    data?.map(({ appName, _id, pwaName, createdAt }) => ({
       name: appName,
+      appName: pwaName,
       domain: "–",
       geo: "–",
       createdAt: new Date(createdAt as string),
@@ -99,6 +104,19 @@ const MyPWAs = () => {
         onClick: () => navigate(`/edit-PWA/${pwa.id}`),
       },
       {
+        label: <span className="text-xs text-white">Переименовать</span>,
+        key: "rename",
+        icon: <FiFileText style={{ color: "white" }} />,
+        onClick: () => {
+          const renamePwa = (data || []).find(({ _id }) => _id === pwa.id);
+
+          setRenamePwa({
+            ...renamePwa,
+            pwaName: renamePwa?.pwaName || renamePwa?.appName,
+          } as PwaContent);
+        },
+      },
+      {
         label: <span className="text-xs text-white">Дублировать</span>,
         key: "copy",
         icon: <FiCopy style={{ color: "white" }} />,
@@ -143,6 +161,25 @@ const MyPWAs = () => {
     setAvailablePWAs(filteredPWAs);
   };
 
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRenamePwa(
+      (prev) =>
+        ({
+          ...prev,
+          pwaName: e.target.value,
+        } as PwaContent)
+    );
+  };
+
+  const handleSubmitRenamePwa = async () =>
+    updatePwaContent({
+      pwaName: renamePwa?.pwaName,
+      id: renamePwa?._id,
+    } as PwaContent).then(() => {
+      setRenamePwa(undefined);
+      refetch();
+    });
+
   return (
     <div className="px-[50px] pt-[110px] pb-[40px]">
       <div className="flex justify-between items-center mb-7">
@@ -185,7 +222,11 @@ const MyPWAs = () => {
           />
         </div>
 
-        {isLoading || deletePwaLoading || copyPwaLoading || isFetching ? (
+        {isLoading ||
+        deletePwaLoading ||
+        copyPwaLoading ||
+        isFetching ||
+        updatePwaLoading ? (
           <div
             style={{
               display: "flex",
@@ -225,9 +266,13 @@ const MyPWAs = () => {
                     key={pwa.id}
                     className="hover:bg-[#383B66] group h-14 focus:bg-gray-300 w-full text-white cursor-pointer"
                   >
-                    <Tooltip color="grey" placement="topRight" title={pwa.name}>
+                    <Tooltip
+                      color="grey"
+                      placement="topRight"
+                      title={pwa.appName || pwa.name}
+                    >
                       <td className="px-8 py-3 truncate overflow-hidden whitespace-nowrap">
-                        {pwa.name}
+                        {pwa.appName || pwa.name}
                       </td>
                     </Tooltip>
                     <td className="px-8 py-3">{pwa.domain}</td>
@@ -300,6 +345,23 @@ const MyPWAs = () => {
             reviews={previewPwa.reviews}
           />
         )}
+      </Modal>
+
+      <Modal
+        title="Rename"
+        open={!!renamePwa}
+        onOk={handleSubmitRenamePwa}
+        cancelText="Отмена"
+        okText="Переименовать"
+        onCancel={() => setRenamePwa(undefined)}
+      >
+        <MonsterInput
+          placeholder="Название"
+          type="text"
+          className="h-[42px] bg-[#161724]"
+          value={renamePwa?.pwaName}
+          onChange={handleNameChange}
+        />
       </Modal>
     </div>
   );
