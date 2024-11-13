@@ -155,26 +155,30 @@ const MyPWAs = () => {
     }
 
     const filteredPWAs = preparePwaData().filter((pwa) =>
-      pwa.name.toLowerCase().includes(e.target.value.toLowerCase()),
+      pwa.name.toLowerCase().includes(e.target.value.toLowerCase())
     );
 
     setAvailablePWAs(filteredPWAs);
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setRenamePwa((prev) => ({
-      ...prev,
-      pwaName: e.target.value,
-    } as PwaContent));
+    setRenamePwa(
+      (prev) =>
+        ({
+          ...prev,
+          pwaName: e.target.value,
+        } as PwaContent)
+    );
   };
 
-  const handleSubmitRenamePwa = async () => updatePwaContent({
-    pwaName: renamePwa?.pwaName,
-    id: renamePwa?._id,
-  } as PwaContent).then(() => {
-    setRenamePwa(undefined);
-    refetch();
-  });
+  const handleSubmitRenamePwa = async () =>
+    updatePwaContent({
+      pwaName: renamePwa?.pwaName,
+      id: renamePwa?._id,
+    } as PwaContent).then(() => {
+      setRenamePwa(undefined);
+      refetch();
+    });
 
   return (
     <div className="px-[50px] pt-[110px] pb-[40px]">
@@ -218,7 +222,11 @@ const MyPWAs = () => {
           />
         </div>
 
-        {isLoading || deletePwaLoading || copyPwaLoading || isFetching ? (
+        {isLoading ||
+        deletePwaLoading ||
+        copyPwaLoading ||
+        isFetching ||
+        updatePwaLoading ? (
           <div
             style={{
               display: "flex",
@@ -343,14 +351,14 @@ const MyPWAs = () => {
         title="Rename"
         open={!!renamePwa}
         onOk={handleSubmitRenamePwa}
-        confirmLoading={updatePwaLoading}
-        okText="Rename"
+        cancelText="Отмена"
+        okText="Переименовать"
         onCancel={() => setRenamePwa(undefined)}
       >
         <MonsterInput
           placeholder="Название"
           type="text"
-          className="rename-field-input"
+          className="h-[42px] bg-[#161724]"
           value={renamePwa?.pwaName}
           onChange={handleNameChange}
         />
