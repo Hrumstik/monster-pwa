@@ -301,7 +301,7 @@ const MyPWAs = () => {
       <Modal
         open={!!previewPwa}
         footer={[]}
-        className="w-[360px] h-[671px] rounded-[32px] box-border border-[9px] border-solid border-[#515ACA] bg-white overflow-auto"
+        className="w-[360px] h-[671px] rounded-[32px] box-border border-[9px] border-solid border-[#515ACA] bg-white overflow-auto scrollbar-hidden"
         style={{
           overflow: "scroll",
           maxHeight: "80vh",

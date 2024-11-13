@@ -6,6 +6,7 @@ export interface Picture {
 export interface PwaContent {
   appName: string;
   pwaName?: string;
+  hasPaidContentTitle: boolean;
   developerName: string;
   countOfDownloads: string;
   countOfReviews: string;
@@ -34,6 +35,7 @@ export interface PwaContent {
     reviewIconColor?: string;
     reviewText: string;
     reviewDate: string;
+    devResponse?: string;
   }[];
   version: string;
   sliders: number[];

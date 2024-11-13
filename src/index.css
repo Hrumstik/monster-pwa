@@ -57,6 +57,15 @@
   color: #ffffff;
 }
 
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hidden {
+  -ms-overflow-style: none; /* для IE и Edge */
+  scrollbar-width: none; /* для Firefox */
+}
+
 html {
   overflow: hidden;
 }

@@ -38,6 +38,7 @@ interface DesignOptionFormValues {
   developerName: string;
   countOfDownloads: string;
   countOfReviews: string;
+  hasPaidContentTitle: boolean;
   size: string;
   verified: boolean;
   tags: string[];
@@ -109,6 +110,7 @@ const DesignOption = () => {
         size: fetchedPwaContent.size,
         lastUpdate: fetchedPwaContent.lastUpdate,
         securityUI: fetchedPwaContent.securityUI,
+        hasPaidContentTitle: fetchedPwaContent.hasPaidContentTitle,
       });
       updatedReviews.forEach((review) => {
         form.setFieldsValue({
@@ -117,6 +119,8 @@ const DesignOption = () => {
           [`reviewText${review.id}`]: review.reviewText,
           [`reviewDate${review.id}`]: dayjs(review.reviewDate),
           [`reviewAuthorIcon${review.id}`]: review.reviewAuthorIcon,
+          [`reviewIconColor${review.devResponse}`]: review.devResponse,
+          [`devResponse${review.id}`]: review.devResponse,
         });
       });
       setAppIcon({
@@ -155,7 +159,7 @@ const DesignOption = () => {
     countOfDownloads: "10 000 +",
     countOfReviews: "3 тыс.",
     verified: true,
-    rating: "4.8",
+    rating: "4.9",
     countOfReviewsFull: "30,301",
     version: "1.63.1",
     shortDescription:
@@ -165,6 +169,7 @@ const DesignOption = () => {
     fullDescription:
       "Обновление и опыт быть самым богатым! Не сдавайся до конца, ты можешь стать победителем",
     securityUI: true,
+    hasPaidContentTitle: true,
   });
   const [checkStatus] = useLazyGetPwaContentStatusQuery();
 
@@ -183,6 +188,7 @@ const DesignOption = () => {
       lastUpdate: form.getFieldValue("lastUpdate"),
       size: form.getFieldValue("size"),
       securityUI: form.getFieldValue("securityUI"),
+      hasPaidContentTitle: form.getFieldValue("hasPaidContentTitle"),
     });
   };
 
@@ -375,6 +381,7 @@ const DesignOption = () => {
         securityUI: form.getFieldValue("securityUI"),
         lastUpdate: new Date().toISOString(),
         pwaLink: form.getFieldValue("pwaLink"),
+        hasPaidContentTitle: form.getFieldValue("hasPaidContentTitle"),
         rating: "4.9",
         countOfReviewsFull: form.getFieldValue("countOfReviews"),
         appIcon: appIcon.url!,
@@ -391,6 +398,7 @@ const DesignOption = () => {
           reviewAuthorRating: review.reviewAuthorRating,
           reviewText: review.reviewText,
           reviewDate: review.reviewDate,
+          devResponse: review.devResponse,
         })),
         shortDescription: form.getFieldValue("shortDescription"),
         fullDescription: form.getFieldValue("fullDescription"),
@@ -436,11 +444,12 @@ const DesignOption = () => {
         onFinish={onFinish}
         initialValues={{
           verified: false,
-          countOfStars: 2,
+          countOfStars: 4.9,
           countOfDownloads: "1,000+",
           countOfReviews: "100",
-          securityUI: false,
+          securityUI: true,
           size: "4 mb",
+          hasPaidContentTitle: true,
         }}
         validateTrigger="onSubmit"
         onValuesChange={handleValuesChange}
@@ -559,11 +568,11 @@ const DesignOption = () => {
               >
                 <Upload showUploadList={false} beforeUpload={beforeUpload}>
                   {appIcon.preview ? (
-                    <div className="relative w-[100px] h-[100px] group">
+                    <div className="relative w-[100px] h-[100px] group rounded-xl overflow-hidden">
                       <img
                         src={appIcon.preview}
                         alt="Uploaded"
-                        className="w-[100px] h-[100px] object-contain rounded-lg"
+                        className="w-[100px] h-[100px] object-fill "
                       />
                       <button
                         className="absolute  opacity-0 top-0 right-0 group-hover:opacity-100  text-white rounded-full w-4 h-4 flex justify-center items-center"
@@ -735,7 +744,7 @@ const DesignOption = () => {
                 >
                   <TextArea
                     rows={6}
-                    className="resize-none"
+                    className="resize-none scrollbar-hidden"
                     placeholder="Введите описание приложения:"
                   />
                 </Form.Item>
@@ -747,15 +756,13 @@ const DesignOption = () => {
                 <div className="text-sm text-white leading-[14px] mb-[10px]">
                   Теги к описанию: (напишите тег и нажмите Enter)
                 </div>
-                <div className="border-[rgb(22,23,36)] bg-[#161724] border border-solid hover:border-[#383B66] rounded-lg cursor-text p-3 mb-[30px]">
+                <div className="border-[rgb(22,23,36)]  bg-[#161724] border border-solid hover:border-[#383B66] rounded-lg cursor-text p-3 mb-[30px]">
                   {tags.map((tag, index) => (
                     <div
                       key={index}
                       className="bg-[#E3CC02] inline-flex items-center h-[22px] pl-2 pr-0.5 py-0.5 rounded-lg mx-2.5 cursor-pointer"
                     >
-                      <span className="text-[#161724] text-xs leading-[14px] mr-2">
-                        {tag}
-                      </span>
+                      <span className="text-[#161724] text-xs mr-2">{tag}</span>
                       <span
                         className="bg-[#FFFBD8] text-[#161724] rounded-full w-[18px] h-[18px] flex justify-center items-center"
                         onClick={() => removeTag(tag)}
@@ -822,8 +829,8 @@ const DesignOption = () => {
                     ))}
                   </div>
                 </div>
-                <div className="flex-1">
-                  <div className="font-bold text-end text-white text-base leading-[18px] mb-4">
+                <div className="flex-1 flex-col flex gap-4">
+                  <div className="font-bold text-end text-white text-base leading-[18px]">
                     Дополнительные блоки:
                   </div>
                   <div className="flex gap-4 justify-end items-center">
@@ -832,6 +839,14 @@ const DesignOption = () => {
                     </Form.Item>
                     <div className="text-white text-base leading-5">
                       Безопасность и <br /> передача данных
+                    </div>
+                  </div>
+                  <div className="flex gap-4 justify-end items-center">
+                    <Form.Item name="hasPaidContentTitle" noStyle>
+                      <MonsterSwitch />
+                    </Form.Item>
+                    <div className="text-white text-base leading-5">
+                      Реклама и <br /> платный контент
                     </div>
                   </div>
                 </div>
@@ -870,7 +885,7 @@ const DesignOption = () => {
                 </div>
               </div>
             </div>
-            <div className="w-[360px] sticky top-0 right-0 h-[671px] rounded-[32px] box-border border-[9px] border-solid border-[#515ACA] bg-white overflow-auto ">
+            <div className="w-[360px] sticky top-4 right-0 h-[671px] rounded-[32px] box-border border-[9px] border-solid border-[#515ACA] bg-white overflow-auto scrollbar-hidden">
               <Preview
                 sliders={sliders}
                 previewPwaContent={previewContent}
@@ -904,8 +919,8 @@ const DesignOption = () => {
             width="140"
             colors={["#515ACA", "#E3CC02"]}
           />
-          Ваше PWA-приложение создается. Пожалуйста, подождите – оно загрузится
-          автоматически, как только будет готово!
+          Ваше PWA-приложение создается. Пожалуйста, подождите –<br /> оно
+          загрузится автоматически, как только будет готово!
         </div>
       )}
     </>

@@ -4,6 +4,7 @@ export interface Review {
   reviewAuthorRating: number;
   reviewIconColor?: string;
   reviewText: string;
+  devResponse?: string;
   reviewDate: string;
   id?: string;
   isActive?: boolean;
