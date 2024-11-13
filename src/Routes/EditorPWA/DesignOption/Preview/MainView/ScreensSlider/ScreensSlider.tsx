@@ -1,14 +1,23 @@
+import React from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/swiper-bundle.css";
 import { Picture } from "@models/pwa";
 
-const ScreensSlider = ({ screens }: { screens: Picture[] }) => {
+interface ScreensSliderProps {
+  screens: Picture[];
+}
+
+const ScreensSlider: React.FC<ScreensSliderProps> = ({ screens }) => {
   return (
-    <div className="slider-container no-scrollbar mb-6 overflow-x-auto whitespace-nowrap scroll-smooth">
-      <div className="flex space-x-4">
-        {screens.map((screen, index) => (
-          <div
-            key={index}
-            className="bg-gray-300 rounded-lg flex-shrink-0 w-[94px] h-[167px] snap-start"
-          >
+    <Swiper
+      spaceBetween={16}
+      slidesPerView={"auto"}
+      freeMode={true}
+      grabCursor={true}
+    >
+      {screens.map((screen, index) => (
+        <SwiperSlide key={index} style={{ width: "94px", height: "167px" }}>
+          <div className="bg-gray-300 rounded-lg flex-shrink-0 w-full h-full">
             {screen.url && (
               <img
                 src={screen.url}
@@ -17,9 +26,9 @@ const ScreensSlider = ({ screens }: { screens: Picture[] }) => {
               />
             )}
           </div>
-        ))}
-      </div>
-    </div>
+        </SwiperSlide>
+      ))}
+    </Swiper>
   );
 };
 
