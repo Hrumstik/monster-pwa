@@ -112,8 +112,8 @@ const MyPWAs = () => {
 
           setRenamePwa({
             ...renamePwa,
-            pwaName: renamePwa.pwaName || renamePwa.appName,
-          });
+            pwaName: renamePwa?.pwaName || renamePwa?.appName,
+          } as PwaContent);
         },
       },
       {
@@ -160,6 +160,21 @@ const MyPWAs = () => {
 
     setAvailablePWAs(filteredPWAs);
   };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRenamePwa((prev) => ({
+      ...prev,
+      pwaName: e.target.value,
+    } as PwaContent));
+  };
+
+  const handleSubmitRenamePwa = async () => updatePwaContent({
+    pwaName: renamePwa?.pwaName,
+    id: renamePwa?._id,
+  } as PwaContent).then(() => {
+    setRenamePwa(undefined);
+    refetch();
+  });
 
   return (
     <div className="px-[50px] pt-[110px] pb-[40px]">
@@ -327,16 +342,9 @@ const MyPWAs = () => {
       <Modal
         title="Rename"
         open={!!renamePwa}
-        onOk={async () => {
-          await updatePwaContent({
-            pwaName: renamePwa?.pwaName,
-            id: renamePwa._id,
-          }).then(() => {
-            setRenamePwa(undefined);
-            refetch();
-          });
-        }}
+        onOk={handleSubmitRenamePwa}
         confirmLoading={updatePwaLoading}
+        okText="Rename"
         onCancel={() => setRenamePwa(undefined)}
       >
         <MonsterInput
@@ -344,13 +352,7 @@ const MyPWAs = () => {
           type="text"
           className="rename-field-input"
           value={renamePwa?.pwaName}
-          onChange={(e) => {
-            setRenamePwa((prev: PwaContent) => ({
-              ...prev,
-              pwaName: e.target.value,
-            }));
-          }}
-          rules={[{ required: true, message: "Please input your password!" }]}
+          onChange={handleNameChange}
         />
       </Modal>
     </div>
