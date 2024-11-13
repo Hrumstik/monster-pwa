@@ -13,6 +13,7 @@ const ScreensSlider: React.FC<ScreensSliderProps> = ({ screens }) => {
       spaceBetween={16}
       slidesPerView={"auto"}
       freeMode={true}
+      className="mb-6"
       grabCursor={true}
     >
       {screens.map((screen, index) => (

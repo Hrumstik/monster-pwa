@@ -15,10 +15,11 @@ const TagsSlider: React.FC<TagsSliderProps> = ({ tags }) => {
       spaceBetween={12}
       freeMode={true}
       grabCursor={true}
-      className="mb-7"
+      slidesPerView={3.5}
+      className="mb-7 flex"
     >
       {actualTags.map((tag, index) => (
-        <SwiperSlide key={index} style={{ width: "auto", flexShrink: 0 }}>
+        <SwiperSlide key={index}>
           <div className="rounded-lg border border-solid border-[#49454F] flex items-center justify-center px-3 py-1.5 h-8">
             {tag}
           </div>
