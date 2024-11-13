@@ -78,7 +78,7 @@ const MainView = ({
               ? previewPwaContent.appName
               : "Plinko ASMR"}
           </div>
-          <div className="flex gap-1 items-center">
+          <div className="flex gap-1 items-center mb-2">
             <div className="font-medium text-[#1357CD] leading-4 text-[14px]">
               {previewPwaContent.developerName
                 ? previewPwaContent.developerName
@@ -86,6 +86,13 @@ const MainView = ({
             </div>
             {previewPwaContent.verified && <VerifiedIcon />}
           </div>
+          {previewPwaContent.hasPaidContentTitle && (
+            <div className="flex gap-1 text-[8px] text-[#444444] items-center">
+              <div>Нет рекламы</div>
+              <div className="rounded-full w-0.5 h-0.5 bg-[#444444]" />
+              <div>Нет платного контента</div>
+            </div>
+          )}
         </div>
       </div>
       <div className="flex mb-5">

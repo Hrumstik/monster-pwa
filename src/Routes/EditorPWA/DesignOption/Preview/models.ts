@@ -19,26 +19,12 @@ export interface PreviewPwaContent {
   countOfReviews?: string;
   size: string;
   verified: boolean;
-  //   tags: string[];
+  hasPaidContentTitle: boolean;
   securityUI: boolean;
   lastUpdate: string;
-  //   pwaLink: string;
   rating: string;
   countOfReviewsFull: string;
   shortDescription: string;
   fullDescription: string;
-  //   languages?: string[];
-  //   images: {
-  //     url: string;
-  //   }[];
-  //   reviews: {
-  //     reviewAuthorName: string;
-  //     reviewAuthorIcon?: string;
-  //     reviewAuthorRating: number;
-  //     reviewIconColor: string;
-  //     reviewText: string;
-  //     reviewDate: string;
-  //   }[];
   version: string;
-  //   sliders: number[];
 }

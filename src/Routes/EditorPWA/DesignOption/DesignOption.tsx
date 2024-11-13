@@ -38,6 +38,7 @@ interface DesignOptionFormValues {
   developerName: string;
   countOfDownloads: string;
   countOfReviews: string;
+  hasPaidContentTitle: boolean;
   size: string;
   verified: boolean;
   tags: string[];
@@ -109,6 +110,7 @@ const DesignOption = () => {
         size: fetchedPwaContent.size,
         lastUpdate: fetchedPwaContent.lastUpdate,
         securityUI: fetchedPwaContent.securityUI,
+        hasPaidContentTitle: fetchedPwaContent.hasPaidContentTitle,
       });
       updatedReviews.forEach((review) => {
         form.setFieldsValue({
@@ -157,7 +159,7 @@ const DesignOption = () => {
     countOfDownloads: "10 000 +",
     countOfReviews: "3 тыс.",
     verified: true,
-    rating: "4.8",
+    rating: "4.9",
     countOfReviewsFull: "30,301",
     version: "1.63.1",
     shortDescription:
@@ -167,6 +169,7 @@ const DesignOption = () => {
     fullDescription:
       "Обновление и опыт быть самым богатым! Не сдавайся до конца, ты можешь стать победителем",
     securityUI: true,
+    hasPaidContentTitle: true,
   });
   const [checkStatus] = useLazyGetPwaContentStatusQuery();
 
@@ -185,6 +188,7 @@ const DesignOption = () => {
       lastUpdate: form.getFieldValue("lastUpdate"),
       size: form.getFieldValue("size"),
       securityUI: form.getFieldValue("securityUI"),
+      hasPaidContentTitle: form.getFieldValue("hasPaidContentTitle"),
     });
   };
 
@@ -377,6 +381,7 @@ const DesignOption = () => {
         securityUI: form.getFieldValue("securityUI"),
         lastUpdate: new Date().toISOString(),
         pwaLink: form.getFieldValue("pwaLink"),
+        hasPaidContentTitle: form.getFieldValue("hasPaidContentTitle"),
         rating: "4.9",
         countOfReviewsFull: form.getFieldValue("countOfReviews"),
         appIcon: appIcon.url!,
@@ -439,11 +444,12 @@ const DesignOption = () => {
         onFinish={onFinish}
         initialValues={{
           verified: false,
-          countOfStars: 2,
+          countOfStars: 4.9,
           countOfDownloads: "1,000+",
           countOfReviews: "100",
-          securityUI: false,
+          securityUI: true,
           size: "4 mb",
+          hasPaidContentTitle: true,
         }}
         validateTrigger="onSubmit"
         onValuesChange={handleValuesChange}
@@ -823,8 +829,8 @@ const DesignOption = () => {
                     ))}
                   </div>
                 </div>
-                <div className="flex-1">
-                  <div className="font-bold text-end text-white text-base leading-[18px] mb-4">
+                <div className="flex-1 flex-col flex gap-4">
+                  <div className="font-bold text-end text-white text-base leading-[18px]">
                     Дополнительные блоки:
                   </div>
                   <div className="flex gap-4 justify-end items-center">
@@ -833,6 +839,14 @@ const DesignOption = () => {
                     </Form.Item>
                     <div className="text-white text-base leading-5">
                       Безопасность и <br /> передача данных
+                    </div>
+                  </div>
+                  <div className="flex gap-4 justify-end items-center">
+                    <Form.Item name="hasPaidContentTitle" noStyle>
+                      <MonsterSwitch />
+                    </Form.Item>
+                    <div className="text-white text-base leading-5">
+                      Реклама и <br /> платный контент
                     </div>
                   </div>
                 </div>
@@ -905,8 +919,8 @@ const DesignOption = () => {
             width="140"
             colors={["#515ACA", "#E3CC02"]}
           />
-          Ваше PWA-приложение создается. Пожалуйста, подождите – оно загрузится
-          автоматически, как только будет готово!
+          Ваше PWA-приложение создается. Пожалуйста, подождите –<br /> оно
+          загрузится автоматически, как только будет готово!
         </div>
       )}
     </>
