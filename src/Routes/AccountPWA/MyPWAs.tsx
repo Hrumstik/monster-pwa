@@ -348,11 +348,18 @@ const MyPWAs = () => {
       </Modal>
 
       <Modal
-        title="Rename"
+        title={<div className="mb-5">Переименовать PWA</div>}
         open={!!renamePwa}
-        onOk={handleSubmitRenamePwa}
-        cancelText="Отмена"
-        okText="Переименовать"
+        footer={
+          <div
+            className="mt-5 flex justify-end"
+            onClick={handleSubmitRenamePwa}
+          >
+            <button className="leading-5 box-border h-[42px] flex justify-center items-center bg-white text-[#121320] rounded-lg p-5">
+              Сохранить
+            </button>
+          </div>
+        }
         onCancel={() => setRenamePwa(undefined)}
       >
         <MonsterInput

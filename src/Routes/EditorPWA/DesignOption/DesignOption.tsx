@@ -159,7 +159,7 @@ const DesignOption = () => {
     countOfDownloads: "10 000 +",
     countOfReviews: "3 тыс.",
     verified: true,
-    rating: "4.9",
+    rating: "5",
     countOfReviewsFull: "30,301",
     version: "1.63.1",
     shortDescription:
@@ -444,7 +444,7 @@ const DesignOption = () => {
         onFinish={onFinish}
         initialValues={{
           verified: false,
-          countOfStars: 4.9,
+          countOfStars: 5,
           countOfDownloads: "1,000+",
           countOfReviews: "100",
           securityUI: true,
