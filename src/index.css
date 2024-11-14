@@ -21,8 +21,8 @@
   color: #6b7280 !important;
 }
 
-.ant-modal-content,
-.ant-modal-title {
+.rename-pwa-modal .ant-modal-content,
+.rename-pwa-modal .ant-modal-title {
   background: #515aca !important;
 }
 

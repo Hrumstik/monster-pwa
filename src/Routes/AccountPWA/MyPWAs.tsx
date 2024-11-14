@@ -348,6 +348,7 @@ const MyPWAs = () => {
       </Modal>
 
       <Modal
+        className="rename-pwa-modal"
         title={<div className="mb-5">Переименовать PWA</div>}
         open={!!renamePwa}
         footer={
