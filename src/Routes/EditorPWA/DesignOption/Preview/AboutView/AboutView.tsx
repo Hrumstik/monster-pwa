@@ -39,7 +39,7 @@ const AboutView: React.FC<Props> = ({
         <div className="text-base text-main font-sans pt-4 pb-3 flex items-center">
           Описание
         </div>
-        <div className="text-sm whitespace-pre-wrap relative text-justify text-[#605D64]">
+        <div className="text-sm whitespace-pre-wrap relative text-left text-[#605D64]">
           {previewPwaContent.fullDescription}
         </div>
       </section>

@@ -140,7 +140,7 @@ const MainView = ({
           </span>
           <ArrowRightOutlined />
         </div>
-        <div className="text-[#605D64] text-[14px] leading-5">
+        <div className="text-[#605D64] text-[14px] leading-5 text-left">
           {previewPwaContent.shortDescription}
         </div>
       </div>
