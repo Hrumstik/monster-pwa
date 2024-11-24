@@ -436,6 +436,35 @@ const DesignOption = () => {
     setTags(["Casino", "Slots", "Online", "Offline"]);
   };
 
+  const handleSliderChange = (index: number, value: number) => {
+    const maxTotal = 5;
+    const updatedSliders = [...sliders];
+    updatedSliders[index] = value;
+
+    const remaining =
+      maxTotal -
+      updatedSliders.slice(0, index + 1).reduce((sum, val) => sum + val, 0);
+
+    if (remaining < 0) {
+      updatedSliders[index] += remaining;
+      setSliders(updatedSliders);
+      return;
+    }
+
+    const lowerSliders = updatedSliders.slice(index + 1);
+    const totalWeight = lowerSliders.reduce(
+      (acc, _, i) => acc + (lowerSliders.length - i),
+      0
+    );
+
+    for (let i = 0; i < lowerSliders.length; i++) {
+      const weight = lowerSliders.length - i;
+      const allocated = (remaining / totalWeight) * weight;
+      updatedSliders[index + 1 + i] = allocated;
+    }
+    setSliders(updatedSliders);
+  };
+
   return (
     <>
       {contextHolder}
@@ -814,13 +843,9 @@ const DesignOption = () => {
                         <MonsterSlider
                           className="flex-1"
                           value={sliders[index]}
-                          onChange={(value) => {
-                            setSliders((prev) => {
-                              const newSliders = [...prev];
-                              newSliders[index] = value;
-                              return newSliders;
-                            });
-                          }}
+                          onChange={(newValue) =>
+                            handleSliderChange(index, newValue)
+                          }
                           step={0.1}
                           min={0}
                           max={5}
