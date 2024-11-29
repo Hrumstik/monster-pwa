@@ -8,7 +8,7 @@ export interface PwaContent {
   pwaName?: string;
   hasPaidContentTitle: boolean;
   developerName: string;
-  countOfDownloads: string;
+  countOfDownloads: Record<string, string>;
   countOfReviews: string;
   size: string;
   verified: boolean;
@@ -17,8 +17,8 @@ export interface PwaContent {
   lastUpdate: string;
   pwaLink: string;
   rating: string;
-  shortDescription: string;
-  fullDescription: string;
+  shortDescription: Record<string, string>;
+  fullDescription: Record<string, string>;
   countOfReviewsFull: string;
   countOfStars: number;
   appIcon: string;
@@ -33,9 +33,9 @@ export interface PwaContent {
     reviewAuthorIcon?: string;
     reviewAuthorRating: number;
     reviewIconColor?: string;
-    reviewText: string;
+    reviewText: Record<string, string>;
     reviewDate: string;
-    devResponse?: string;
+    devResponse?: Record<string, string>;
   }[];
   version: string;
   sliders: number[];

@@ -34,6 +34,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 
 interface DesignOptionFormValues {
+  languages: string[];
   appName: string;
   developerName: string;
   countOfDownloads: string;
@@ -78,9 +79,10 @@ const DesignOption = () => {
       }));
 
       form.setFieldsValue({
+        languages: fetchedPwaContent.languages,
         appName: fetchedPwaContent.appName,
         developerName: fetchedPwaContent.developerName,
-        countOfDownloads: fetchedPwaContent.countOfDownloads,
+        countOfDownloads: fetchedPwaContent.countOfDownloads.originalLanguage,
         countOfReviews: fetchedPwaContent.countOfReviews,
         size: fetchedPwaContent.size,
         verified: fetchedPwaContent.verified,
@@ -92,19 +94,19 @@ const DesignOption = () => {
         countOfReviewsFull: fetchedPwaContent.countOfReviewsFull,
         countOfStars: fetchedPwaContent.countOfStars,
         version: fetchedPwaContent.version,
-        fullDescription: fetchedPwaContent.fullDescription,
+        fullDescription: fetchedPwaContent.fullDescription.originalLanguage,
         appIcon: fetchedPwaContent.appIcon,
-        shortDescription: fetchedPwaContent.shortDescription,
+        shortDescription: fetchedPwaContent.shortDescription.originalLanguage,
       });
       setPreviewContent({
         appName: fetchedPwaContent.appName,
         developerName: fetchedPwaContent.developerName,
-        countOfDownloads: fetchedPwaContent.countOfDownloads,
+        countOfDownloads: fetchedPwaContent.countOfDownloads.originalLanguage,
         countOfReviews: fetchedPwaContent.countOfReviews,
         verified: fetchedPwaContent.verified,
         rating: fetchedPwaContent.rating,
-        shortDescription: fetchedPwaContent.shortDescription,
-        fullDescription: fetchedPwaContent.fullDescription,
+        shortDescription: fetchedPwaContent.shortDescription.originalLanguage,
+        fullDescription: fetchedPwaContent.fullDescription.originalLanguage,
         countOfReviewsFull: fetchedPwaContent.countOfReviewsFull,
         version: fetchedPwaContent.version,
         size: fetchedPwaContent.size,
@@ -204,8 +206,10 @@ const DesignOption = () => {
         reviewAuthorRating: 5,
         reviewIconColor: "",
         avatarTitle: "",
-        reviewText:
-          "Комментарий пока не сохранен. Введите данные и сохраните его.",
+        reviewText: {
+          originalLanguage:
+            "Комментарий пока не сохранен. Введите данные и сохраните его.",
+        },
         reviewDate: new Date().toISOString(),
         isActive: true,
         id: uuidv4(),
@@ -373,7 +377,9 @@ const DesignOption = () => {
       const payload = {
         appName: form.getFieldValue("appName"),
         developerName: form.getFieldValue("developerName"),
-        countOfDownloads: form.getFieldValue("countOfDownloads"),
+        countOfDownloads: {
+          originalLanguage: form.getFieldValue("countOfDownloads"),
+        },
         countOfReviews: form.getFieldValue("countOfReviews"),
         size: form.getFieldValue("size"),
         verified: true,
@@ -400,10 +406,15 @@ const DesignOption = () => {
           reviewDate: review.reviewDate,
           devResponse: review.devResponse,
         })),
-        shortDescription: form.getFieldValue("shortDescription"),
-        fullDescription: form.getFieldValue("fullDescription"),
+        shortDescription: {
+          originalLanguage: form.getFieldValue("shortDescription"),
+        },
+        fullDescription: {
+          originalLanguage: form.getFieldValue("fullDescription"),
+        },
         version: "1.0",
         sliders,
+        languages: form.getFieldValue("languages"),
       };
       const pwaContent = await createPwaContent(payload).unwrap();
       if (id) deletePwaContent(id);
@@ -546,11 +557,23 @@ const DesignOption = () => {
             </div>
             <div className="flex gap-[30px]">
               <div className="flex-1">
-                <Form.Item className="languages">
+                <Form.Item
+                  name="languages"
+                  rules={[
+                    {
+                      required: true,
+                      type: "array",
+                      message: "Выберите хотя бы один язык",
+                    },
+                  ]}
+                >
                   <MonsterSelect
                     mode="multiple"
                     className="w-full"
                     options={languages}
+                    onChange={(value) =>
+                      form.setFieldsValue({ languages: value })
+                    }
                     placeholder="Язык"
                     notFoundContent={
                       <span className="text-base text-white">
