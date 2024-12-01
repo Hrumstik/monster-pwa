@@ -327,13 +327,13 @@ const MyPWAs = () => {
               {
                 appName: previewPwa.appName,
                 developerName: previewPwa.developerName,
-                countOfDownloads: previewPwa.countOfDownloads,
+                countOfDownloads: previewPwa.countOfDownloads.originalLanguage,
                 countOfReviews: previewPwa.countOfReviews,
                 verified: previewPwa.verified,
                 rating: previewPwa.rating,
                 countOfReviewsFull: previewPwa.countOfReviewsFull,
-                shortDescription: previewPwa.shortDescription,
-                fullDescription: previewPwa.fullDescription,
+                shortDescription: previewPwa.shortDescription.originalLanguage,
+                fullDescription: previewPwa.fullDescription.originalLanguage,
               } as PreviewPwaContent
             }
             appIcon={{ url: previewPwa.appIcon, preview: null }}
@@ -342,7 +342,13 @@ const MyPWAs = () => {
               preview: null,
             }))}
             tags={previewPwa.tags}
-            reviews={previewPwa.reviews}
+            reviews={previewPwa.reviews.map((review) => {
+              return {
+                ...review,
+                reviewText: review.reviewText.originalLanguage,
+                devResponse: review.devResponse?.originalLanguage,
+              };
+            })}
           />
         )}
       </Modal>
