@@ -75,6 +75,8 @@ const DesignOption = () => {
     const fetchPwaContent = async () => {
       const updatedReviews = fetchedPwaContent.reviews.map((review) => ({
         ...review,
+        reviewText: review.reviewText.originalLanguage,
+        devResponse: review.devResponse?.originalLanguage,
         id: uuidv4(),
       }));
 
@@ -206,10 +208,8 @@ const DesignOption = () => {
         reviewAuthorRating: 5,
         reviewIconColor: "",
         avatarTitle: "",
-        reviewText: {
-          originalLanguage:
-            "Комментарий пока не сохранен. Введите данные и сохраните его.",
-        },
+        reviewText:
+          "Комментарий пока не сохранен. Введите данные и сохраните его.",
         reviewDate: new Date().toISOString(),
         isActive: true,
         id: uuidv4(),
@@ -402,9 +402,15 @@ const DesignOption = () => {
           reviewAuthorName: review.reviewAuthorName,
           reviewAuthorIcon: review.reviewAuthorIcon,
           reviewAuthorRating: review.reviewAuthorRating,
-          reviewText: review.reviewText,
+          reviewText: {
+            originalLanguage: review.reviewText,
+          },
           reviewDate: review.reviewDate,
-          devResponse: review.devResponse,
+          devResponse: review.devResponse
+            ? {
+                originalLanguage: review.devResponse,
+              }
+            : undefined,
         })),
         shortDescription: {
           originalLanguage: form.getFieldValue("shortDescription"),

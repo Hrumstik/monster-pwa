@@ -3,8 +3,8 @@ export interface Review {
   reviewAuthorIcon?: string;
   reviewAuthorRating: number;
   reviewIconColor?: string;
-  reviewText: Record<string, string>;
-  devResponse?: Record<string, string>;
+  reviewText: string;
+  devResponse?: string;
   reviewDate: string;
   id?: string;
   isActive?: boolean;
