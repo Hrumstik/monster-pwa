@@ -12,18 +12,19 @@ import MonsterDropdown from "../../shared/elements/Dropdown/Dropdown";
 import { useNavigate } from "react-router-dom";
 import {
   useGetAllPwaContentQuery,
-  useDeletePwaContentMutation,
   useCopyPwaContentMutation,
   useUpdatePwaContentMutation,
+  useDeletePwaContentForcedMutation,
 } from "@store/slices/pwaApi";
 import Preview from "../EditorPWA/DesignOption/Preview/Preview.tsx";
 import { PreparedPWADataItem, PwaContent } from "@models/pwa.ts";
 import { PreviewPwaContent } from "Routes/EditorPWA/DesignOption/Preview/models.ts";
+import Steps from "@shared/elements/Steps/Steps.tsx";
 
 const MyPWAs = () => {
   const { data, refetch, isLoading, isFetching } = useGetAllPwaContentQuery();
   const [deletePwaContent, { isLoading: deletePwaLoading }] =
-    useDeletePwaContentMutation();
+    useDeletePwaContentForcedMutation();
   const [copyPwaContent, { isLoading: copyPwaLoading }] =
     useCopyPwaContentMutation();
   const [updatePwaContent, { isLoading: updatePwaLoading }] =
@@ -192,28 +193,15 @@ const MyPWAs = () => {
         </span>
       </div>
       <div className="rounded-lg w-full min-h-[62vh] bg-[#20223B]">
-        <div className="text-sm font-medium text-center text-white border-b border-[#161724]">
-          <ul className="flex flex-wrap -mb-px px-7">
-            {Object.values(MyPWAsTabs).map((tab, index) => (
-              <li key={tab} className="me-12">
-                <div
-                  className={`inline-block p-4 border-b-2 ${
-                    tab === currentTab
-                      ? "border-[#00FF11]"
-                      : "border-transparent hover:border-[#515ACA]"
-                  } rounded-t-lg ${
-                    index
-                      ? "text-gray-500 cursor-not-allowed"
-                      : "cursor-pointer"
-                  }`}
-                  onClick={index ? undefined : () => setCurrentTab(tab)}
-                >
-                  {getTabText(tab)}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Steps
+          steps={Object.values(MyPWAsTabs).map((tab) => ({
+            label: getTabText(tab),
+            isClickable: true,
+            id: tab,
+          }))}
+          currentStep={currentTab}
+          onStepChange={(step: string) => setCurrentTab(step as MyPWAsTabs)}
+        />
         <div className="p-3 flex justify-start">
           <MonsterInput
             onChange={handleSearch}

@@ -8,6 +8,12 @@ interface ScreensSliderProps {
 }
 
 const ScreensSlider: React.FC<ScreensSliderProps> = ({ screens }) => {
+  const hasScreens = screens.some((screen) => screen.url);
+
+  const actualScreens = hasScreens
+    ? screens.filter((screen) => screen.url)
+    : screens;
+
   return (
     <Swiper
       spaceBetween={16}
@@ -16,7 +22,7 @@ const ScreensSlider: React.FC<ScreensSliderProps> = ({ screens }) => {
       className="mb-6"
       grabCursor={true}
     >
-      {screens.map((screen, index) => (
+      {actualScreens.map((screen, index) => (
         <SwiperSlide key={index} style={{ width: "94px", height: "167px" }}>
           <div className="bg-gray-300 rounded-lg flex-shrink-0 w-full h-full">
             {screen.url && (
