@@ -666,7 +666,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                     )}
                   </Upload>
                 </Form.Item>
-                <div className="ml-[19px] flex flex-col gap-[19px] mr-[30px]">
+                <div className="ml-[19px] w-full flex flex-col gap-[19px] mr-[30px]">
                   <Form.Item
                     name="appName"
                     className="mb-0"
@@ -674,7 +674,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                   >
                     <MonsterInput
                       placeholder="Название приложения"
-                      className="!bg-[#161724] !h-[42px] max-w-[341px]"
+                      className="!bg-[#161724] !h-[42px] w-full"
                     />
                   </Form.Item>
 
@@ -696,16 +696,17 @@ const DesignOption: React.FC<DesignOptionProps> = ({
             </div>
             <div className="bg-cardColor rounded-lg px-[50px] pt-[54px] pb-[30px] flex-1">
               <div className="flex gap-[50px]">
-                <div className="flex flex-col gap-9">
-                  <div className="flex relative">
+                <div className="flex flex-1 flex-col gap-9">
+                  <div className="relative">
                     <div className="text-[#8F919D] text-xs absolute top-[-24px]">
                       Размер
                     </div>
                     <Form.Item name="size" className="mb-0">
                       <MonsterInput
-                        className="!bg-[#161724] !h-[42px] max-w-40"
+                        className="!bg-[#161724] !h-[42px]"
                         defaultValue={"4 mb"}
                         placeholder="Размер"
+                        suffix={<GenerateIcon />}
                       />
                     </Form.Item>
                   </div>
@@ -721,11 +722,26 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                       ]}
                     >
                       <MonsterInput
-                        className="!bg-[#161724] !h-[42px] max-w-40"
+                        className="!bg-[#161724] !h-[42px]"
                         placeholder="Количество скачиваний"
+                        suffix={<GenerateIcon />}
                       />
                     </Form.Item>
                   </div>
+
+                  <div className="flex flex-col relative">
+                    <div className="text-[#8F919D] text-xs absolute top-[-24px]">
+                      Возраст
+                    </div>
+                    <MonsterInput
+                      className="!bg-[#161724] !h-[42px]"
+                      defaultValue={"18+"}
+                      placeholder="Возраст"
+                      suffix={<GenerateIcon />}
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-1 flex-col gap-9">
                   <div className="flex relative">
                     <div className="text-[#8F919D] text-xs absolute top-[-24px] whitespace-nowrap">
                       Рейтинг приложения
@@ -733,18 +749,6 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                     <Form.Item name="countOfStars" className="mb-0">
                       <MonsterRate className="flex whitespace-nowrap" />
                     </Form.Item>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-9">
-                  <div className="flex flex-col relative">
-                    <div className="text-[#8F919D] text-xs absolute top-[-24px]">
-                      Возраст
-                    </div>
-                    <MonsterInput
-                      className="!bg-[#161724] !h-[42px] w-40"
-                      defaultValue={"18+"}
-                      placeholder="Возраст"
-                    />
                   </div>
                   <div className="flex gap-5 items-center">
                     <div className="flex gap-1">
