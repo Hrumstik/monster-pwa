@@ -56,18 +56,18 @@ export const stepsInitialState: Step[] = [
     icon: getTabIcon(EditorPWATabs.Domain, false, false),
     isPassed: false,
   },
-  {
-    label: "Аналитика",
-    id: EditorPWATabs.Analytics,
-    isClickable: true,
-    icon: getTabIcon(EditorPWATabs.Analytics, false, false),
-    isPassed: false,
-  },
-  {
-    label: "PUSH УВЕДОМЛЕНИЯ",
-    id: EditorPWATabs.Push,
-    isClickable: true,
-    icon: getTabIcon(EditorPWATabs.Push, false, false),
-    isPassed: false,
-  },
+  // {
+  //   label: "Аналитика",
+  //   id: EditorPWATabs.Analytics,
+  //   isClickable: true,
+  //   icon: getTabIcon(EditorPWATabs.Analytics, false, false),
+  //   isPassed: false,
+  // },
+  // {
+  //   label: "PUSH УВЕДОМЛЕНИЯ",
+  //   id: EditorPWATabs.Push,
+  //   isClickable: true,
+  //   icon: getTabIcon(EditorPWATabs.Push, false, false),
+  //   isPassed: false,
+  // },
 ];

@@ -10,10 +10,10 @@ const store = configureStore({
     [pwaSlice.reducerPath]: pwaSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware()
-          .concat(authSlice.middleware)
-          .concat(filesSlice.middleware)
-          .concat(pwaSlice.middleware),
+    getDefaultMiddleware()
+      .concat(authSlice.middleware)
+      .concat(filesSlice.middleware)
+      .concat(pwaSlice.middleware),
 });
 
 export default store;

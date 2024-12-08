@@ -1,6 +1,8 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import baseQuery from "../../middlewares/authBaseQuery";
 import { PwaContent } from "@models/pwa";
+import { User } from "@models/user";
+import { AddDomainResponse, DomainData } from "@models/domain";
 
 export const pwaSlice = createApi({
   reducerPath: "pwaApi",
@@ -46,10 +48,19 @@ export const pwaSlice = createApi({
       query: (id) => `/pwa-content/${id}`,
     }),
 
-    buildPwaContent: builder.query<{ jobId: string }, string>({
-      query: (id) => ({
+    buildPwaContent: builder.query<
+      { jobId: string },
+      {
+        id: string;
+        body?: {
+          domain?: string;
+        };
+      }
+    >({
+      query: ({ id, body }) => ({
         url: `/pwa-content/${id}/build`,
         method: "POST",
+        body: body,
       }),
     }),
     getPwaContentStatus: builder.query<
@@ -59,6 +70,16 @@ export const pwaSlice = createApi({
       query: (jobId) => ({
         url: `/pwa-content/status/${jobId}`,
         method: "GET",
+      }),
+    }),
+    getMyUser: builder.query<User, void>({
+      query: () => "/user/me",
+    }),
+    addDomain: builder.mutation<AddDomainResponse, DomainData>({
+      query: (data) => ({
+        url: "/domains/add",
+        method: "POST",
+        body: data,
       }),
     }),
   }),
@@ -75,4 +96,6 @@ export const {
   useLazyBuildPwaContentQuery,
   useLazyGetPwaContentByIdQuery,
   useGetPwaContentByIdQuery,
+  useGetMyUserQuery,
+  useAddDomainMutation,
 } = pwaSlice;

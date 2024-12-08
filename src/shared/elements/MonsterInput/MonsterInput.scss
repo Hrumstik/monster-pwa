@@ -1,5 +1,6 @@
 .monster-input.ant-input,
-.monster-input.ant-input-textarea {
+.monster-input.ant-input-textarea,
+.monster-input.ant-input-affix-wrapper {
   background-color: #20223b;
   border: 1px solid #161724;
   box-sizing: border-box;
@@ -25,7 +26,8 @@
   }
 
   &.ant-input-disabled,
-  &.ant-input-textarea-disabled {
+  &.ant-input-textarea-disabled,
+  &.ant-input-affix-wrapper-disabled {
     background-color: #161724;
     border-color: #383b66;
     color: #5f6280;
@@ -37,7 +39,8 @@
 }
 
 .ant-input,
-.ant-input-textarea {
+.ant-input-textarea,
+.ant-input-affix-wrapper {
   background-color: #161724 !important;
   border: 1px solid #161724;
   box-sizing: border-box;
@@ -46,7 +49,8 @@
   padding: 12px;
 
   &.ant-input-disabled,
-  &.ant-input-textarea-disabled {
+  &.ant-input-textarea-disabled,
+  &.ant-input-affix-wrapper-disabled {
     background-color: #161724;
     border-color: #383b66;
     color: #5f6280;
@@ -58,22 +62,69 @@
 }
 
 .ant-input:hover,
-.ant-input-textarea:hover {
+.ant-input-textarea:hover,
+.ant-input-affix-wrapper:hover {
   border-color: #36395a;
 }
 
 .ant-input:focus,
-.ant-input-textarea:focus {
+.ant-input-textarea:focus,
+.ant-input-affix-wrapper:focus {
   border-color: #36395a;
   outline: none;
 }
 
 .ant-input:focus-within,
-.ant-input-textarea:focus-within {
+.ant-input-textarea:focus-within,
+.ant-input-affix-wrapper:focus-within {
   border-color: #36395a;
 }
 
 .ant-input::placeholder,
-.ant-input-textarea::placeholder {
+.ant-input-textarea::placeholder,
+.ant-input-affix-wrapper::placeholder {
   color: #5f6280;
+}
+
+.ant-input-affix-wrapper {
+  background-color: #20223b;
+  border: 1px solid #161724;
+  box-sizing: border-box;
+  border-radius: 8px;
+  color: white;
+
+  &:hover {
+    border-color: #36395a;
+  }
+
+  &:focus {
+    border-color: #36395a;
+    outline: none;
+  }
+
+  &:focus-within {
+    border-color: #36395a;
+  }
+
+  &.ant-input-affix-wrapper-disabled {
+    background-color: #161724;
+    border-color: #383b66;
+    color: #5f6280;
+  }
+
+  .ant-input {
+    background-color: #20223b !important;
+    color: white;
+  }
+
+  .ant-input::placeholder {
+    color: #5f6280 !important;
+  }
+}
+
+:where(.css-dev-only-do-not-override-11lehqq).ant-input-affix-wrapper
+  > input.ant-input,
+:where(.css-dev-only-do-not-override-11lehqq).ant-input-affix-wrapper
+  > textarea.ant-input {
+  background-color: #161724 !important;
 }

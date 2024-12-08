@@ -4,7 +4,7 @@ import MonsterInput from "../../shared/elements/MonsterInput/MonsterInput";
 import { MoreOutlined } from "@ant-design/icons";
 import moment from "moment";
 import { MdOutlineEdit, MdDelete } from "react-icons/md";
-import { FiCopy, FiFileText } from "react-icons/fi";
+import { FiFileText } from "react-icons/fi";
 import { VscPreview } from "react-icons/vsc";
 
 import { Modal, Spin, Tooltip, Empty } from "antd";
@@ -12,7 +12,6 @@ import MonsterDropdown from "../../shared/elements/Dropdown/Dropdown";
 import { useNavigate } from "react-router-dom";
 import {
   useGetAllPwaContentQuery,
-  useCopyPwaContentMutation,
   useUpdatePwaContentMutation,
   useDeletePwaContentForcedMutation,
 } from "@store/slices/pwaApi";
@@ -20,15 +19,16 @@ import Preview from "../EditorPWA/DesignOption/Preview/Preview.tsx";
 import { PreparedPWADataItem, PwaContent } from "@models/pwa.ts";
 import { PreviewPwaContent } from "Routes/EditorPWA/DesignOption/Preview/models.ts";
 import Steps from "@shared/elements/Steps/Steps.tsx";
+import useGetPwaInfo from "@shared/hooks/useGetPwaInfo.ts";
 
 const MyPWAs = () => {
   const { data, refetch, isLoading, isFetching } = useGetAllPwaContentQuery();
   const [deletePwaContent, { isLoading: deletePwaLoading }] =
     useDeletePwaContentForcedMutation();
-  const [copyPwaContent, { isLoading: copyPwaLoading }] =
-    useCopyPwaContentMutation();
   const [updatePwaContent, { isLoading: updatePwaLoading }] =
     useUpdatePwaContentMutation();
+
+  const { getPwaInfo } = useGetPwaInfo();
 
   const navigate = useNavigate();
 
@@ -45,24 +45,19 @@ const MyPWAs = () => {
     }
   };
 
-  const handleCopy = async (id: string) => {
-    try {
-      await copyPwaContent(id).then(refetch);
-    } catch (error) {
-      console.error("Failed to delete PWA content:", error);
-    }
-  };
-
   const preparePwaData = () =>
-    data?.map(({ appName, _id, pwaName, createdAt }) => ({
-      name: appName,
-      appName: pwaName,
-      domain: "–",
-      geo: "–",
-      createdAt: new Date(createdAt as string),
-      status: "–",
-      id: _id,
-    })) || [];
+    data?.map(({ _id }) => {
+      const pwaInfo = getPwaInfo(_id!);
+      return {
+        name: pwaInfo.pwaName,
+        appName: pwaInfo.appName,
+        domain: pwaInfo.domain,
+        geo: "–",
+        createdAt: new Date(pwaInfo.createdAt!),
+        status: "–",
+        id: _id,
+      };
+    }) ?? [];
 
   useEffect(() => {
     switch (currentTab) {
@@ -113,16 +108,16 @@ const MyPWAs = () => {
 
           setRenamePwa({
             ...renamePwa,
-            pwaName: renamePwa?.pwaName || renamePwa?.appName,
+            pwaName: renamePwa?.pwaName ?? renamePwa?.appName,
           } as PwaContent);
         },
       },
-      {
-        label: <span className="text-xs text-white">Дублировать</span>,
-        key: "copy",
-        icon: <FiCopy style={{ color: "white" }} />,
-        onClick: () => handleCopy(pwa.id as string),
-      },
+      // {
+      //   label: <span className="text-xs text-white">Дублировать</span>,
+      //   key: "copy",
+      //   icon: <FiCopy style={{ color: "white" }} />,
+      //   onClick: () => handleCopy(pwa.id as string),
+      // },
       {
         label: <span className="text-xs text-white">Предпросмотр</span>,
         key: "preview",
@@ -156,7 +151,7 @@ const MyPWAs = () => {
     }
 
     const filteredPWAs = preparePwaData().filter((pwa) =>
-      pwa.name.toLowerCase().includes(e.target.value.toLowerCase())
+      pwa.name?.toLowerCase().includes(e.target.value.toLowerCase())
     );
 
     setAvailablePWAs(filteredPWAs);
@@ -180,6 +175,9 @@ const MyPWAs = () => {
       setRenamePwa(undefined);
       refetch();
     });
+
+  const shouldShowLoader =
+    isLoading || deletePwaLoading || isFetching || updatePwaLoading;
 
   return (
     <div className="px-[50px] pt-[110px] pb-[40px]">
@@ -210,87 +208,78 @@ const MyPWAs = () => {
           />
         </div>
 
-        {isLoading ||
-        deletePwaLoading ||
-        copyPwaLoading ||
-        isFetching ||
-        updatePwaLoading ? (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              padding: "20px",
-            }}
-          >
-            <Spin />
-          </div>
-        ) : availablePWAs.length ? (
-          <table className="table-fixed bg-transparent border-collapse w-full">
-            <thead>
-              <tr>
-                <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white">
-                  Название
-                </th>
-                <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white">
-                  Домен
-                </th>
-                <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white">
-                  ГЕО
-                </th>
-                <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white">
-                  Дата создания
-                </th>
-                <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white">
-                  Статус
-                </th>
-                <th className="bg-[#515ACA] px-8 py-3"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {!!availablePWAs.length &&
-                availablePWAs.map((pwa) => (
-                  <tr
-                    key={pwa.id}
-                    className="hover:bg-[#383B66] group h-14 focus:bg-gray-300 w-full text-white cursor-pointer"
-                  >
-                    <Tooltip
-                      color="grey"
-                      placement="topRight"
-                      title={pwa.appName || pwa.name}
-                    >
-                      <td className="px-8 py-3 truncate overflow-hidden whitespace-nowrap">
-                        {pwa.appName || pwa.name}
-                      </td>
-                    </Tooltip>
-                    <td className="px-8 py-3">{pwa.domain}</td>
-                    <td className="px-8 py-3">{pwa.geo}</td>
-                    <td className="px-8 py-3">
-                      {moment(pwa.createdAt).format("DD.MM.YYYY")}
-                    </td>
-                    <td className="px-8 py-3">{pwa.status}</td>
-                    <td className="px-8 py-3 flex gap-[10px]">
-                      <MonsterDropdown
-                        trigger={["click"]}
-                        menu={{ items: generateDropDownItems(pwa) }}
-                      >
-                        <button className="hover:bg-[#20223B] rounded flex items-center justify-center w-[30px] h-[30px] border-none bg-[#383B66] group-hover:bg-[#20223B]">
-                          <MoreOutlined
-                            style={{ color: "white", fontSize: "15px" }}
-                          />
-                        </button>
-                      </MonsterDropdown>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
+        {shouldShowLoader ? (
+          <Spin fullscreen />
         ) : (
-          <Empty
-            description={<span style={{ color: "white" }}>No items</span>}
-            className="p-[40px]"
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-          />
+          <>
+            {availablePWAs.length ? (
+              <table className="table-fixed bg-transparent border-collapse w-full">
+                <thead>
+                  <tr>
+                    <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white">
+                      Название
+                    </th>
+                    <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white">
+                      Домен
+                    </th>
+                    <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white">
+                      ГЕО
+                    </th>
+                    <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white">
+                      Дата создания
+                    </th>
+                    <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white">
+                      Статус
+                    </th>
+                    <th className="bg-[#515ACA] px-8 py-3"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {!!availablePWAs.length &&
+                    availablePWAs.map((pwa) => (
+                      <tr
+                        key={pwa.id}
+                        className="hover:bg-[#383B66] group h-14 focus:bg-gray-300 w-full text-white cursor-pointer"
+                      >
+                        <Tooltip
+                          color="grey"
+                          placement="topRight"
+                          title={pwa.appName ?? pwa.name}
+                        >
+                          <td className="px-8 py-3 truncate overflow-hidden whitespace-nowrap">
+                            {pwa.appName ?? pwa.name}
+                          </td>
+                        </Tooltip>
+                        <td className="px-8 py-3">{pwa.domain}</td>
+                        <td className="px-8 py-3">{pwa.geo}</td>
+                        <td className="px-8 py-3">
+                          {moment(pwa.createdAt).format("DD.MM.YYYY")}
+                        </td>
+                        <td className="px-8 py-3">{pwa.status}</td>
+                        <td className="px-8 py-3 flex gap-[10px]">
+                          <MonsterDropdown
+                            trigger={["click"]}
+                            menu={{ items: generateDropDownItems(pwa) }}
+                          >
+                            <button className="hover:bg-[#20223B] rounded flex items-center justify-center w-[30px] h-[30px] border-none bg-[#383B66] group-hover:bg-[#20223B]">
+                              <MoreOutlined
+                                style={{ color: "white", fontSize: "15px" }}
+                              />
+                            </button>
+                          </MonsterDropdown>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            ) : (
+              <Empty
+                description={<span style={{ color: "white" }}>No items</span>}
+                className="p-[40px]"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+              />
+            )}
+          </>
         )}
       </div>
 

@@ -1,4 +1,4 @@
-import { Form, Input, Spin, Upload } from "antd";
+import { Form, Input, Spin, Upload, notification } from "antd";
 import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
 import DropdownIcon from "@shared/icons/DropdownIcon";
 import MonsterSelect from "@shared/elements/Select/MonsterSelect";
@@ -7,23 +7,20 @@ import UploadImageIcon from "@shared/icons/UploadImageIcon";
 import { IoAddOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import MonsterSwitch from "@shared/elements/Switch/MonsterSwitch";
-import MonsterRate from "@shared/elements/Rate/MonsterRate";
 import RestoreIcon from "@shared/icons/RestoreIcon";
 import MonsterSlider from "@shared/elements/Slider/MonsterSlider";
 import GptIcon from "@shared/icons/GptIcon";
 import { Review } from "@models/review";
 import SimpleButton from "@shared/elements/SimpleButton/SimpleButton";
-import { Picture } from "@models/pwa";
+import { Picture, PwaContent } from "@models/pwa";
 import ReviewItem from "./ReviewItem/ReviewItem";
 import { useWatch } from "antd/es/form/Form";
 import { v4 as uuidv4 } from "uuid";
 import { requiredValidator } from "@shared/form/validators/validators";
 import { useUploadImagesMutation } from "@store/slices/filesApi";
-import { notification } from "antd";
 import {
   useLazyBuildPwaContentQuery,
   useCreatePwaContentMutation,
-  useLazyGetPwaContentStatusQuery,
   useDeletePwaContentMutation,
   useGetPwaContentByIdQuery,
 } from "@store/slices/pwaApi";
@@ -32,6 +29,15 @@ import Preview from "./Preview/Preview";
 import { Hourglass } from "react-loader-spinner";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
+import { EditorPWATabs, getTabIcon } from "../EditorPWAHelpers";
+import { Step } from "@shared/elements/Steps/Steps";
+import useGetPwaInfo from "@shared/hooks/useGetPwaInfo";
+import { useMount } from "react-use";
+import useCheckBuildStatus from "@shared/hooks/useCheckBuildStatus";
+import InfoIcon from "@icons/InfoIcon";
+import VerifiedIcon from "@icons/VerifiedIcon";
+import GenerateIcon from "@icons/GenerateIcon";
+import MonsterRate from "@shared/elements/Rate/MonsterRate";
 
 interface DesignOptionFormValues {
   languages: string[];
@@ -56,9 +62,24 @@ interface DesignOptionFormValues {
   appIcon: string;
 }
 
+interface DesignOptionProps {
+  setPwaContent: (pwaContent: PwaContent) => void;
+  setCurrentTab: (tab: EditorPWATabs) => void;
+  steps: Step[];
+  setSteps: (steps: Step[]) => void;
+  pwaContent?: PwaContent;
+}
+
 const { TextArea } = Input;
 
-const DesignOption = () => {
+const DesignOption: React.FC<DesignOptionProps> = ({
+  setPwaContent,
+  setCurrentTab,
+  setSteps,
+  steps,
+  pwaContent,
+}) => {
+  const { getPwaInfo } = useGetPwaInfo();
   const navigate = useNavigate();
   const [createPwaContent] = useCreatePwaContentMutation();
   const [buildPwaContent] = useLazyBuildPwaContentQuery();
@@ -69,81 +90,74 @@ const DesignOption = () => {
       skip: !id,
     });
   const [deletePwaContent] = useDeletePwaContentMutation();
+  const { startPolling } = useCheckBuildStatus();
+
+  const setFormValues = (content: PwaContent) => {
+    const updatedReviews = content.reviews.map((review) => ({
+      ...review,
+      reviewText: review.reviewText.originalLanguage,
+      devResponse: review.devResponse?.originalLanguage,
+      id: uuidv4(),
+    }));
+
+    form.setFieldsValue({
+      languages: content.languages,
+      appName: content.appName,
+      developerName: content.developerName,
+      countOfDownloads: content.countOfDownloads.originalLanguage,
+      countOfReviews: content.countOfReviews,
+      size: content.size,
+      verified: content.verified,
+      tags: content.tags,
+      securityUI: content.securityUI,
+      lastUpdate: content.lastUpdate,
+      pwaLink: content.pwaLink,
+      rating: content.rating,
+      countOfReviewsFull: content.countOfReviewsFull,
+      countOfStars: content.countOfStars,
+      version: content.version,
+      fullDescription: content.fullDescription.originalLanguage,
+      appIcon: content.appIcon,
+      shortDescription: content.shortDescription.originalLanguage,
+    });
+
+    updatedReviews.forEach((review) => {
+      form.setFieldsValue({
+        [`reviewAuthorName${review.id}`]: review.reviewAuthorName,
+        [`reviewAuthorRating${review.id}`]: review.reviewAuthorRating,
+        [`reviewText${review.id}`]: review.reviewText,
+        [`reviewDate${review.id}`]: dayjs(review.reviewDate),
+        [`reviewAuthorIcon${review.id}`]: review.reviewAuthorIcon,
+        [`reviewIconColor${review.id}`]: review.devResponse,
+        [`devResponse${review.id}`]: review.devResponse,
+      });
+    });
+
+    setAppIcon({
+      url: content.appIcon,
+      preview: content.appIcon,
+    });
+
+    setTags(content.tags);
+    setReviews(updatedReviews);
+    setSliders(content.sliders);
+    setScreens(
+      content.images.map((image) => ({
+        url: image.url,
+        preview: image.url,
+      }))
+    );
+  };
 
   useEffect(() => {
     if (!id || !fetchedPwaContent) return;
-    const fetchPwaContent = async () => {
-      const updatedReviews = fetchedPwaContent.reviews.map((review) => ({
-        ...review,
-        reviewText: review.reviewText.originalLanguage,
-        devResponse: review.devResponse?.originalLanguage,
-        id: uuidv4(),
-      }));
-
-      form.setFieldsValue({
-        languages: fetchedPwaContent.languages,
-        appName: fetchedPwaContent.appName,
-        developerName: fetchedPwaContent.developerName,
-        countOfDownloads: fetchedPwaContent.countOfDownloads.originalLanguage,
-        countOfReviews: fetchedPwaContent.countOfReviews,
-        size: fetchedPwaContent.size,
-        verified: fetchedPwaContent.verified,
-        tags: fetchedPwaContent.tags,
-        securityUI: fetchedPwaContent.securityUI,
-        lastUpdate: fetchedPwaContent.lastUpdate,
-        pwaLink: fetchedPwaContent.pwaLink,
-        rating: fetchedPwaContent.rating,
-        countOfReviewsFull: fetchedPwaContent.countOfReviewsFull,
-        countOfStars: fetchedPwaContent.countOfStars,
-        version: fetchedPwaContent.version,
-        fullDescription: fetchedPwaContent.fullDescription.originalLanguage,
-        appIcon: fetchedPwaContent.appIcon,
-        shortDescription: fetchedPwaContent.shortDescription.originalLanguage,
-      });
-      setPreviewContent({
-        appName: fetchedPwaContent.appName,
-        developerName: fetchedPwaContent.developerName,
-        countOfDownloads: fetchedPwaContent.countOfDownloads.originalLanguage,
-        countOfReviews: fetchedPwaContent.countOfReviews,
-        verified: fetchedPwaContent.verified,
-        rating: fetchedPwaContent.rating,
-        shortDescription: fetchedPwaContent.shortDescription.originalLanguage,
-        fullDescription: fetchedPwaContent.fullDescription.originalLanguage,
-        countOfReviewsFull: fetchedPwaContent.countOfReviewsFull,
-        version: fetchedPwaContent.version,
-        size: fetchedPwaContent.size,
-        lastUpdate: fetchedPwaContent.lastUpdate,
-        securityUI: fetchedPwaContent.securityUI,
-        hasPaidContentTitle: fetchedPwaContent.hasPaidContentTitle,
-      });
-      updatedReviews.forEach((review) => {
-        form.setFieldsValue({
-          [`reviewAuthorName${review.id}`]: review.reviewAuthorName,
-          [`reviewAuthorRating${review.id}`]: review.reviewAuthorRating,
-          [`reviewText${review.id}`]: review.reviewText,
-          [`reviewDate${review.id}`]: dayjs(review.reviewDate),
-          [`reviewAuthorIcon${review.id}`]: review.reviewAuthorIcon,
-          [`reviewIconColor${review.devResponse}`]: review.devResponse,
-          [`devResponse${review.id}`]: review.devResponse,
-        });
-      });
-      setAppIcon({
-        url: fetchedPwaContent.appIcon,
-        preview: fetchedPwaContent.appIcon,
-      });
-      setTags(fetchedPwaContent.tags);
-      setReviews(updatedReviews);
-      setSliders(fetchedPwaContent.sliders);
-      setScreens(
-        fetchedPwaContent.images.map((image) => ({
-          url: image.url,
-          preview: image.url,
-        }))
-      );
-    };
-    fetchPwaContent();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setFormValues(fetchedPwaContent);
   }, [fetchedPwaContent]);
+
+  useMount(() => {
+    if (!pwaContent) return;
+    setFormValues(pwaContent);
+  });
 
   const [form] = Form.useForm<DesignOptionFormValues>();
   const [uploadImages, { isLoading: areImagesLoading }] =
@@ -175,7 +189,6 @@ const DesignOption = () => {
     securityUI: true,
     hasPaidContentTitle: true,
   });
-  const [checkStatus] = useLazyGetPwaContentStatusQuery();
 
   const handleValuesChange = () => {
     setPreviewContent({
@@ -321,40 +334,6 @@ const DesignOption = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const startPolling = (jobId: string) => {
-    const interval = setInterval(async () => {
-      try {
-        const statusData = await checkStatus(jobId).unwrap();
-        if (statusData?.status === "completed") {
-          clearInterval(interval);
-          if (statusData?.url) {
-            const link = document.createElement("a");
-            link.href = statusData.url;
-            link.download = "archive.zip";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            setIsLoading(false);
-            navigate("/");
-          }
-        } else if (statusData?.status === "failed") {
-          clearInterval(interval);
-          api.error({
-            message: "Error",
-            description: statusData?.body,
-            placement: "topRight",
-            duration: 60,
-          });
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error(error);
-        clearInterval(interval);
-        setIsLoading(false);
-      }
-    }, 15000);
-  };
-
   const addEmptyScreen = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
@@ -371,8 +350,6 @@ const DesignOption = () => {
   const onFinish = async () => {
     try {
       await form.validateFields();
-
-      setIsLoading(true);
 
       const payload = {
         appName: form.getFieldValue("appName"),
@@ -422,11 +399,51 @@ const DesignOption = () => {
         sliders,
         languages: form.getFieldValue("languages"),
       };
-      const pwaContent = await createPwaContent(payload).unwrap();
-      if (id) deletePwaContent(id);
-      const buildResponse = await buildPwaContent(pwaContent._id!).unwrap();
-      const jobId = buildResponse.jobId;
-      setTimeout(() => startPolling(jobId), 10000);
+      setPwaContent(payload);
+      if (!id) {
+        await form.validateFields();
+        setCurrentTab(EditorPWATabs.Domain);
+        setSteps(
+          steps.map((step) => {
+            if (step.id === EditorPWATabs.Design) {
+              return {
+                ...step,
+                isPassed: true,
+                icon: getTabIcon(EditorPWATabs.Design, true, false),
+              };
+            }
+            return step;
+          })
+        );
+      } else if (id && fetchedPwaContent) {
+        setIsLoading(true);
+        const domain = getPwaInfo(fetchedPwaContent._id!).domain;
+        const pwaContent = await createPwaContent(payload).unwrap();
+        if (id) deletePwaContent(id);
+        const buildResponse = await buildPwaContent({
+          id: pwaContent._id!,
+          body: {
+            domain,
+          },
+        }).unwrap();
+        const jobId = buildResponse.jobId;
+        setTimeout(
+          () =>
+            startPolling({
+              jobId,
+              completedStatusCallback: () => {
+                api.success({
+                  message: "Успешно",
+                  description: "PWA успешно изменено, ожидайте обновления",
+                });
+                setTimeout(() => {
+                  navigate(`/`);
+                }, 5000);
+              },
+            }),
+          10000
+        );
+      }
     } catch (error) {
       if (error && typeof error === "object" && "errorFields" in error) {
         onFinishFailed(
@@ -497,13 +514,13 @@ const DesignOption = () => {
           size: "4 mb",
           hasPaidContentTitle: true,
         }}
-        validateTrigger="onSubmit"
         onValuesChange={handleValuesChange}
         onFinishFailed={onFinishFailed}
+        validateTrigger={["onSubmit", "onBlur"]}
       >
         <div className="flex flex-col gap-[30px] mb-[134px]">
-          <div className="bg-cardColor rounded-lg p-[50px] mb-4">
-            <div className="flex gap-[30px] mb-[30px]">
+          <div className="bg-cardColor rounded-lg p-[50px] pb-[30px]">
+            <div className="flex gap-[30px]">
               <div className="flex-1 flex flex-col gap-[30px]">
                 <div className="text-base-lg leading-[25px] text-white">
                   Настройки оформления
@@ -527,7 +544,6 @@ const DesignOption = () => {
                   <Form.Item
                     name="pwaLink"
                     className="mb-7"
-                    validateTrigger="onChange"
                     rules={[requiredValidator("Укажите ссылку на оффер")]}
                   >
                     <MonsterInput
@@ -545,192 +561,204 @@ const DesignOption = () => {
                 </div>
               </div>
             </div>
-            <div className="flex justify-between gap-7 mb-[21px]">
-              <div>
-                <div className="text-base text-orangeSubtitle leading-[18px] font-bold mb-[15px]">
+          </div>
+          <div className="flex gap-7">
+            <div className="flex-1 bg-cardColor rounded-lg p-[50px] min-h-[203px]">
+              <div className="text-base text-white font-bold leading-5 mb-5 ">
+                Шаблон PWA
+              </div>
+              <div className="rounded-lg bg-[#515ACA] pl-3 pr-[14px] py-[14px] flex justify-between text-xs cursor-not-allowed h-[42px] text-white items-center">
+                PlayMarket
+                <DropdownIcon />
+              </div>
+            </div>
+            <div className="flex-1 bg-cardColor rounded-lg px-[50px] py-[30px] min-h-[203px] flex flex-col">
+              <div className="flex gap-2 mb-5">
+                <div className="text-[#E3CC02] text-base font-bold leading-[19px]">
                   Язык и категория PWA
                 </div>
-              </div>
-              <div>
-                <div className="text-orangeSubtitle text-xs leading-[14px] font-bold mb-[17px]">
-                  Шаблон PWA
-                </div>
-                <div className="rounded-lg bg-[#383B66] pl-3 pr-[14px] py-[14px] flex justify-between text-xs cursor-not-allowed w-[341px] h-[42px] text-white items-center">
-                  PlayMarket
-                  <DropdownIcon />
+                <div>
+                  <InfoIcon />
                 </div>
               </div>
-            </div>
-            <div className="flex gap-[30px]">
-              <div className="flex-1">
-                <Form.Item
-                  name="languages"
-                  rules={[
-                    {
-                      required: true,
-                      type: "array",
-                      message: "Выберите хотя бы один язык",
-                    },
-                  ]}
-                >
-                  <MonsterSelect
-                    mode="multiple"
-                    className="w-full"
-                    options={languages}
-                    onChange={(value) =>
-                      form.setFieldsValue({ languages: value })
-                    }
-                    placeholder="Язык"
-                    notFoundContent={
-                      <span className="text-base text-white">
-                        Языка не найдено
-                      </span>
-                    }
-                  />
-                </Form.Item>
-              </div>
-              <div className="flex-1">
-                <MonsterSelect
-                  mode="multiple"
-                  className="w-full"
-                  options={categories}
-                  placeholder="Категория"
-                  notFoundContent={
-                    <span className="text-base text-white">
-                      Категории не найдено
-                    </span>
-                  }
-                />
-              </div>
-            </div>
-          </div>
-          <div className="bg-cardColor rounded-lg px-[50px] py-[30px] mb-4">
-            <div className="font-bold text-base leading-[18px] text-orangeSubtitle mb-5">
-              Оформление
-            </div>
-            <div className="text-white text-xs leading-4 mb-5">
-              Шапка приложения
-            </div>
-            <div className="flex">
               <Form.Item
-                name="appIcon"
-                className="mb-0 max-w-[100px]"
-                valuePropName="appIcon"
-                validateTrigger="onChange"
+                name="languages"
                 rules={[
                   {
                     required: true,
-                    message: "Загрузите иконку",
+                    type: "array",
+                    message: "Выберите хотя бы один язык",
                   },
                 ]}
+                validateTrigger="onChange"
               >
-                <Upload showUploadList={false} beforeUpload={beforeUpload}>
-                  {appIcon.preview ? (
-                    <div className="relative w-[100px] h-[100px] group rounded-xl overflow-hidden">
-                      <img
-                        src={appIcon.preview}
-                        alt="Uploaded"
-                        className="w-[100px] h-[100px] object-fill "
-                      />
-                      <button
-                        className="absolute  opacity-0 top-0 right-0 group-hover:opacity-100  text-white rounded-full w-4 h-4 flex justify-center items-center"
-                        onClick={removeAppIcon}
-                      >
-                        &times;
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={(e) => e.preventDefault()}
-                      className="border-none hover:border-[#36395a] hover:border hover:border-solid bg-[#161724] rounded-lg w-[100px] h-[100px] flex justify-center items-center cursor-pointer relative"
-                    >
-                      <UploadImageIcon />
-                    </button>
-                  )}
-                </Upload>
+                <MonsterSelect
+                  mode="multiple"
+                  className="w-full"
+                  options={languages}
+                  onChange={(value) =>
+                    form.setFieldsValue({ languages: value })
+                  }
+                  placeholder="Язык"
+                  notFoundContent={
+                    <span className="text-base text-white">
+                      Языка не найдено
+                    </span>
+                  }
+                />
               </Form.Item>
-              <div className="ml-[19px] flex flex-col gap-[19px] w-[341px] mr-[30px]">
-                <Form.Item
-                  name="appName"
-                  validateTrigger="onChange"
-                  className="mb-0"
-                  rules={[requiredValidator("Укажите название приложения")]}
-                >
-                  <MonsterInput
-                    placeholder="Название приложения"
-                    className="!bg-[#161724] !h-[42px]"
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  name="developerName"
-                  validateTrigger="onChange"
-                  className="mb-0"
-                  rules={[requiredValidator("Укажите разработчика приложения")]}
-                >
-                  <MonsterInput
-                    placeholder="Разработчик"
-                    className="!bg-[#161724] !h-[42px]"
-                  />
-                </Form.Item>
+              <MonsterSelect
+                mode="multiple"
+                className="w-full"
+                options={categories}
+                placeholder="Категория"
+                notFoundContent={
+                  <span className="text-base text-white">
+                    Категории не найдено
+                  </span>
+                }
+              />
+            </div>
+          </div>
+          <div className="flex gap-[30px]">
+            <div className="bg-cardColor rounded-lg px-[50px] py-[30px] flex-1">
+              <div className="font-bold text-base leading-[18px] text-orangeSubtitle mb-4">
+                Оформление
               </div>
-              <div className="flex flex-col relative mr-[35px]">
-                <div className="text-[#8F919D] text-xs absolute top-[-24px]">
-                  Размер
-                </div>
-                <Form.Item name="size" noStyle>
-                  <MonsterInput
-                    className="!bg-[#161724] !h-[42px] max-w-[130px] mb-6"
-                    defaultValue={"4 mb"}
-                    placeholder="Размер"
-                  />
+              <div className="text-white text-xs leading-4 mb-6">
+                Шапка приложения
+              </div>
+              <div className="flex">
+                <Form.Item
+                  name="appIcon"
+                  className="mb-0 max-w-[100px]"
+                  valuePropName="appIcon"
+                  validateTrigger="onChange"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Загрузите иконку",
+                    },
+                  ]}
+                >
+                  <Upload showUploadList={false} beforeUpload={beforeUpload}>
+                    {appIcon.preview ? (
+                      <div className="relative w-[100px] h-[100px] group rounded-xl overflow-hidden">
+                        <img
+                          src={appIcon.preview}
+                          alt="Uploaded"
+                          className="w-[100px] h-[100px] object-fill "
+                        />
+                        <button
+                          className="absolute  opacity-0 top-0 right-0 group-hover:opacity-100  text-white rounded-full w-4 h-4 flex justify-center items-center"
+                          onClick={removeAppIcon}
+                        >
+                          &times;
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={(e) => e.preventDefault()}
+                        className="border-none hover:border-[#36395a] hover:border hover:border-solid bg-[#161724] rounded-lg w-[100px] h-[100px] flex justify-center items-center cursor-pointer relative"
+                      >
+                        <UploadImageIcon />
+                      </button>
+                    )}
+                  </Upload>
                 </Form.Item>
-                <div className="text-sm text-white leading-4 items-center flex gap-[10px] justify-start">
-                  Verified
-                  <Form.Item name="verified" noStyle>
-                    <MonsterSwitch />
+                <div className="ml-[19px] flex flex-col gap-[19px] mr-[30px]">
+                  <Form.Item
+                    name="appName"
+                    className="mb-0"
+                    rules={[requiredValidator("Укажите название приложения")]}
+                  >
+                    <MonsterInput
+                      placeholder="Название приложения"
+                      className="!bg-[#161724] !h-[42px] max-w-[341px]"
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="developerName"
+                    className="mb-0"
+                    rules={[
+                      requiredValidator("Укажите разработчика приложения"),
+                    ]}
+                  >
+                    <MonsterInput
+                      placeholder="Разработчик"
+                      className="!bg-[#161724] !h-[42px]"
+                      suffix={<GenerateIcon />}
+                    />
                   </Form.Item>
                 </div>
               </div>
-              <div className="flex flex-col relative mr-6">
-                <div className="text-[#8F919D] text-xs absolute top-[-24px]">
-                  Возраст
-                </div>
-                <MonsterInput
-                  className="!bg-[#161724] !h-[42px] max-w-[130px]"
-                  defaultValue={"18+"}
-                  disabled
-                  placeholder="Возраст"
-                />
-                <div className="mt-4">
-                  <div className="text-[#8F919D] text-xs lading-[14px] mb-1.5">
-                    Рейтинг
-                  </div>
-                  <div className="flex gap-2.5 items-center">
-                    <Form.Item name="countOfStars" className="mb-0">
-                      <MonsterRate className="min-w-36" />
-                    </Form.Item>
-                    <div className="font-bold text-xs text-white leading-4">
-                      {form.getFieldValue("countOfStars")}
+            </div>
+            <div className="bg-cardColor rounded-lg px-[50px] pt-[54px] pb-[30px] flex-1">
+              <div className="flex gap-[50px]">
+                <div className="flex flex-col gap-9">
+                  <div className="flex relative">
+                    <div className="text-[#8F919D] text-xs absolute top-[-24px]">
+                      Размер
                     </div>
+                    <Form.Item name="size" className="mb-0">
+                      <MonsterInput
+                        className="!bg-[#161724] !h-[42px] max-w-40"
+                        defaultValue={"4 mb"}
+                        placeholder="Размер"
+                      />
+                    </Form.Item>
+                  </div>
+                  <div className="relative">
+                    <div className="text-[#8F919D] text-xs absolute top-[-24px]">
+                      Скачиваний
+                    </div>
+                    <Form.Item
+                      name="countOfDownloads"
+                      className="mb-0"
+                      rules={[
+                        requiredValidator("Укажите количество скачиваний"),
+                      ]}
+                    >
+                      <MonsterInput
+                        className="!bg-[#161724] !h-[42px] max-w-40"
+                        placeholder="Количество скачиваний"
+                      />
+                    </Form.Item>
+                  </div>
+                  <div className="flex relative">
+                    <div className="text-[#8F919D] text-xs absolute top-[-24px] whitespace-nowrap">
+                      Рейтинг приложения
+                    </div>
+                    <Form.Item name="countOfStars" className="mb-0">
+                      <MonsterRate className="flex whitespace-nowrap" />
+                    </Form.Item>
                   </div>
                 </div>
-              </div>
-              <div className="relative">
-                <div className="text-[#8F919D] text-xs absolute top-[-24px]">
-                  Скачиваний
+                <div className="flex flex-col gap-9">
+                  <div className="flex flex-col relative">
+                    <div className="text-[#8F919D] text-xs absolute top-[-24px]">
+                      Возраст
+                    </div>
+                    <MonsterInput
+                      className="!bg-[#161724] !h-[42px] w-40"
+                      defaultValue={"18+"}
+                      placeholder="Возраст"
+                    />
+                  </div>
+                  <div className="flex gap-5 items-center">
+                    <div className="flex gap-1">
+                      <div className="text-sm text-white leading-4 items-center flex gap-[10px] justify-start">
+                        Verified?
+                      </div>
+                      <VerifiedIcon />
+                    </div>
+
+                    <Form.Item name="verified" noStyle>
+                      <MonsterSwitch />
+                    </Form.Item>
+                  </div>
                 </div>
-                <Form.Item
-                  name="countOfDownloads"
-                  validateTrigger="onChange"
-                  rules={[requiredValidator("Укажите количество скачиваний")]}
-                  className="mb-0"
-                >
-                  <MonsterInput
-                    className="!bg-[#161724] !h-[42px] max-w-[130px]"
-                    placeholder="Количество скачиваний"
-                  />
-                </Form.Item>
               </div>
             </div>
           </div>
@@ -786,7 +814,6 @@ const DesignOption = () => {
                 <Form.Item
                   name="shortDescription"
                   className="mb-4"
-                  validateTrigger="onChange"
                   rules={[requiredValidator("Укажите превью")]}
                 >
                   <MonsterInput
@@ -797,7 +824,6 @@ const DesignOption = () => {
                 <Form.Item
                   name="fullDescription"
                   className="mb-[25px]"
-                  validateTrigger="onChange"
                   rules={[requiredValidator("Укажите описание приложения")]}
                 >
                   <TextArea
@@ -960,11 +986,7 @@ const DesignOption = () => {
           </div>
         </div>
       </Form>
-      <Spin
-        spinning={pwaContentIsLoading || areImagesLoading}
-        fullscreen
-      ></Spin>
-
+      <Spin spinning={pwaContentIsLoading || areImagesLoading} fullscreen />
       {isLoading && (
         <div className="absolute top-1/2 left-1/2 w-full h-full z-[100] flex flex-col items-center justify-center gap-10 text-[#00FF11] font-bold text-[28px] text-center tracking-[1.1px] transform -translate-x-1/2 -translate-y-1/2 p-5 backdrop-blur-[40px]">
           <Hourglass
@@ -973,8 +995,7 @@ const DesignOption = () => {
             width="140"
             colors={["#515ACA", "#E3CC02"]}
           />
-          Ваше PWA-приложение создается. Пожалуйста, подождите –<br /> оно
-          загрузится автоматически, как только будет готово!
+          Ваше PWA-приложение создается. Пожалуйста, подождите.
         </div>
       )}
     </>
