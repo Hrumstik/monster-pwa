@@ -7,7 +7,6 @@ import UploadImageIcon from "@shared/icons/UploadImageIcon";
 import { IoAddOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import MonsterSwitch from "@shared/elements/Switch/MonsterSwitch";
-import RestoreIcon from "@shared/icons/RestoreIcon";
 import MonsterSlider from "@shared/elements/Slider/MonsterSlider";
 import GptIcon from "@shared/icons/GptIcon";
 import { Review } from "@models/review";
@@ -803,14 +802,15 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               </div>
             }
           </div>
-          <div className="bg-cardColor rounded-lg px-[50px] pt-7 pb-[35px]">
-            <div className="font-bold text-orangeSubtitle text-base leading-[18px] mb-5">
-              Описание и теги
-            </div>
-            <div className="text-white text-sm leading-4 mb-[30px]">
-              Хорошее описание и наличие тегов повышает конверсию.
-            </div>
-            <div className="flex gap-[30px]">
+          <div className="flex gap-[30px]">
+            <div className="bg-cardColor rounded-lg px-[50px] py-[30px] flex-1">
+              <div className="font-bold text-orangeSubtitle text-base leading-[18px] mb-5">
+                Описание
+              </div>
+              <div className="text-white text-sm leading-4 mb-[30px]">
+                Хорошее описание и наличие тегов повышает конверсию.
+              </div>
+
               <div className="flex-1">
                 <div className="text-sm leading-[14px] text-white mb-[10px]">
                   Заголовок (превью описания)
@@ -823,6 +823,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                   <MonsterInput
                     placeholder="Введите заголовок"
                     className="h-10"
+                    suffix={<GenerateIcon />}
                   />
                 </Form.Item>
                 <Form.Item
@@ -836,19 +837,27 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                     placeholder="Введите описание приложения:"
                   />
                 </Form.Item>
-                <button className="text-white underline leading-[18px] text-base">
+                <button
+                  disabled
+                  className="text-white underline leading-[18px] text-base"
+                >
                   Сгенерить описание при помощи ChatGPT
                 </button>
               </div>
-              <div className="flex-1">
-                <div className="text-sm text-white leading-[14px] mb-[10px]">
-                  Теги к описанию: (напишите тег и нажмите Enter)
-                </div>
-                <div className="border-[rgb(22,23,36)]  bg-[#161724] border border-solid hover:border-[#383B66] rounded-lg cursor-text p-3 mb-[30px]">
+            </div>
+            <div className="bg-cardColor rounded-lg px-[50px] py-[30px] flex-1">
+              <div className="font-bold text-orangeSubtitle text-base leading-[18px] mb-5">
+                Теги
+              </div>
+              <div className="text-sm text-white leading-[14px] mb-[10px]">
+                Теги к описанию: (напишите тег и нажмите Enter)
+              </div>
+              <div className="border-[rgb(22,23,36)] h-[173px] bg-[#161724] border border-solid hover:border-[#383B66] rounded-lg cursor-text p-3 mb-[30px]">
+                <div className="flex flex-wrap gap-y-2">
                   {tags.map((tag, index) => (
                     <div
                       key={index}
-                      className="bg-[#E3CC02] inline-flex items-center h-[22px] pl-2 pr-0.5 py-0.5 rounded-lg mx-2.5 cursor-pointer"
+                      className="bg-[#E3CC02] inline-flex items-center h-[22px] pl-2 pr-0.5 py-0.5 rounded-lg mr-2.5 mb-2 cursor-pointer"
                     >
                       <span className="text-[#161724] text-xs mr-2">{tag}</span>
                       <span
@@ -860,18 +869,22 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                     </div>
                   ))}
                   <div
-                    className="border-none h-full w-full text-white p-3"
+                    className="border-none h-[22px] w-full text-white p-1 mt-2"
                     style={{ outline: "none" }}
                     onKeyDown={handleTagEnter}
                     contentEditable
                   />
                 </div>
-                <SimpleButton
-                  text="Выбрать случайные теги"
-                  icon={<RestoreIcon />}
-                  onClick={generateTags}
-                />
               </div>
+              <button
+                className="flex gap-3 items-center"
+                onClick={generateTags}
+              >
+                <GenerateIcon />
+                <span className="text-white text-xs font-bold underline">
+                  Выбрать случайные теги
+                </span>
+              </button>
             </div>
           </div>
           <div className="flex gap-[30px] mb-[30px] relative ">
