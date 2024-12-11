@@ -1,3 +1,5 @@
+import { PwaStatus } from "./domain";
+
 export interface LoginBody {
   email: string;
   password: string;
@@ -16,6 +18,11 @@ export interface User {
   pwas: {
     domainName?: string;
     pwaContentId: string;
+    nsRecords: {
+      name: string;
+      _id: string;
+    }[];
+    status: PwaStatus;
   }[];
 }
 

@@ -8,15 +8,16 @@ import {
   EditorPWATabs,
   getTabIcon,
   stepsInitialState,
-} from "./EditorPWAHelpers";
+} from "./EditorPWAHelpers.tsx";
 import { useEffect, useState } from "react";
 import Steps, { Step } from "@shared/elements/Steps/Steps";
-import DomainOption from "./DomainOption.tsx/DomainOption";
+import DomainOption from "./DomainOption.tsx/DomainOption.tsx";
 import { PwaContent } from "@models/pwa";
 import { CloudflareData } from "@models/user";
 import {
   useAddDomainMutation,
   useCreatePwaContentMutation,
+  useDeletePwaContentMutation,
   useLazyBuildPwaContentQuery,
 } from "@store/slices/pwaApi";
 import useCheckBuildStatus from "@shared/hooks/useCheckBuildStatus";
@@ -28,9 +29,10 @@ const EditorPWA = () => {
   const [currentTab, setCurrentTab] = useState<EditorPWATabs>(
     EditorPWATabs.Design
   );
+
   const { id } = useParams();
 
-  const [steps, setSteps] = useState<Step[]>([]);
+  const [steps, setSteps] = useState<Step[]>(stepsInitialState);
   const [pwaContent, setPwaContent] = useState<PwaContent>();
   const [domainsData, setDomainsData] = useState<CloudflareData>();
   const [availableToSave, setAvailableToSave] = useState(false);
@@ -45,17 +47,7 @@ const EditorPWA = () => {
       name: string;
     }[]
   >();
-
-  useEffect(() => {
-    if (id) {
-      setAvailableToSave(true);
-      setSteps(
-        stepsInitialState.filter((step) => step.id === EditorPWATabs.Design)
-      );
-    } else {
-      setSteps(stepsInitialState);
-    }
-  }, []);
+  const [deletePwaContent] = useDeletePwaContentMutation();
 
   useEffect(() => {
     if (id) {
@@ -64,6 +56,28 @@ const EditorPWA = () => {
     }
     setAvailableToSave(!!pwaContent && !!domainsData);
   }, [domainsData, pwaContent]);
+
+  const createNewPwa = async () => {
+    if (!domainsData || !pwaContent) return;
+    try {
+      const response = await addDomain({
+        ...domainsData,
+        pwaId: pwaContent._id!,
+      }).unwrap();
+      setNsRecords(response.nsRecords);
+    } catch (error) {
+      notification.error({
+        message: "Ошибка",
+        description:
+          "Ошибка добавления домена, обратитесь в техническую поддержку",
+      });
+      deletePwaContent(pwaContent._id!);
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+      setIsFinished(true);
+    }
+  };
 
   const addDomainData = async (pwaContent: PwaContent) => {
     if (!domainsData || !pwaContent) return;
@@ -76,8 +90,10 @@ const EditorPWA = () => {
     } catch (error) {
       notification.error({
         message: "Ошибка",
-        description: "Ошибка добавления домена",
+        description:
+          "Ошибка добавления домена, обратитесь в техническую поддержку",
       });
+      deletePwaContent(pwaContent._id!);
       console.log(error);
     } finally {
       setIsLoading(false);
@@ -151,8 +167,6 @@ const EditorPWA = () => {
         return null;
     }
   };
-
-  console.log(id);
 
   return (
     <>

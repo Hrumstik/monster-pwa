@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import baseQuery from "../../middlewares/authBaseQuery";
-import { PwaContent } from "@models/pwa";
+import { DomainCheckStatus, PwaContent } from "@models/pwa";
 import { User } from "@models/user";
 import { AddDomainResponse, DomainData } from "@models/domain";
 
@@ -8,6 +8,7 @@ export const pwaSlice = createApi({
   reducerPath: "pwaApi",
   baseQuery: baseQuery,
   refetchOnFocus: true,
+  tagTypes: ["PwaContent", "User"],
   endpoints: (builder) => ({
     createPwaContent: builder.mutation<PwaContent, PwaContent>({
       query: (data) => ({
@@ -22,18 +23,21 @@ export const pwaSlice = createApi({
         method: "PATCH",
         body: { ...data, id: undefined },
       }),
+      invalidatesTags: ["PwaContent"],
     }),
     deletePwaContent: builder.mutation<void, string>({
       query: (id) => ({
         url: `/pwa-content/${id}`,
         method: "DELETE",
       }),
+      invalidatesTags: ["PwaContent"],
     }),
     deletePwaContentForced: builder.mutation<void, string>({
       query: (id) => ({
         url: `/pwa-content/${id}/force`,
         method: "DELETE",
       }),
+      invalidatesTags: ["PwaContent"],
     }),
     copyPwaContent: builder.mutation<void, string>({
       query: (id) => ({
@@ -43,6 +47,7 @@ export const pwaSlice = createApi({
     }),
     getAllPwaContent: builder.query<PwaContent[], void>({
       query: () => "/pwa-content",
+      providesTags: ["PwaContent"],
     }),
     getPwaContentById: builder.query<PwaContent, string>({
       query: (id) => `/pwa-content/${id}`,
@@ -81,6 +86,10 @@ export const pwaSlice = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["PwaContent"],
+    }),
+    checkDomainStatus: builder.query<DomainCheckStatus, string>({
+      query: (pwaContentId) => `/domains/${pwaContentId}/check-status`,
     }),
   }),
 });
@@ -98,4 +107,5 @@ export const {
   useGetPwaContentByIdQuery,
   useGetMyUserQuery,
   useAddDomainMutation,
+  useLazyCheckDomainStatusQuery,
 } = pwaSlice;

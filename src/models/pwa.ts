@@ -45,7 +45,7 @@ export interface PwaContent {
 }
 
 export interface PreparedPWADataItem {
-  name?: string;
+  pwaName?: string;
   appName?: string;
   domain?: string;
   geo: string;
@@ -59,4 +59,11 @@ export enum StatusData {
   Failed = "failed",
   Pending = "pending",
   Active = "active",
+}
+
+export enum DomainCheckStatus {
+  Active = "active",
+  Pending = "pending",
+  Moved = "moved",
+  Deactivated = "deactivated",
 }

@@ -1,10 +1,10 @@
+import { PwaStatus } from "@models/domain";
+
 export enum MyPWAsTabs {
   All = "all",
   Active = "active",
   Draft = "draft",
-  Stopped = "stopped",
   CreatedAt = "createdAt",
-  Status = "status",
 }
 
 export const getTabText = (tab: MyPWAsTabs) => {
@@ -15,12 +15,23 @@ export const getTabText = (tab: MyPWAsTabs) => {
       return "Активные";
     case MyPWAsTabs.Draft:
       return "Черновики";
-    case MyPWAsTabs.Stopped:
-      return "Остановленн";
     case MyPWAsTabs.CreatedAt:
       return "Дата создания";
-    case MyPWAsTabs.Status:
-      return "Статус";
+  }
+};
+
+export const getPwaStatus = (status: PwaStatus) => {
+  switch (status) {
+    case PwaStatus.BUILDED:
+      return "PWA собран";
+    case PwaStatus.BUILD_FAILED:
+      return "Ошибка сборки";
+    case PwaStatus.WAITING_NS:
+      return "Ожидание NS";
+    case PwaStatus.ACTIVE:
+      return "Активен";
+    default:
+      return "PWA собран";
   }
 };
 

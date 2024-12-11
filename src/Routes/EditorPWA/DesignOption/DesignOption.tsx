@@ -2,7 +2,7 @@ import { Form, Input, Spin, Upload, notification } from "antd";
 import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
 import DropdownIcon from "@shared/icons/DropdownIcon";
 import MonsterSelect from "@shared/elements/Select/MonsterSelect";
-import { categories, languages } from "./DesignOptionHelpers";
+import { categories, languages } from "./DesignOptionHelpers.ts";
 import UploadImageIcon from "@shared/icons/UploadImageIcon";
 import { IoAddOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
@@ -12,7 +12,7 @@ import GptIcon from "@shared/icons/GptIcon";
 import { Review } from "@models/review";
 import SimpleButton from "@shared/elements/SimpleButton/SimpleButton";
 import { Picture, PwaContent } from "@models/pwa";
-import ReviewItem from "./ReviewItem/ReviewItem";
+import ReviewItem from "./ReviewItem/ReviewItem.tsx";
 import { useWatch } from "antd/es/form/Form";
 import { v4 as uuidv4 } from "uuid";
 import { requiredValidator } from "@shared/form/validators/validators";
@@ -22,13 +22,14 @@ import {
   useCreatePwaContentMutation,
   useDeletePwaContentMutation,
   useGetPwaContentByIdQuery,
+  useGetMyUserQuery,
 } from "@store/slices/pwaApi";
-import { PreviewPwaContent } from "./Preview/models";
-import Preview from "./Preview/Preview";
+import { PreviewPwaContent } from "./Preview/models.ts";
+import Preview from "./Preview/Preview.tsx";
 import { Hourglass } from "react-loader-spinner";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
-import { EditorPWATabs, getTabIcon } from "../EditorPWAHelpers";
+import { EditorPWATabs, getTabIcon } from "../EditorPWAHelpers.tsx";
 import { Step } from "@shared/elements/Steps/Steps";
 import useGetPwaInfo from "@shared/hooks/useGetPwaInfo";
 import { useMount } from "react-use";
@@ -84,6 +85,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   const [buildPwaContent] = useLazyBuildPwaContentQuery();
   const [api, contextHolder] = notification.useNotification();
   const { id } = useParams();
+  const { refetch } = useGetMyUserQuery();
   const { data: fetchedPwaContent, isLoading: pwaContentIsLoading } =
     useGetPwaContentByIdQuery(id!, {
       skip: !id,
@@ -233,6 +235,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     if (e.key === "Enter") {
       e.preventDefault();
       const value = e.currentTarget.innerText.trim();
+      if (!value) return;
       setTags((prev) => [...prev, value]);
       form.setFieldsValue({ tags: [...tags, value] });
       e.currentTarget.innerText = "";
@@ -362,7 +365,9 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         tags,
         securityUI: form.getFieldValue("securityUI"),
         lastUpdate: new Date().toISOString(),
-        pwaLink: form.getFieldValue("pwaLink"),
+        pwaLink: form.getFieldValue("pwaLink").includes("https://")
+          ? form.getFieldValue("pwaLink")
+          : `https://${form.getFieldValue("pwaLink")}`,
         hasPaidContentTitle: form.getFieldValue("hasPaidContentTitle"),
         rating: "4.9",
         countOfReviewsFull: form.getFieldValue("countOfReviews"),
@@ -430,14 +435,15 @@ const DesignOption: React.FC<DesignOptionProps> = ({
           () =>
             startPolling({
               jobId,
-              completedStatusCallback: () => {
+              completedStatusCallback: async () => {
                 api.success({
                   message: "Успешно",
-                  description: "PWA успешно изменено, ожидайте обновления",
+                  description: "PWA успешно изменено",
                 });
-                setTimeout(() => {
+                await refetch();
+                setTimeout(async () => {
                   navigate(`/`);
-                }, 5000);
+                }, 1000);
               },
             }),
           10000
@@ -887,97 +893,101 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               </button>
             </div>
           </div>
-          <div className="flex gap-[30px] mb-[30px] relative ">
-            <div className="bg-cardColor rounded-lg h-fit px-[50px] pt-7 pb-[35px] flex-1 flex flex-col gap-5">
-              <div className="flex">
-                <div className="flex-1">
-                  <div className="Оценки и отзывы font-bold text-base leading-[18px] text-orangeSubtitle mb-[25px]">
-                    Оценки и отзывы
-                  </div>
-                  <div className="text-[#8F919D] text-sm leading-[14px] mb-[9px]">
-                    Количество отзывов
-                  </div>
-                  <Form.Item
-                    name="countOfReviews"
-                    className="mb-0"
-                    validateTrigger="onChange"
-                    rules={[requiredValidator("Укажите количество отзывов")]}
-                  >
-                    <MonsterInput className="!bg-[#161724] !h-[42px] mb-5 max-w-[130px]" />
-                  </Form.Item>
-
-                  <div>
-                    {sliders.map((_, index) => (
-                      <div className="flex gap-3 items-center" key={index}>
-                        <span className="text-white font-bold text-xs">
-                          {index + 1}
-                        </span>
-                        <MonsterSlider
-                          className="flex-1"
-                          value={sliders[index]}
-                          onChange={(newValue) =>
-                            handleSliderChange(index, newValue)
-                          }
-                          step={0.1}
-                          min={0}
-                          max={5}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="flex-1 flex-col flex gap-4">
-                  <div className="font-bold text-end text-white text-base leading-[18px]">
-                    Дополнительные блоки:
-                  </div>
-                  <div className="flex gap-4 justify-end items-center">
-                    <Form.Item name="securityUI" noStyle>
-                      <MonsterSwitch />
+          <div className="flex gap-[30px] mb-[30px] relative">
+            <div className="flex flex-col gap-[30px] flex-1">
+              <div className="bg-cardColor rounded-lg px-[50px] py-[30px]  flex flex-col gap-5">
+                <div className="flex">
+                  <div className="flex-1">
+                    <div className="Оценки и отзывы font-bold text-base leading-[18px] text-orangeSubtitle mb-[25px]">
+                      Оценки и отзывы
+                    </div>
+                    <div className="text-[#8F919D] text-sm leading-[14px] mb-[9px]">
+                      Количество отзывов
+                    </div>
+                    <Form.Item
+                      name="countOfReviews"
+                      className="mb-0"
+                      validateTrigger="onChange"
+                      rules={[requiredValidator("Укажите количество отзывов")]}
+                    >
+                      <MonsterInput className="!bg-[#161724] !h-[42px] mb-5 max-w-[130px]" />
                     </Form.Item>
-                    <div className="text-white text-base leading-5">
-                      Безопасность и <br /> передача данных
+
+                    <div>
+                      {sliders.map((_, index) => (
+                        <div className="flex gap-3 items-center" key={index}>
+                          <span className="text-white font-bold text-xs">
+                            {index + 1}
+                          </span>
+                          <MonsterSlider
+                            className="flex-1"
+                            value={sliders[index]}
+                            onChange={(newValue) =>
+                              handleSliderChange(index, newValue)
+                            }
+                            step={0.1}
+                            min={0}
+                            max={5}
+                          />
+                        </div>
+                      ))}
                     </div>
                   </div>
-                  <div className="flex gap-4 justify-end items-center">
-                    <Form.Item name="hasPaidContentTitle" noStyle>
-                      <MonsterSwitch />
-                    </Form.Item>
-                    <div className="text-white text-base leading-5">
-                      Реклама и <br /> платный контент
+                  <div className="flex-1 flex-col flex gap-4">
+                    <div className="font-bold text-end text-white text-base leading-[18px]">
+                      Дополнительные блоки:
+                    </div>
+                    <div className="flex gap-4 justify-end items-center">
+                      <Form.Item name="securityUI" noStyle>
+                        <MonsterSwitch />
+                      </Form.Item>
+                      <div className="text-white text-base leading-5">
+                        Безопасность и <br /> передача данных
+                      </div>
+                    </div>
+                    <div className="flex gap-4 justify-end items-center">
+                      <Form.Item name="hasPaidContentTitle" noStyle>
+                        <MonsterSwitch />
+                      </Form.Item>
+                      <div className="text-white text-base leading-5">
+                        Реклама и <br /> платный контент
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col gap-5">
-                <div className="flex justify-between items-center">
-                  <div className="text-white font-bold text-base leading-[18px] mb-5">
-                    Комментарии
+              <div className="bg-cardColor rounded-lg py-[30px] px-[50px]">
+                <div className="flex flex-col gap-5">
+                  <div className="flex justify-between items-center">
+                    <div className="text-[#E3CC02] font-bold text-base leading-[18px] ">
+                      Комментарии
+                    </div>
                   </div>
-                </div>
-                {reviews.map((review, index) => (
-                  <ReviewItem
-                    key={index}
-                    reviewContent={review}
-                    allReviews={reviews}
-                    setAllReviews={setReviews}
-                    form={form}
-                  />
-                ))}
-                <div className="flex justify-between gap-[52px]">
-                  <div className="flex gap-[30px]">
-                    {reviews.some((review) => review.isActive) ? null : (
-                      <button
-                        className="text-sm uppercase hover:underline text-[#02E314] flex gap-2 leading-4 items-center font-bold"
-                        onClick={addEmptyReview}
-                      >
-                        + добавить
-                      </button>
-                    )}
-                    <SimpleButton
-                      disabled
-                      icon={<GptIcon />}
-                      text="Сгенерить с ChatGPT"
+                  {reviews.map((review, index) => (
+                    <ReviewItem
+                      key={index}
+                      reviewContent={review}
+                      allReviews={reviews}
+                      setAllReviews={setReviews}
+                      form={form}
                     />
+                  ))}
+                  <div className="flex justify-between gap-[52px]">
+                    <div className="flex gap-[30px]">
+                      {reviews.some((review) => review.isActive) ? null : (
+                        <button
+                          className="text-sm uppercase hover:underline text-[#02E314] flex gap-2 leading-4 items-center font-bold"
+                          onClick={addEmptyReview}
+                        >
+                          + добавить
+                        </button>
+                      )}
+                      <SimpleButton
+                        disabled
+                        icon={<GptIcon />}
+                        text="Сгенерить с ChatGPT"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1012,7 +1022,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
             width="140"
             colors={["#515ACA", "#E3CC02"]}
           />
-          Ваше PWA-приложение создается. Пожалуйста, подождите.
+          Ваше PWA-приложение обновляется, это займет некоторое время
         </div>
       )}
     </>

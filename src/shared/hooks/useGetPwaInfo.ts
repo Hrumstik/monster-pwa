@@ -13,12 +13,18 @@ const useGetPwaInfo = () => {
     const domain = user?.pwas.find(
       (pwa) => pwa.pwaContentId === pwaId
     )?.domainName;
+    const nsRecords = user?.pwas.find(
+      (pwa) => pwa.pwaContentId === pwaId
+    )?.nsRecords;
+    const status = user?.pwas.find((pwa) => pwa.pwaContentId === pwaId)?.status;
 
     return {
       domain,
       appName: pwaContent?.appName,
       pwaName: pwaContent?.pwaName,
       createdAt: pwaContent?.createdAt,
+      nsRecords,
+      status: status,
     };
   };
 

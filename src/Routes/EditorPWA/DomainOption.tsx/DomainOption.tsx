@@ -8,6 +8,9 @@ import axios from "axios";
 import { EditorPWATabs, getTabIcon } from "../EditorPWAHelpers";
 import { DomainOptions } from "@models/domain";
 import { useMount } from "react-use";
+import { extractDomain } from "@shared/helpers/formate-data";
+import { useNavigate, useParams } from "react-router-dom";
+import useGetPwaInfo from "@shared/hooks/useGetPwaInfo";
 
 interface DomainOptionProps {
   setDomainsData: (domainData?: CloudflareData) => void;
@@ -29,6 +32,21 @@ const DomainOption: React.FC<DomainOptionProps> = ({
   );
   const [api, contextHolder] = notification.useNotification();
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { getPwaInfo } = useGetPwaInfo();
+  const { id } = useParams();
+  let savedNsRecords:
+    | {
+        name: string;
+        _id: string;
+      }[]
+    | undefined;
+
+  if (id) {
+    savedNsRecords = getPwaInfo(id).nsRecords;
+  }
+
+  const actualNsRecords = nsRecords ?? savedNsRecords;
 
   const domains = [
     { value: "plinkoxy.store", label: "plinkoxy.store" },
@@ -47,7 +65,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
       const domainValidation = await axios.post(
         "https://pwac.world/domains/check-addition",
         {
-          domain: form.getFieldValue("domain"),
+          domain: extractDomain(form.getFieldValue("domain")),
           email: form.getFieldValue("email"),
           gApiKey: form.getFieldValue("gApiKey"),
         }
@@ -76,7 +94,14 @@ const DomainOption: React.FC<DomainOptionProps> = ({
       const domainIsValid = await validateDomainData();
       if (domainIsValid) {
         const values = form.getFieldsValue();
-        setDomainsData(values);
+        const domain = extractDomain(values.domain);
+        if (!domain) {
+          throw new Error("Invalid domain");
+        }
+        setDomainsData({
+          ...values,
+          domain: extractDomain(values.domain)!,
+        });
         setSteps(
           steps.map((step) => {
             if (step.id === EditorPWATabs.Domain) {
@@ -91,6 +116,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
         );
         api.success({
           message: "Успешно",
+          description: "Приложение PWA можно сохранить",
         });
       }
     } catch (error) {
@@ -110,7 +136,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
     <>
       {contextHolder}
       <Spin spinning={isLoading} fullscreen />
-      {nsRecords ? (
+      {actualNsRecords ? (
         <Result
           status="success"
           title={
@@ -135,7 +161,10 @@ const DomainOption: React.FC<DomainOptionProps> = ({
           }
           extra={
             <div className="flex justify-center">
-              <button className="bg-white hover:bg-[#00FF11] text-[#121320] rounded-lg text-base py-3 px-[38px] whitespace-nowrap flex item">
+              <button
+                onClick={() => navigate("/")}
+                className="bg-white hover:bg-[#00FF11] text-[#121320] rounded-lg text-base py-3 px-[38px] whitespace-nowrap flex item"
+              >
                 Вернуться на страницу с моими PWA
               </button>
             </div>

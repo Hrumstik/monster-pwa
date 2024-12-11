@@ -15,3 +15,10 @@ export interface AddDomainResponse {
 export interface DomainData extends CloudflareData {
   pwaId: string;
 }
+
+export enum PwaStatus {
+  BUILDED = "BUILDED",
+  BUILD_FAILED = "BUILD_FAILED",
+  WAITING_NS = "WAITING_NS",
+  ACTIVE = "ACTIVE",
+}
