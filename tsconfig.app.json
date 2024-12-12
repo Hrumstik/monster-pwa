@@ -10,7 +10,8 @@
       "@icons/*": ["./shared/icons/*"],
       "@shared/*": ["./shared/*"],
       "@store/*": ["./store/*"],
-      "@models/*": ["./models/*"]
+      "@models/*": ["./models/*"],
+      "@routes/*": ["./routes/*"]
     },
 
     /* Bundler mode */

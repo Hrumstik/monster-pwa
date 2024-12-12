@@ -1,8 +1,8 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Layout from "./core/layout";
-import MyPWAs from "./routes/AccountPWA/MyPWAs";
-import LoginPage from "./routes/Login/Login";
-import EditorPWA from "./routes/EditorPWA/EditorPWA";
+import MyPWAs from "@routes/AccountPWA/MyPWAs";
+import LoginPage from "@routes/Login/Login";
+import EditorPWA from "@routes/EditorPWA/EditorPWA";
 import { Provider } from "react-redux";
 import store from "./store/store";
 import ProtectedRoutes from "./routes/protected-routes";
