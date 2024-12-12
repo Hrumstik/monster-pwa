@@ -5,12 +5,12 @@ import MonsterInput from "../../../shared/elements/MonsterInput/MonsterInput";
 import { Step } from "@shared/elements/Steps/Steps";
 import { CloudflareData } from "@models/user";
 import axios from "axios";
-import { EditorPWATabs, getTabIcon } from "../EditorPWAHelpers";
 import { DomainOptions } from "@models/domain";
 import { useMount } from "react-use";
 import { extractDomain } from "@shared/helpers/formate-data";
 import { useNavigate } from "react-router-dom";
 import useGetPwaInfo from "@shared/hooks/useGetPwaInfo";
+import { EditorPWATabs, getTabIcon } from "../EditorPWAHelpers";
 
 interface DomainOptionProps {
   setDomainsData: (domainData?: CloudflareData) => void;

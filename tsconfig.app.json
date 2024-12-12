@@ -11,7 +11,7 @@
       "@shared/*": ["./shared/*"],
       "@store/*": ["./store/*"],
       "@models/*": ["./models/*"],
-      "@routes/*": ["./routes/*"]
+      "@Routes/*": ["./Routes/*"]
     },
 
     /* Bundler mode */

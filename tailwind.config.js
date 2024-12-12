@@ -22,5 +22,17 @@ export default {
       },
     },
   },
+  safelist: [
+    "monster-input",
+    "ant-input",
+    "ant-input-affix-wrapper",
+    "ant-input-disabled",
+    "ant-input-textarea",
+    "ant-input-affix-wrapper-disabled",
+    "ant-input-focused",
+    "ant-modal",
+    "ant-modal-content",
+    "ant-modal-title",
+  ],
   plugins: [],
 };

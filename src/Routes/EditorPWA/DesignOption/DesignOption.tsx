@@ -12,7 +12,7 @@ import {
   generateRandomValue,
   languages,
   sizeValues,
-} from "./DesignOptionHelpers.ts";
+} from "./DesignOptionHelpers";
 import UploadImageIcon from "@shared/icons/UploadImageIcon";
 import { IoAddOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
@@ -22,7 +22,7 @@ import GptIcon from "@shared/icons/GptIcon";
 import { Review } from "@models/review";
 import SimpleButton from "@shared/elements/SimpleButton/SimpleButton";
 import { Picture, PwaContent } from "@models/pwa";
-import ReviewItem from "./ReviewItem/ReviewItem.tsx";
+import ReviewItem from "./ReviewItem/ReviewItem";
 import { useWatch } from "antd/es/form/Form";
 import { v4 as uuidv4 } from "uuid";
 import { requiredValidator } from "@shared/form/validators/validators";
@@ -32,7 +32,7 @@ import { PreviewPwaContent } from "./Preview/models.ts";
 import Preview from "./Preview/Preview.tsx";
 import { useParams } from "react-router-dom";
 import dayjs from "dayjs";
-import { EditorPWATabs, getTabIcon } from "../EditorPWAHelpers.tsx";
+import { EditorPWATabs, getTabIcon } from "../EditorPWAHelpers";
 import { Step } from "@shared/elements/Steps/Steps";
 import { useMount } from "react-use";
 import InfoIcon from "@icons/InfoIcon";

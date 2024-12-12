@@ -87,33 +87,32 @@
 }
 
 .ant-input-affix-wrapper {
-  background-color: #20223b;
-  border: 1px solid #161724;
+  background-color: #161724 !important;
+  border: 1px solid #161724 !important;
   box-sizing: border-box;
   border-radius: 8px;
   color: white;
 
   &:hover {
-    border-color: #36395a;
+    border-color: #36395a !important;
   }
 
   &:focus {
-    border-color: #36395a;
+    border-color: #36395a !important;
     outline: none;
   }
 
   &:focus-within {
-    border-color: #36395a;
+    border-color: #36395a !important;
   }
 
   &.ant-input-affix-wrapper-disabled {
-    background-color: #161724;
-    border-color: #383b66;
-    color: #5f6280;
+    background-color: #161724 !important;
+    border-color: #383b66 !important;
+    color: #5f6280 !important;
   }
 
   .ant-input {
-    background-color: #20223b !important;
     color: white;
   }
 
