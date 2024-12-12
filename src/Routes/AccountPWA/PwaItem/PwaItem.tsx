@@ -19,7 +19,7 @@ import { FiFileText } from "react-icons/fi";
 import { MdDelete, MdOutlineEdit } from "react-icons/md";
 import { VscPreview } from "react-icons/vsc";
 import { useNavigate } from "react-router-dom";
-import { PreviewPwaContent } from "../../EditorPWA/DesignOption/Preview/models.tsx";
+import { PreviewPwaContent } from "../../EditorPWA/DesignOption/Preview/models.ts";
 import Preview from "../../EditorPWA/DesignOption/Preview/Preview.tsx";
 import useGetPwaInfo from "@shared/hooks/useGetPwaInfo";
 import { PwaStatus } from "@models/domain";

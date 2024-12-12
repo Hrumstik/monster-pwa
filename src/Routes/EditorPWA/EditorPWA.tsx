@@ -1,5 +1,5 @@
 import IconButton from "@shared/elements/IconButton/IconButton";
-import DesignOption from "./DesignOption/DesignOption";
+import DesignOption from "./DesignOption/DesignOption.tsx";
 import { MdOutlineNotStarted } from "react-icons/md";
 import { VscPreview } from "react-icons/vsc";
 import { FaSave } from "react-icons/fa";
