@@ -12,7 +12,7 @@ import {
   useLazyCheckDomainStatusQuery,
   useUpdatePwaContentMutation,
 } from "@store/slices/pwaApi";
-import { Modal, Spin, Tooltip } from "antd";
+import { Modal, notification, Spin, Tooltip } from "antd";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { FiFileText } from "react-icons/fi";
@@ -47,6 +47,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         interval = setInterval(async () => {
           const status = await checkDomainStatus(pwaContentID).unwrap();
           if (status === DomainCheckStatus.Active) {
+            console.log("clear interval");
             clearInterval(interval);
           }
         }, 300000);
@@ -61,8 +62,11 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
   const handleDelete = async (id: string) => {
     try {
       await deletePwaContent(id);
-    } catch (error) {
-      console.error("Failed to delete PWA content:", error);
+    } catch {
+      notification.error({
+        message: "Ошибка",
+        description: "Не удалось удалить PWA",
+      });
     }
   };
 
@@ -93,7 +97,6 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         icon: <VscPreview style={{ color: "white" }} />,
         onClick: () => {
           const preview = (data || []).find(({ _id }) => _id === pwa.id);
-
           setPreviewPwa(preview);
         },
       },

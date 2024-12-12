@@ -9,7 +9,7 @@ import { EditorPWATabs, getTabIcon } from "../EditorPWAHelpers";
 import { DomainOptions } from "@models/domain";
 import { useMount } from "react-use";
 import { extractDomain } from "@shared/helpers/formate-data";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useGetPwaInfo from "@shared/hooks/useGetPwaInfo";
 
 interface DomainOptionProps {
@@ -17,7 +17,7 @@ interface DomainOptionProps {
   domainsData?: CloudflareData;
   steps: Step[];
   setSteps: (steps: Step[]) => void;
-  nsRecords?: { name: string }[];
+  pwaContentId: string | null;
 }
 
 const DomainOption: React.FC<DomainOptionProps> = ({
@@ -25,7 +25,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
   steps,
   setSteps,
   domainsData,
-  nsRecords,
+  pwaContentId,
 }) => {
   const [currentDomainTab, setCurrentDomainTab] = useState(
     DomainOptions.OwnDomain
@@ -34,7 +34,6 @@ const DomainOption: React.FC<DomainOptionProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { getPwaInfo } = useGetPwaInfo();
-  const { id } = useParams();
   let savedNsRecords:
     | {
         name: string;
@@ -42,11 +41,9 @@ const DomainOption: React.FC<DomainOptionProps> = ({
       }[]
     | undefined;
 
-  if (id) {
-    savedNsRecords = getPwaInfo(id).nsRecords;
+  if (pwaContentId) {
+    savedNsRecords = getPwaInfo(pwaContentId).nsRecords;
   }
-
-  const actualNsRecords = nsRecords ?? savedNsRecords;
 
   const domains = [
     { value: "plinkoxy.store", label: "plinkoxy.store" },
@@ -136,7 +133,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
     <>
       {contextHolder}
       <Spin spinning={isLoading} fullscreen />
-      {actualNsRecords ? (
+      {savedNsRecords ? (
         <Result
           status="success"
           title={
@@ -151,7 +148,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
                 указав следующие серверы:
               </p>
               <ul className="text-white text-xs">
-                {nsRecords?.map((record, i) => (
+                {savedNsRecords?.map((record, i) => (
                   <li key={record.name}>{`NS-сервер ${i + 1}: ${
                     record.name
                   }`}</li>
@@ -181,7 +178,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
           </div>
           <div className="flex gap-[30px] mb-[50px]">
             <div
-              className={`w-[460px] h-[178px] ${
+              className={`flex-1 h-[178px] ${
                 currentDomainTab === DomainOptions.BuyDomain
                   ? "bg-[#515ACA]"
                   : "bg-[#20223B]"
@@ -198,7 +195,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
             </div>
             <div
               onClick={() => setCurrentDomainTab(DomainOptions.OwnDomain)}
-              className={`w-[460px] h-[178px] ${
+              className={`flex-1 h-[178px] ${
                 currentDomainTab === DomainOptions.OwnDomain
                   ? "bg-[#515ACA]"
                   : "bg-[#20223B]"
@@ -227,7 +224,6 @@ const DomainOption: React.FC<DomainOptionProps> = ({
                 <MonsterSelect
                   options={domains}
                   defaultValue={domains[0]}
-                  className="w-[460px]"
                   placeholder="Домен"
                 />
                 <div className="flex gap-[30px]">
@@ -243,14 +239,25 @@ const DomainOption: React.FC<DomainOptionProps> = ({
           )}
           {currentDomainTab === DomainOptions.OwnDomain && (
             <div className="flex gap-[30px]">
-              <div className="w-[460px]">
+              <div className="flex-1">
                 <div className="font-bold text-white text-base mb-[15px]">
                   (1) Подключение своего домена
                 </div>
-                <div className="font-normal text-gray-400 w-[355px] mb-[30px]">
+                <div className="font-normal text-gray-400 mb-[30px]">
                   Для того, чтобы использовать собственный домен, нужно передать
-                  управление DNS записями в Cloudflare. Инструкция
-                  <span className="underline cursor-pointer">здесь</span>.
+                  управление DNS записями в Cloudflare. Инструкция{" "}
+                  <span
+                    onClick={() =>
+                      window.open(
+                        "https://vibegamesteam.notion.site/86ca016f4984469db74d7c2eca83c16f",
+                        "_blank"
+                      )
+                    }
+                    className="underline cursor-pointer"
+                  >
+                    здесь
+                  </span>
+                  .
                 </div>
                 <Form
                   form={form}
@@ -311,11 +318,11 @@ const DomainOption: React.FC<DomainOptionProps> = ({
                   </Form.Item>
                 </Form>
               </div>
-              <div className="w-[460px]">
+              <div className="flex-1">
                 <div className="font-bold text-white text-base mb-[15px]">
                   (2) Автонастрйока
                 </div>
-                <div className="font-normal text-gray-400 w-[355px] mb-[40px]">
+                <div className="font-normal text-gray-400  mb-[40px]">
                   Чтобы все заработало, в Cloudflare будет выполнен ряд
                   автоматических настроек для вашего домена. Для продолжения
                   нажмите кнопку ниже. Посмотреть API ключ можно{" "}
@@ -329,14 +336,13 @@ const DomainOption: React.FC<DomainOptionProps> = ({
                   </a>
                   . Вам будет нужен Global API key.
                 </div>
-                <div className="flex gap-[30px]">
-                  <button
-                    onClick={onFinish}
-                    className="bg-white hover:bg-[#00FF11] text-[#121320] rounded-lg text-base py-3 px-[38px] whitespace-nowrap flex item"
-                  >
-                    Сохранить и продолжить
-                  </button>
-                </div>
+
+                <button
+                  onClick={onFinish}
+                  className="bg-white hover:bg-[#00FF11] text-[#121320] rounded-lg text-base py-3 px-[38px]  flex item"
+                >
+                  Сохранить и продолжить
+                </button>
               </div>
             </div>
           )}

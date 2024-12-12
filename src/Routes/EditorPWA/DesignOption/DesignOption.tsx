@@ -1,8 +1,18 @@
-import { Form, Input, Spin, Upload, notification } from "antd";
+import { Form, Input, notification, Spin, Upload } from "antd";
 import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
 import DropdownIcon from "@shared/icons/DropdownIcon";
 import MonsterSelect from "@shared/elements/Select/MonsterSelect";
-import { categories, languages } from "./DesignOptionHelpers.ts";
+import {
+  casinoKeywords,
+  casinoMessages,
+  categories,
+  countOfDownloadsValues,
+  countOfReviews,
+  developerValue,
+  generateRandomValue,
+  languages,
+  sizeValues,
+} from "./DesignOptionHelpers.ts";
 import UploadImageIcon from "@shared/icons/UploadImageIcon";
 import { IoAddOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
@@ -17,29 +27,20 @@ import { useWatch } from "antd/es/form/Form";
 import { v4 as uuidv4 } from "uuid";
 import { requiredValidator } from "@shared/form/validators/validators";
 import { useUploadImagesMutation } from "@store/slices/filesApi";
-import {
-  useLazyBuildPwaContentQuery,
-  useCreatePwaContentMutation,
-  useDeletePwaContentMutation,
-  useGetPwaContentByIdQuery,
-  useGetMyUserQuery,
-} from "@store/slices/pwaApi";
+import { useGetPwaContentByIdQuery } from "@store/slices/pwaApi";
 import { PreviewPwaContent } from "./Preview/models.ts";
 import Preview from "./Preview/Preview.tsx";
-import { Hourglass } from "react-loader-spinner";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import { EditorPWATabs, getTabIcon } from "../EditorPWAHelpers.tsx";
 import { Step } from "@shared/elements/Steps/Steps";
-import useGetPwaInfo from "@shared/hooks/useGetPwaInfo";
 import { useMount } from "react-use";
-import useCheckBuildStatus from "@shared/hooks/useCheckBuildStatus";
 import InfoIcon from "@icons/InfoIcon";
 import VerifiedIcon from "@icons/VerifiedIcon";
 import GenerateIcon from "@icons/GenerateIcon";
 import MonsterRate from "@shared/elements/Rate/MonsterRate";
 
-interface DesignOptionFormValues {
+export interface DesignOptionFormValues {
   languages: string[];
   appName: string;
   developerName: string;
@@ -79,19 +80,11 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   steps,
   pwaContent,
 }) => {
-  const { getPwaInfo } = useGetPwaInfo();
-  const navigate = useNavigate();
-  const [createPwaContent] = useCreatePwaContentMutation();
-  const [buildPwaContent] = useLazyBuildPwaContentQuery();
-  const [api, contextHolder] = notification.useNotification();
   const { id } = useParams();
-  const { refetch } = useGetMyUserQuery();
   const { data: fetchedPwaContent, isLoading: pwaContentIsLoading } =
     useGetPwaContentByIdQuery(id!, {
       skip: !id,
     });
-  const [deletePwaContent] = useDeletePwaContentMutation();
-  const { startPolling } = useCheckBuildStatus();
 
   const setFormValues = (content: PwaContent) => {
     const updatedReviews = content.reviews.map((review) => ({
@@ -334,8 +327,6 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     );
   };
 
-  const [isLoading, setIsLoading] = useState(false);
-
   const addEmptyScreen = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
@@ -404,50 +395,27 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         languages: form.getFieldValue("languages"),
       };
       setPwaContent(payload);
+      await form.validateFields();
+
+      setSteps(
+        steps.map((step) => {
+          if (step.id === EditorPWATabs.Design) {
+            return {
+              ...step,
+              isPassed: true,
+              icon: getTabIcon(EditorPWATabs.Design, true, false),
+            };
+          }
+          return step;
+        })
+      );
       if (!id) {
-        await form.validateFields();
         setCurrentTab(EditorPWATabs.Domain);
-        setSteps(
-          steps.map((step) => {
-            if (step.id === EditorPWATabs.Design) {
-              return {
-                ...step,
-                isPassed: true,
-                icon: getTabIcon(EditorPWATabs.Design, true, false),
-              };
-            }
-            return step;
-          })
-        );
-      } else if (id && fetchedPwaContent) {
-        setIsLoading(true);
-        const domain = getPwaInfo(fetchedPwaContent._id!).domain;
-        const pwaContent = await createPwaContent(payload).unwrap();
-        if (id) deletePwaContent(id);
-        const buildResponse = await buildPwaContent({
-          id: pwaContent._id!,
-          body: {
-            domain,
-          },
-        }).unwrap();
-        const jobId = buildResponse.jobId;
-        setTimeout(
-          () =>
-            startPolling({
-              jobId,
-              completedStatusCallback: async () => {
-                api.success({
-                  message: "Успешно",
-                  description: "PWA успешно изменено",
-                });
-                await refetch();
-                setTimeout(async () => {
-                  navigate(`/`);
-                }, 1000);
-              },
-            }),
-          10000
-        );
+      } else {
+        notification.success({
+          message: "Успешно",
+          description: "Вы можете сохранить PWA",
+        });
       }
     } catch (error) {
       if (error && typeof error === "object" && "errorFields" in error) {
@@ -456,7 +424,6 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         );
       } else {
         console.error(error);
-        setIsLoading(false);
       }
     }
   };
@@ -472,9 +439,11 @@ const DesignOption: React.FC<DesignOptionProps> = ({
 
   const generateTags = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
-    setTags(["Casino", "Slots", "Online", "Offline"]);
-  };
 
+    const shuffled = [...casinoKeywords].sort(() => Math.random() - 0.5);
+    const randomTags = shuffled.slice(0, 5);
+    setTags(randomTags);
+  };
   const handleSliderChange = (index: number, value: number) => {
     const maxTotal = 5;
     const updatedSliders = [...sliders];
@@ -506,7 +475,6 @@ const DesignOption: React.FC<DesignOptionProps> = ({
 
   return (
     <>
-      {contextHolder}
       <Form
         form={form}
         onFinish={onFinish}
@@ -525,15 +493,15 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       >
         <div className="flex flex-col gap-[30px] mb-[134px]">
           <div className="bg-cardColor rounded-lg p-[50px] pb-[30px]">
-            <div className="flex gap-[30px]">
+            <div className="flex gap-[30px] sm:flex-col lg:flex-row">
               <div className="flex-1 flex flex-col gap-[30px]">
                 <div className="text-base-lg leading-[25px] text-white">
                   Настройки оформления
                 </div>
-                <div className="text-white text-sm leading-4  ">
+                <p className="text-white text-sm leading-4 truncate ...">
                   Вы можете сделать все самостоятельно или же <br /> скопировать
                   дизайн существующего приложения.
-                </div>
+                </p>
                 <button
                   className="rounded-lg border border-solid border-cardBorder text-white text-base p-5 flex items-center h-15  leading-5 cursor-not-allowed"
                   onClick={(e) => e.preventDefault()}
@@ -567,7 +535,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               </div>
             </div>
           </div>
-          <div className="flex gap-7">
+          <div className="flex lg:flex-row sm:flex-col gap-7">
             <div className="flex-1 bg-cardColor rounded-lg p-[50px] min-h-[203px]">
               <div className="text-base text-white font-bold leading-5 mb-5 ">
                 Шаблон PWA
@@ -578,7 +546,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               </div>
             </div>
             <div className="flex-1 bg-cardColor rounded-lg px-[50px] py-[30px] min-h-[203px] flex flex-col">
-              <div className="flex gap-2 mb-5">
+              <div className="flex  gap-2 mb-5">
                 <div className="text-[#E3CC02] text-base font-bold leading-[19px]">
                   Язык и категория PWA
                 </div>
@@ -625,7 +593,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               />
             </div>
           </div>
-          <div className="flex gap-[30px]">
+          <div className="flex lg:flex-row sm:flex-col gap-[30px]">
             <div className="bg-cardColor rounded-lg px-[50px] py-[30px] flex-1">
               <div className="font-bold text-base leading-[18px] text-orangeSubtitle mb-4">
                 Оформление
@@ -633,7 +601,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               <div className="text-white text-xs leading-4 mb-6">
                 Шапка приложения
               </div>
-              <div className="flex">
+              <div className="flex xl:flex-row sm:flex-col gap-[30px]">
                 <Form.Item
                   name="appIcon"
                   className="mb-0 max-w-[100px]"
@@ -671,7 +639,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                     )}
                   </Upload>
                 </Form.Item>
-                <div className="ml-[19px] w-full flex flex-col gap-[19px] mr-[30px]">
+                <div className="w-full flex flex-col gap-[19px]">
                   <Form.Item
                     name="appName"
                     className="mb-0"
@@ -693,14 +661,27 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                     <MonsterInput
                       placeholder="Разработчик"
                       className="!bg-[#161724] !h-[42px]"
-                      suffix={<GenerateIcon />}
+                      suffix={
+                        <div
+                          className="cursor-pointer"
+                          onClick={() =>
+                            generateRandomValue(
+                              form,
+                              "developerName",
+                              developerValue
+                            )
+                          }
+                        >
+                          <GenerateIcon />
+                        </div>
+                      }
                     />
                   </Form.Item>
                 </div>
               </div>
             </div>
             <div className="bg-cardColor rounded-lg px-[50px] pt-[54px] pb-[30px] flex-1">
-              <div className="flex gap-[50px]">
+              <div className="flex xl:flex-row sm:flex-col xl:gap-[50px] sm:gap-9">
                 <div className="flex flex-1 flex-col gap-9">
                   <div className="relative">
                     <div className="text-[#8F919D] text-xs absolute top-[-24px]">
@@ -711,7 +692,16 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                         className="!bg-[#161724] !h-[42px]"
                         defaultValue={"4 mb"}
                         placeholder="Размер"
-                        suffix={<GenerateIcon />}
+                        suffix={
+                          <div
+                            className="cursor-pointer"
+                            onClick={() =>
+                              generateRandomValue(form, "size", sizeValues)
+                            }
+                          >
+                            <GenerateIcon />
+                          </div>
+                        }
                       />
                     </Form.Item>
                   </div>
@@ -729,7 +719,20 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                       <MonsterInput
                         className="!bg-[#161724] !h-[42px]"
                         placeholder="Количество скачиваний"
-                        suffix={<GenerateIcon />}
+                        suffix={
+                          <div
+                            className="cursor-pointer"
+                            onClick={() =>
+                              generateRandomValue(
+                                form,
+                                "countOfDownloads",
+                                countOfDownloadsValues
+                              )
+                            }
+                          >
+                            <GenerateIcon />
+                          </div>
+                        }
                       />
                     </Form.Item>
                   </div>
@@ -741,6 +744,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                     <MonsterInput
                       className="!bg-[#161724] !h-[42px]"
                       defaultValue={"18+"}
+                      disabled
                       placeholder="Возраст"
                       suffix={<GenerateIcon />}
                     />
@@ -808,7 +812,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               </div>
             }
           </div>
-          <div className="flex gap-[30px]">
+          <div className="flex lg:flex-row sm:flex-col gap-[30px]">
             <div className="bg-cardColor rounded-lg px-[50px] py-[30px] flex-1">
               <div className="font-bold text-orangeSubtitle text-base leading-[18px] mb-5">
                 Описание
@@ -829,7 +833,20 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                   <MonsterInput
                     placeholder="Введите заголовок"
                     className="h-10"
-                    suffix={<GenerateIcon />}
+                    suffix={
+                      <div
+                        className="cursor-pointer"
+                        onClick={() =>
+                          generateRandomValue(
+                            form,
+                            "shortDescription",
+                            casinoMessages
+                          )
+                        }
+                      >
+                        <GenerateIcon />
+                      </div>
+                    }
                   />
                 </Form.Item>
                 <Form.Item
@@ -893,7 +910,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               </button>
             </div>
           </div>
-          <div className="flex gap-[30px] mb-[30px] relative">
+          <div className="flex xl:flex-row sm:flex-col gap-[30px] mb-[30px] relative">
             <div className="flex flex-col gap-[30px] flex-1">
               <div className="bg-cardColor rounded-lg px-[50px] py-[30px]  flex flex-col gap-5">
                 <div className="flex">
@@ -910,7 +927,23 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                       validateTrigger="onChange"
                       rules={[requiredValidator("Укажите количество отзывов")]}
                     >
-                      <MonsterInput className="!bg-[#161724] !h-[42px] mb-5 max-w-[130px]" />
+                      <MonsterInput
+                        className="!bg-[#161724] !h-[42px] mb-5 max-w-[130px]"
+                        suffix={
+                          <div
+                            className="cursor-pointer"
+                            onClick={() =>
+                              generateRandomValue(
+                                form,
+                                "countOfReviews",
+                                countOfReviews
+                              )
+                            }
+                          >
+                            <GenerateIcon />
+                          </div>
+                        }
+                      />
                     </Form.Item>
 
                     <div>
@@ -992,7 +1025,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                 </div>
               </div>
             </div>
-            <div className="w-[360px] sticky top-4 right-0 h-[671px] rounded-[32px] box-border border-[9px] border-solid border-[#515ACA] bg-white overflow-auto scrollbar-hidden">
+            <div className="w-[360px] flex  sticky top-4 right-0 h-[671px] rounded-[32px] box-border border-[9px] border-solid border-[#515ACA] bg-white overflow-auto scrollbar-hidden">
               <Preview
                 sliders={sliders}
                 previewPwaContent={previewContent}
@@ -1014,17 +1047,6 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         </div>
       </Form>
       <Spin spinning={pwaContentIsLoading || areImagesLoading} fullscreen />
-      {isLoading && (
-        <div className="absolute top-1/2 left-1/2 w-full h-full z-[100] flex flex-col items-center justify-center gap-10 text-[#00FF11] font-bold text-[28px] text-center tracking-[1.1px] transform -translate-x-1/2 -translate-y-1/2 p-5 backdrop-blur-[40px]">
-          <Hourglass
-            visible
-            height="140"
-            width="140"
-            colors={["#515ACA", "#E3CC02"]}
-          />
-          Ваше PWA-приложение обновляется, это займет некоторое время
-        </div>
-      )}
     </>
   );
 };

@@ -3,7 +3,7 @@ import DesignOption from "./DesignOption/DesignOption";
 import { MdOutlineNotStarted } from "react-icons/md";
 import { VscPreview } from "react-icons/vsc";
 import { FaSave } from "react-icons/fa";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   EditorPWATabs,
   getTabIcon,
@@ -18,11 +18,13 @@ import {
   useAddDomainMutation,
   useCreatePwaContentMutation,
   useDeletePwaContentMutation,
+  useGetMyUserQuery,
   useLazyBuildPwaContentQuery,
 } from "@store/slices/pwaApi";
 import useCheckBuildStatus from "@shared/hooks/useCheckBuildStatus";
 import { notification } from "antd";
 import { Hourglass } from "react-loader-spinner";
+import useGetPwaInfo from "@shared/hooks/useGetPwaInfo.ts";
 
 const EditorPWA = () => {
   const { pwaId } = useParams();
@@ -31,7 +33,7 @@ const EditorPWA = () => {
   );
 
   const { id } = useParams();
-
+  const { refetch } = useGetMyUserQuery();
   const [steps, setSteps] = useState<Step[]>(stepsInitialState);
   const [pwaContent, setPwaContent] = useState<PwaContent>();
   const [domainsData, setDomainsData] = useState<CloudflareData>();
@@ -41,81 +43,104 @@ const EditorPWA = () => {
   const [addDomain] = useAddDomainMutation();
   const { startPolling } = useCheckBuildStatus();
   const [isLoading, setIsLoading] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
-  const [nsRecords, setNsRecords] = useState<
-    {
-      name: string;
-    }[]
-  >();
+  const { getPwaInfo } = useGetPwaInfo();
+  const navigate = useNavigate();
+  const [pwaContentId, setPwaContentId] = useState<string | null>(null);
+
   const [deletePwaContent] = useDeletePwaContentMutation();
 
   useEffect(() => {
     if (id) {
-      setAvailableToSave(true);
-      return;
+      setPwaContentId(id);
+      setSteps(
+        steps.map((step) => {
+          if (step.id === EditorPWATabs.Domain) {
+            return {
+              ...step,
+              isPassed: true,
+              icon: getTabIcon(EditorPWATabs.Domain, true, false),
+            };
+          }
+          return step;
+        })
+      );
     }
-    setAvailableToSave(!!pwaContent && !!domainsData);
-  }, [domainsData, pwaContent]);
+  }, [id]);
 
-  const createNewPwa = async () => {
-    if (!domainsData || !pwaContent) return;
-    try {
-      const response = await addDomain({
-        ...domainsData,
-        pwaId: pwaContent._id!,
-      }).unwrap();
-      setNsRecords(response.nsRecords);
-    } catch (error) {
-      notification.error({
-        message: "Ошибка",
-        description:
-          "Ошибка добавления домена, обратитесь в техническую поддержку",
-      });
-      deletePwaContent(pwaContent._id!);
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-      setIsFinished(true);
+  useEffect(() => {
+    if (pwaContent && (id || domainsData)) {
+      setAvailableToSave(true);
     }
+  }, [domainsData, id, pwaContent]);
+
+  const finishEditingPwa = () => {
+    notification.success({
+      message: "Успешно",
+      description: "PWA успешно изменено",
+    });
+    setTimeout(async () => {
+      navigate(`/`);
+      await refetch();
+      setIsLoading(false);
+    }, 1000);
   };
 
   const addDomainData = async (pwaContent: PwaContent) => {
     if (!domainsData || !pwaContent) return;
     try {
-      const response = await addDomain({
+      await addDomain({
         ...domainsData,
         pwaId: pwaContent._id!,
       }).unwrap();
-      setNsRecords(response.nsRecords);
     } catch (error) {
       notification.error({
         message: "Ошибка",
         description:
           "Ошибка добавления домена, обратитесь в техническую поддержку",
       });
-      deletePwaContent(pwaContent._id!);
+      setTimeout(() => {
+        navigate(`/edit-PWA/${pwaContent._id}`);
+      }, 1000);
       console.log(error);
     } finally {
       setIsLoading(false);
-      setIsFinished(true);
     }
   };
 
   const savePwa = async () => {
-    if (!pwaContent || !domainsData) return;
+    if (!pwaContent) return;
     try {
       setIsLoading(true);
+      let domain;
+      if (id) {
+        domain = getPwaInfo(id).domain;
+      }
+      if (id) deletePwaContent(id);
       const pwaContentResponse = await createPwaContent(pwaContent).unwrap();
-      const buildResponse = await buildPwaContent({
-        id: pwaContentResponse._id!,
-      }).unwrap();
+
+      setPwaContentId(pwaContentResponse._id!);
+      console.log(id, "id");
+      console.log(getPwaInfo(pwaContentResponse._id!).domain, "domain");
+      const buildPayload = !id
+        ? { id: pwaContentResponse._id! }
+        : {
+            id: pwaContentResponse._id!,
+            body: {
+              domain,
+            },
+          };
+      console.log(buildPayload, "buildPayload");
+      const buildResponse = await buildPwaContent(buildPayload).unwrap();
       setTimeout(
         () =>
           startPolling({
             jobId: buildResponse.jobId,
-            completedStatusCallback: () => {
-              addDomainData(pwaContentResponse);
-            },
+            completedStatusCallback: id
+              ? () => finishEditingPwa()
+              : () => addDomainData(pwaContentResponse),
+            catchCallback: id
+              ? () => setIsLoading(false)
+              : () => addDomainData(pwaContentResponse),
           }),
         10000
       );
@@ -150,7 +175,7 @@ const EditorPWA = () => {
             setDomainsData={setDomainsData}
             steps={steps}
             setSteps={setSteps}
-            nsRecords={nsRecords}
+            pwaContentId={pwaContentId}
           />
         );
       case EditorPWATabs.Design:
@@ -190,7 +215,7 @@ const EditorPWA = () => {
               icon={<VscPreview color="white" />}
               text="Предпросмотр"
             />
-            {!isFinished && (
+            {
               <IconButton
                 icon={<FaSave color="white" />}
                 disabled={!availableToSave}
@@ -202,7 +227,7 @@ const EditorPWA = () => {
                     : "animate-none"
                 }
               />
-            )}
+            }
           </div>
         </div>
         <div className="mb-10">
@@ -223,7 +248,9 @@ const EditorPWA = () => {
             width="140"
             colors={["#515ACA", "#E3CC02"]}
           />
-          Ваше PWA-приложение создается. Пожалуйста, подождите.
+          {id
+            ? "  Ваше PWA-приложение обновляется, это займет некоторое время"
+            : " Ваше PWA-приложение создается. Пожалуйста, подождите."}
         </div>
       )}
     </>

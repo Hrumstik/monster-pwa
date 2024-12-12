@@ -30,14 +30,14 @@ export const pwaSlice = createApi({
         url: `/pwa-content/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["PwaContent"],
+      invalidatesTags: ["PwaContent", "User"],
     }),
     deletePwaContentForced: builder.mutation<void, string>({
       query: (id) => ({
         url: `/pwa-content/${id}/force`,
         method: "DELETE",
       }),
-      invalidatesTags: ["PwaContent"],
+      invalidatesTags: ["PwaContent", "User"],
     }),
     copyPwaContent: builder.mutation<void, string>({
       query: (id) => ({
@@ -65,7 +65,7 @@ export const pwaSlice = createApi({
       query: ({ id, body }) => ({
         url: `/pwa-content/${id}/build`,
         method: "POST",
-        body: body,
+        body,
       }),
     }),
     getPwaContentStatus: builder.query<
@@ -79,6 +79,7 @@ export const pwaSlice = createApi({
     }),
     getMyUser: builder.query<User, void>({
       query: () => "/user/me",
+      providesTags: ["User"],
     }),
     addDomain: builder.mutation<AddDomainResponse, DomainData>({
       query: (data) => ({
@@ -86,10 +87,15 @@ export const pwaSlice = createApi({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["PwaContent"],
+      invalidatesTags: ["User", "PwaContent"],
     }),
     checkDomainStatus: builder.query<DomainCheckStatus, string>({
-      query: (pwaContentId) => `/domains/${pwaContentId}/check-status`,
+      query: (pwaContentId) => ({
+        url: `/domains/${pwaContentId}/check-status`,
+        responseHandler: "text",
+      }),
+      transformResponse: (response: string) =>
+        response.trim() as DomainCheckStatus,
     }),
   }),
 });

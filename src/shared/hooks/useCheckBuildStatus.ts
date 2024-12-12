@@ -8,18 +8,18 @@ const useCheckBuildStatus = () => {
   const startPolling = ({
     jobId,
     completedStatusCallback,
-    finallyCallback,
+    catchCallback,
   }: {
     jobId: string;
-    completedStatusCallback: () => void;
-    finallyCallback?: () => void;
+    completedStatusCallback?: () => void;
+    catchCallback?: () => void;
   }) => {
     const interval = setInterval(async () => {
       try {
         const statusData = await checkStatus(jobId).unwrap();
         if (statusData?.status === StatusData.Completed) {
           clearInterval(interval);
-          completedStatusCallback();
+          if (completedStatusCallback) completedStatusCallback();
         } else if (statusData?.status === StatusData.Failed) {
           notification.error({
             message: "Error",
@@ -31,12 +31,11 @@ const useCheckBuildStatus = () => {
       } catch (e) {
         console.log(e);
         clearInterval(interval);
+        if (catchCallback) catchCallback();
         notification.error({
           message: "Ошибка",
           description: "Ошибка проверки статуса сборки",
         });
-      } finally {
-        if (finallyCallback) finallyCallback();
       }
     }, 15000);
   };
