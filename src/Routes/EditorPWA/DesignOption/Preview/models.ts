@@ -27,4 +27,5 @@ export interface PreviewPwaContent {
   shortDescription: string;
   fullDescription: string;
   version: string;
+  wideScreens: boolean;
 }

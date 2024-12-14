@@ -27,7 +27,8 @@ export interface User {
 }
 
 export interface CloudflareData {
+  _id?: string;
   domain: string;
-  email: string;
-  gApiKey: string;
+  email?: string;
+  gApiKey?: string;
 }

@@ -127,7 +127,10 @@ const MainView = ({
       <button className="bg-[#1357CD] rounded-[60px] h-9 w-full text-white mb-5">
         Установить
       </button>
-      <ScreensSlider screens={screens} />
+      <ScreensSlider
+        screens={screens}
+        wideScreens={previewPwaContent.wideScreens}
+      />
       <div className="flex flex-col gap-3 mb-4">
         <div
           className="flex justify-between items-center cursor-pointer"

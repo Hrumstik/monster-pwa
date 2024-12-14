@@ -1,9 +1,13 @@
 import { StatusData } from "@models/pwa";
-import { useLazyGetPwaContentStatusQuery } from "@store/slices/pwaApi";
+import {
+  useGetMyUserQuery,
+  useLazyGetPwaContentStatusQuery,
+} from "@store/slices/pwaApi";
 import { notification } from "antd";
 
 const useCheckBuildStatus = () => {
   const [checkStatus] = useLazyGetPwaContentStatusQuery();
+  const { refetch: refetchStatus } = useGetMyUserQuery();
 
   const startPolling = ({
     jobId,
@@ -19,7 +23,8 @@ const useCheckBuildStatus = () => {
         const statusData = await checkStatus(jobId).unwrap();
         if (statusData?.status === StatusData.Completed) {
           clearInterval(interval);
-          if (completedStatusCallback) completedStatusCallback();
+          refetchStatus();
+          completedStatusCallback?.();
         } else if (statusData?.status === StatusData.Failed) {
           notification.error({
             message: "Error",

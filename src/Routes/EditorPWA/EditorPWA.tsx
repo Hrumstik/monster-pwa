@@ -16,9 +16,11 @@ import { PwaContent } from "@models/pwa";
 import { CloudflareData } from "@models/user";
 import {
   useAddDomainMutation,
+  useAttachReadyDomainMutation,
   useCreatePwaContentMutation,
   useDeletePwaContentMutation,
   useGetMyUserQuery,
+  useGetReadyDomainsQuery,
   useLazyBuildPwaContentQuery,
 } from "@store/slices/pwaApi";
 import useCheckBuildStatus from "@shared/hooks/useCheckBuildStatus";
@@ -33,19 +35,22 @@ const EditorPWA = () => {
   );
 
   const { id } = useParams();
-  const { refetch } = useGetMyUserQuery();
+  const { data: userData, refetch } = useGetMyUserQuery();
   const [steps, setSteps] = useState<Step[]>(stepsInitialState);
   const [pwaContent, setPwaContent] = useState<PwaContent>();
   const [domainsData, setDomainsData] = useState<CloudflareData>();
   const [availableToSave, setAvailableToSave] = useState(false);
   const [createPwaContent] = useCreatePwaContentMutation();
   const [buildPwaContent] = useLazyBuildPwaContentQuery();
+  const { data: readyDomainsData } = useGetReadyDomainsQuery();
   const [addDomain] = useAddDomainMutation();
+  const [addReadyDomain] = useAttachReadyDomainMutation();
   const { startPolling } = useCheckBuildStatus();
   const [isLoading, setIsLoading] = useState(false);
   const { getPwaInfo } = useGetPwaInfo();
   const navigate = useNavigate();
   const [pwaContentId, setPwaContentId] = useState<string | null>(null);
+  const [isFinished, setIsFinished] = useState(false);
 
   const [deletePwaContent] = useDeletePwaContentMutation();
 
@@ -78,6 +83,7 @@ const EditorPWA = () => {
       message: "Успешно",
       description: "PWA успешно изменено",
     });
+    setIsFinished(true);
     setTimeout(async () => {
       navigate(`/`);
       await refetch();
@@ -88,10 +94,32 @@ const EditorPWA = () => {
   const addDomainData = async (pwaContent: PwaContent) => {
     if (!domainsData || !pwaContent) return;
     try {
-      await addDomain({
-        ...domainsData,
-        pwaId: pwaContent._id!,
-      }).unwrap();
+      if (domainsData.gApiKey) {
+        await addDomain({
+          ...domainsData,
+          pwaId: pwaContent._id!,
+        }).unwrap();
+      } else {
+        const domainId = readyDomainsData?.find(
+          (domain) => domain.domain === domainsData.domain
+        )?._id;
+
+        await addReadyDomain({
+          id: domainId!,
+          pwaId: pwaContent._id!,
+          userId: userData!._id,
+        }).unwrap();
+        notification.success({
+          message: "Успешно",
+          description: "Ваше PWA успешно создано",
+        });
+        setIsFinished(true);
+        setTimeout(async () => {
+          navigate(`/`);
+          await refetch();
+          setIsLoading(false);
+        }, 1000);
+      }
     } catch (error) {
       notification.error({
         message: "Ошибка",
@@ -119,8 +147,6 @@ const EditorPWA = () => {
       const pwaContentResponse = await createPwaContent(pwaContent).unwrap();
 
       setPwaContentId(pwaContentResponse._id!);
-      console.log(id, "id");
-      console.log(getPwaInfo(pwaContentResponse._id!).domain, "domain");
       const buildPayload = !id
         ? { id: pwaContentResponse._id! }
         : {
@@ -129,7 +155,6 @@ const EditorPWA = () => {
               domain,
             },
           };
-      console.log(buildPayload, "buildPayload");
       const buildResponse = await buildPwaContent(buildPayload).unwrap();
       setTimeout(
         () =>
@@ -173,6 +198,7 @@ const EditorPWA = () => {
         return (
           <DomainOption
             setDomainsData={setDomainsData}
+            domainsData={domainsData}
             steps={steps}
             setSteps={setSteps}
             pwaContentId={pwaContentId}
@@ -215,7 +241,7 @@ const EditorPWA = () => {
               icon={<VscPreview color="white" />}
               text="Предпросмотр"
             />
-            {
+            {!isFinished && (
               <IconButton
                 icon={<FaSave color="white" />}
                 disabled={!availableToSave}
@@ -227,7 +253,7 @@ const EditorPWA = () => {
                     : "animate-none"
                 }
               />
-            }
+            )}
           </div>
         </div>
         <div className="mb-10">

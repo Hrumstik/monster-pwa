@@ -5,9 +5,13 @@ import { Picture } from "@models/pwa";
 
 interface ScreensSliderProps {
   screens: Picture[];
+  wideScreens: boolean;
 }
 
-const ScreensSlider: React.FC<ScreensSliderProps> = ({ screens }) => {
+const ScreensSlider: React.FC<ScreensSliderProps> = ({
+  screens,
+  wideScreens,
+}) => {
   const hasScreens = screens.some((screen) => screen.url);
 
   const actualScreens = hasScreens
@@ -19,11 +23,15 @@ const ScreensSlider: React.FC<ScreensSliderProps> = ({ screens }) => {
       spaceBetween={16}
       slidesPerView={"auto"}
       freeMode={true}
+      centerInsufficientSlides={true}
       className="mb-6"
       grabCursor={true}
     >
       {actualScreens.map((screen, index) => (
-        <SwiperSlide key={index} style={{ width: "94px", height: "167px" }}>
+        <SwiperSlide
+          key={index}
+          style={{ width: wideScreens ? "250px" : "94px", height: "167px" }}
+        >
           <div className="bg-gray-300 rounded-lg flex-shrink-0 w-full h-full">
             {screen.url && (
               <img

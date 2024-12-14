@@ -2,7 +2,12 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import baseQuery from "../../middlewares/authBaseQuery";
 import { DomainCheckStatus, PwaContent } from "@models/pwa";
 import { User } from "@models/user";
-import { AddDomainResponse, DomainData } from "@models/domain";
+import {
+  AddDomainResponse,
+  AttachReadyDomainResponse,
+  DomainData,
+  ReadyDomains,
+} from "@models/domain";
 
 export const pwaSlice = createApi({
   reducerPath: "pwaApi",
@@ -97,6 +102,20 @@ export const pwaSlice = createApi({
       transformResponse: (response: string) =>
         response.trim() as DomainCheckStatus,
     }),
+    getReadyDomains: builder.query<ReadyDomains[], void>({
+      query: () => "/ready-domain",
+    }),
+    attachReadyDomain: builder.mutation<
+      AttachReadyDomainResponse,
+      { id: string; pwaId: string; userId: string }
+    >({
+      query: ({ id, pwaId, userId }) => ({
+        url: `/ready-domain/${id}/attach`,
+        method: "PATCH",
+        body: { pwaId, userId },
+      }),
+      invalidatesTags: ["User", "PwaContent"],
+    }),
   }),
 });
 
@@ -114,4 +133,6 @@ export const {
   useGetMyUserQuery,
   useAddDomainMutation,
   useLazyCheckDomainStatusQuery,
+  useGetReadyDomainsQuery,
+  useAttachReadyDomainMutation,
 } = pwaSlice;

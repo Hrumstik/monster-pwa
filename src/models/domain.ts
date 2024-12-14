@@ -16,6 +16,22 @@ export interface DomainData extends CloudflareData {
   pwaId: string;
 }
 
+export interface ReadyDomains {
+  _id: string;
+  domain: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AttachReadyDomainResponse {
+  _id: string;
+  domain: string;
+  pwaId: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export enum PwaStatus {
   BUILDED = "BUILDED",
   BUILD_FAILED = "BUILD_FAILED",

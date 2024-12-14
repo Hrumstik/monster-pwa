@@ -9,6 +9,7 @@ import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
 import {
   useDeletePwaContentForcedMutation,
   useGetAllPwaContentQuery,
+  useGetMyUserQuery,
   useLazyCheckDomainStatusQuery,
   useUpdatePwaContentMutation,
 } from "@store/slices/pwaApi";
@@ -23,23 +24,29 @@ import { PreviewPwaContent } from "../../EditorPWA/DesignOption/Preview/models.t
 import Preview from "../../EditorPWA/DesignOption/Preview/Preview.tsx";
 import useGetPwaInfo from "@shared/hooks/useGetPwaInfo";
 import { PwaStatus } from "@models/domain";
+import { getPwaStatus } from "../MyPWAsHelpers.tsx";
 
 const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
   const { data } = useGetAllPwaContentQuery();
   const navigate = useNavigate();
   const [renamePwa, setRenamePwa] = useState<PwaContent | null>();
   const [previewPwa, setPreviewPwa] = useState<PwaContent | null>();
+  const { data: userData } = useGetMyUserQuery();
   const [deletePwaContent, { isLoading: deletePwaLoading }] =
     useDeletePwaContentForcedMutation();
   const [updatePwaContent, { isLoading: updatePwaLoading }] =
     useUpdatePwaContentMutation();
   const [checkDomainStatus] = useLazyCheckDomainStatusQuery();
-
-  const { getPwaInfo } = useGetPwaInfo();
+  const [pwaStatus, setPwaStatus] = useState<PwaStatus>();
 
   useEffect(() => {
-    const actualStaus = getPwaInfo(pwa.id!).status!;
-    if (actualStaus === PwaStatus.ACTIVE) return;
+    const actualStatus = getPwaInfo(pwa.id!).status!;
+    setPwaStatus(actualStatus);
+  }, [userData]);
+
+  const { getPwaInfo } = useGetPwaInfo();
+  useEffect(() => {
+    if (pwaStatus === PwaStatus.ACTIVE) return;
     let interval: NodeJS.Timeout;
     const getDomainStatus = async (pwaContentID: string) => {
       const status = await checkDomainStatus(pwaContentID).unwrap();
@@ -47,8 +54,8 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         interval = setInterval(async () => {
           const status = await checkDomainStatus(pwaContentID).unwrap();
           if (status === DomainCheckStatus.Active) {
-            console.log("clear interval");
             clearInterval(interval);
+            setPwaStatus(PwaStatus.ACTIVE);
           }
         }, 300000);
       }
@@ -57,7 +64,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
     getDomainStatus(pwa.id!);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [pwaStatus]);
 
   const handleDelete = async (id: string) => {
     try {
@@ -148,7 +155,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         <td className="px-8 py-3 truncate ...">
           {moment(pwa.createdAt).format("DD.MM.YYYY")}
         </td>
-        <td className="px-8 py-3 truncate ...">{pwa.status}</td>
+        <td className="px-8 py-3 truncate ...">{getPwaStatus(pwaStatus!)}</td>
         <td className="px-8 py-3 flex gap-[10px]">
           <MonsterDropdown
             trigger={["click"]}

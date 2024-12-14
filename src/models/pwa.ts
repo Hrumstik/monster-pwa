@@ -22,6 +22,9 @@ export interface PwaContent {
   countOfReviewsFull: string;
   countOfStars: number;
   appIcon: string;
+  age: string;
+  hasMenu: boolean;
+  hasLoadingScreen: boolean;
   languages?: string[];
   images: {
     id?: string;
@@ -42,6 +45,7 @@ export interface PwaContent {
   createdAt?: string;
   id?: string;
   _id?: string;
+  wideScreens: boolean;
 }
 
 export interface PreparedPWADataItem {

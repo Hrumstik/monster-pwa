@@ -3,6 +3,7 @@ import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
 import DropdownIcon from "@shared/icons/DropdownIcon";
 import MonsterSelect from "@shared/elements/Select/MonsterSelect";
 import {
+  ageValues,
   casinoKeywords,
   casinoMessages,
   categories,
@@ -39,6 +40,7 @@ import InfoIcon from "@icons/InfoIcon";
 import VerifiedIcon from "@icons/VerifiedIcon";
 import GenerateIcon from "@icons/GenerateIcon";
 import MonsterRate from "@shared/elements/Rate/MonsterRate";
+import ClassicButton from "@shared/elements/ClassicButton/ClassibButton.tsx";
 
 export interface DesignOptionFormValues {
   languages: string[];
@@ -61,6 +63,10 @@ export interface DesignOptionFormValues {
   shortDescription: string;
   version: string;
   appIcon: string;
+  age: string;
+  hasLoadingScreen: boolean;
+  hasMenu: boolean;
+  wideScreens: boolean;
 }
 
 interface DesignOptionProps {
@@ -113,6 +119,9 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       fullDescription: content.fullDescription.originalLanguage,
       appIcon: content.appIcon,
       shortDescription: content.shortDescription.originalLanguage,
+      hasLoadingScreen: content.hasLoadingScreen,
+      hasMenu: content.hasMenu,
+      age: content.age,
     });
 
     updatedReviews.forEach((review) => {
@@ -157,6 +166,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   const [uploadImages, { isLoading: areImagesLoading }] =
     useUploadImagesMutation();
   useWatch("countOfStars", form);
+  const wideScreensIsActive = useWatch("wideScreens", form);
   const [appIcon, setAppIcon] = useState<Picture>({
     url: null,
     preview: null,
@@ -182,6 +192,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       "Обновление и опыт быть самым богатым! Не сдавайся до конца, ты можешь стать победителем",
     securityUI: true,
     hasPaidContentTitle: true,
+    wideScreens: false,
   });
 
   const handleValuesChange = () => {
@@ -200,6 +211,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       size: form.getFieldValue("size"),
       securityUI: form.getFieldValue("securityUI"),
       hasPaidContentTitle: form.getFieldValue("hasPaidContentTitle"),
+      wideScreens: form.getFieldValue("wideScreens"),
     });
   };
 
@@ -302,11 +314,17 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         beforeUpload={(file) => handleBeforeScreensUpload(file, index)}
       >
         {screen.preview ? (
-          <div className="relative w-[100px] h-[160px] group">
+          <div
+            className={`relative ${
+              wideScreensIsActive ? "w-[220px]" : " w-[100px]"
+            } h-[160px] group `}
+          >
             <img
               src={screen.preview}
               alt={`Uploaded ${index}`}
-              className="w-[100px] h-[160px] object-fill rounded-lg"
+              className={`${
+                wideScreensIsActive ? "w-[220px]" : " w-[100px]"
+              } h-[160px] object-fill transition-all duration-300 ease-in-out rounded-lg`}
             />
             <button
               className="absolute opacity-0 top-0 right-0 group-hover:opacity-100 text-white rounded-full w-6 h-6 flex justify-center items-center"
@@ -318,7 +336,10 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         ) : (
           <button
             onClick={(e) => e.preventDefault()}
-            className="border-none hover:border-[#36395a] hover:border hover:border-solid bg-[#161724] h-[166px] rounded-lg w-[100px]  flex justify-center items-center cursor-pointer relative"
+            className={`border-none hover:border-[#36395a] hover:border hover:border-solid bg-[#161724] h-[166px] rounded-lg 
+              ${wideScreensIsActive ? "w-[220px]" : "w-[100px]"} 
+              flex justify-center items-center cursor-pointer relative 
+              transition-all duration-300 ease-in-out`}
           >
             <UploadImageIcon />
           </button>
@@ -364,6 +385,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         countOfReviewsFull: form.getFieldValue("countOfReviews"),
         appIcon: appIcon.url!,
         countOfStars: form.getFieldValue("countOfStars"),
+        age: form.getFieldValue("age"),
         images: screens
           .filter((screen) => screen.url !== null)
           .map((screen) => ({
@@ -392,7 +414,10 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         },
         version: "1.0",
         sliders,
+        hasLoadingScreen: form.getFieldValue("hasLoadingScreen"),
+        hasMenu: form.getFieldValue("hasMenu"),
         languages: form.getFieldValue("languages"),
+        wideScreens: form.getFieldValue("wideScreens"),
       };
       setPwaContent(payload);
       await form.validateFields();
@@ -412,6 +437,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       if (!id) {
         setCurrentTab(EditorPWATabs.Domain);
       } else {
+        console.log("PWA сохранен");
         notification.success({
           message: "Успешно",
           description: "Вы можете сохранить PWA",
@@ -486,6 +512,9 @@ const DesignOption: React.FC<DesignOptionProps> = ({
           securityUI: true,
           size: "4 mb",
           hasPaidContentTitle: true,
+          age: "18+",
+          hasMenu: true,
+          hasLoadingScreen: true,
         }}
         onValuesChange={handleValuesChange}
         onFinishFailed={onFinishFailed}
@@ -741,13 +770,23 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                     <div className="text-[#8F919D] text-xs absolute top-[-24px]">
                       Возраст
                     </div>
-                    <MonsterInput
-                      className="!bg-[#161724] !h-[42px]"
-                      defaultValue={"18+"}
-                      disabled
-                      placeholder="Возраст"
-                      suffix={<GenerateIcon />}
-                    />
+                    <Form.Item name="age" className="mb-0">
+                      <MonsterInput
+                        className="!bg-[#161724] !h-[42px]"
+                        defaultValue={"18+"}
+                        placeholder="Возраст"
+                        suffix={
+                          <div
+                            className="cursor-pointer"
+                            onClick={() =>
+                              generateRandomValue(form, "age", ageValues)
+                            }
+                          >
+                            <GenerateIcon />
+                          </div>
+                        }
+                      />
+                    </Form.Item>
                   </div>
                 </div>
                 <div className="flex flex-1 flex-col gap-9">
@@ -783,13 +822,23 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               Загрузите изображения и видео для отображения на странице
               установки
             </div>
-            <div className="max-w-[460px] mb-[13px]">
-              <MonsterInput
-                placeholder="YouTube video URL"
-                className="!bg-[#161724] !h-[42px]"
-                autoComplete="off"
-                disabled
-              />
+            <div className="flex flex-row gap-[60px]">
+              <div className="mb-[13px] w-[460px]">
+                <MonsterInput
+                  placeholder="YouTube video URL"
+                  className="!bg-[#161724] !h-[42px]"
+                  autoComplete="off"
+                  disabled
+                />
+              </div>
+              <div className="flex gap-4 justify-start">
+                <div className="text-white text-base leading-5 truncate ...">
+                  Широкоформатные
+                </div>
+                <Form.Item name="wideScreens" noStyle>
+                  <MonsterSwitch />
+                </Form.Item>
+              </div>
             </div>
             <div className="text-[#8F919D] italic text-xs leading-[14px] mb-[18px]">
               *Видео всегда будет отображаться первым в скриншотах приложения
@@ -910,85 +959,101 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               </button>
             </div>
           </div>
-          <div className="flex xl:flex-row sm:flex-col gap-[30px] mb-[30px] relative">
-            <div className="flex flex-col gap-[30px] flex-1">
-              <div className="bg-cardColor rounded-lg px-[50px] py-[30px]  flex flex-col gap-5">
-                <div className="flex">
-                  <div className="flex-1">
-                    <div className="Оценки и отзывы font-bold text-base leading-[18px] text-orangeSubtitle mb-[25px]">
-                      Оценки и отзывы
-                    </div>
-                    <div className="text-[#8F919D] text-sm leading-[14px] mb-[9px]">
-                      Количество отзывов
-                    </div>
-                    <Form.Item
-                      name="countOfReviews"
-                      className="mb-0"
-                      validateTrigger="onChange"
-                      rules={[requiredValidator("Укажите количество отзывов")]}
+          <div className="flex lg:flex-row sm:flex-col gap-[30px]">
+            <div className="bg-cardColor flex-1 rounded-lg px-[50px] py-[30px]  flex flex-col gap-5">
+              <div className="Оценки и отзывы font-bold text-base leading-[18px] text-orangeSubtitle mb-[25px]">
+                Оценки и отзывы
+              </div>
+              <div className="text-[#8F919D] text-sm leading-[14px] mb-[9px]">
+                Количество отзывов
+              </div>
+              <Form.Item
+                name="countOfReviews"
+                className="mb-0"
+                validateTrigger="onChange"
+                rules={[requiredValidator("Укажите количество отзывов")]}
+              >
+                <MonsterInput
+                  className="!bg-[#161724] !h-[42px] mb-5 max-w-[130px]"
+                  suffix={
+                    <div
+                      className="cursor-pointer"
+                      onClick={() =>
+                        generateRandomValue(
+                          form,
+                          "countOfReviews",
+                          countOfReviews
+                        )
+                      }
                     >
-                      <MonsterInput
-                        className="!bg-[#161724] !h-[42px] mb-5 max-w-[130px]"
-                        suffix={
-                          <div
-                            className="cursor-pointer"
-                            onClick={() =>
-                              generateRandomValue(
-                                form,
-                                "countOfReviews",
-                                countOfReviews
-                              )
-                            }
-                          >
-                            <GenerateIcon />
-                          </div>
-                        }
-                      />
-                    </Form.Item>
+                      <GenerateIcon />
+                    </div>
+                  }
+                />
+              </Form.Item>
 
-                    <div>
-                      {sliders.map((_, index) => (
-                        <div className="flex gap-3 items-center" key={index}>
-                          <span className="text-white font-bold text-xs">
-                            {index + 1}
-                          </span>
-                          <MonsterSlider
-                            className="flex-1"
-                            value={sliders[index]}
-                            onChange={(newValue) =>
-                              handleSliderChange(index, newValue)
-                            }
-                            step={0.1}
-                            min={0}
-                            max={5}
-                          />
-                        </div>
-                      ))}
-                    </div>
+              <div>
+                {sliders.map((_, index) => (
+                  <div className="flex gap-3 items-center" key={index}>
+                    <span className="text-white font-bold text-xs">
+                      {index + 1}
+                    </span>
+                    <MonsterSlider
+                      className="flex-1"
+                      value={sliders[index]}
+                      onChange={(newValue) =>
+                        handleSliderChange(index, newValue)
+                      }
+                      step={0.1}
+                      min={0}
+                      max={5}
+                    />
                   </div>
-                  <div className="flex-1 flex-col flex gap-4">
-                    <div className="font-bold text-end text-white text-base leading-[18px]">
-                      Дополнительные блоки:
-                    </div>
-                    <div className="flex gap-4 justify-end items-center">
-                      <Form.Item name="securityUI" noStyle>
-                        <MonsterSwitch />
-                      </Form.Item>
-                      <div className="text-white text-base leading-5">
-                        Безопасность и <br /> передача данных
-                      </div>
-                    </div>
-                    <div className="flex gap-4 justify-end items-center">
-                      <Form.Item name="hasPaidContentTitle" noStyle>
-                        <MonsterSwitch />
-                      </Form.Item>
-                      <div className="text-white text-base leading-5">
-                        Реклама и <br /> платный контент
-                      </div>
-                    </div>
+                ))}
+              </div>
+            </div>
+            <div className="bg-cardColor flex-1 rounded-lg px-[50px] py-[30px] flex flex-col gap-[30px]">
+              <div className="font-bold text-base text-[#E3CC02]">
+                Дополнительный кастом
+              </div>
+              <div className="flex flex-col gap-4">
+                <div className="flex gap-4 justify-start items-center">
+                  <Form.Item name="securityUI" noStyle>
+                    <MonsterSwitch />
+                  </Form.Item>
+                  <div className="text-white text-base leading-5">
+                    Безопасность и <br /> передача данных
+                  </div>
+                </div>
+                <div className="flex gap-4 justify-start items-center">
+                  <Form.Item name="hasPaidContentTitle" noStyle>
+                    <MonsterSwitch />
+                  </Form.Item>
+                  <div className="text-white text-base leading-5">
+                    Реклама и <br /> платный контент
+                  </div>
+                </div>
+                <div className="flex gap-4 justify-start items-center">
+                  <Form.Item name="hasLoadingScreen" noStyle>
+                    <MonsterSwitch />
+                  </Form.Item>
+                  <div className="text-white text-base leading-5">
+                    Прелоадер
+                  </div>
+                </div>
+                <div className="flex gap-4 justify-start items-center">
+                  <Form.Item name="hasMenu" noStyle>
+                    <MonsterSwitch />
+                  </Form.Item>
+                  <div className="text-white text-base leading-5">
+                    Меню внизу экрана
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+          <div className="flex xl:flex-row sm:flex-col gap-[30px] mb-[30px] relative">
+            <div className="flex flex-col gap-[30px] flex-1">
               <div className="bg-cardColor rounded-lg py-[30px] px-[50px]">
                 <div className="flex flex-col gap-5">
                   <div className="flex justify-between items-center">
@@ -1024,6 +1089,9 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                   </div>
                 </div>
               </div>
+              <div>
+                <ClassicButton onClick={onFinish} text={"Продолжить"} />
+              </div>
             </div>
             <div className="w-[360px] flex  sticky top-4 right-0 h-[671px] rounded-[32px] box-border border-[9px] border-solid border-[#515ACA] bg-white overflow-auto scrollbar-hidden">
               <Preview
@@ -1036,14 +1104,6 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               />
             </div>
           </div>
-          <div>
-            <SimpleButton
-              onClick={onFinish}
-              text="Сохранить и продолжить"
-              color="bg-[white]"
-              textColor="text-[#121320]"
-            />
-          </div>
         </div>
       </Form>
       <Spin spinning={pwaContentIsLoading || areImagesLoading} fullscreen />
@@ -1052,3 +1112,25 @@ const DesignOption: React.FC<DesignOptionProps> = ({
 };
 
 export default DesignOption;
+
+<div className="flex-1 flex-col flex gap-4">
+  <div className="font-bold text-end text-white text-base leading-[18px]">
+    Дополнительные блоки:
+  </div>
+  <div className="flex gap-4 justify-end items-center">
+    <Form.Item name="securityUI" noStyle>
+      <MonsterSwitch />
+    </Form.Item>
+    <div className="text-white text-base leading-5">
+      Безопасность и <br /> передача данных
+    </div>
+  </div>
+  <div className="flex gap-4 justify-end items-center">
+    <Form.Item name="hasPaidContentTitle" noStyle>
+      <MonsterSwitch />
+    </Form.Item>
+    <div className="text-white text-base leading-5">
+      Реклама и <br /> платный контент
+    </div>
+  </div>
+</div>;
