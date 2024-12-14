@@ -122,6 +122,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       hasLoadingScreen: content.hasLoadingScreen,
       hasMenu: content.hasMenu,
       age: content.age,
+      wideScreens: content.wideScreens,
     });
 
     updatedReviews.forEach((review) => {
