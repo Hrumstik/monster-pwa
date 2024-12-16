@@ -48,7 +48,7 @@ const MyPWAs = () => {
           preparePwaData().filter((pwa) => {
             const actualStatus = getPwaInfo(pwa.id!).status;
             return actualStatus === PwaStatus.ACTIVE;
-          })
+          }),
         );
         break;
       case MyPWAsTabs.Draft:
@@ -56,14 +56,14 @@ const MyPWAs = () => {
           preparePwaData().filter((pwa) => {
             const actualStatus = getPwaInfo(pwa.id!).status;
             return actualStatus === PwaStatus.BUILDED;
-          })
+          }),
         );
         break;
       case MyPWAsTabs.CreatedAt:
         setAvailablePWAs(
           preparePwaData().sort(
-            (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-          )
+            (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+          ),
         );
         break;
       default:
@@ -80,8 +80,9 @@ const MyPWAs = () => {
       return;
     }
 
-    const filteredPWAs = preparePwaData().filter((pwa) =>
-      pwa.pwaName?.toLowerCase().includes(e.target.value.toLowerCase())
+    const filteredPWAs = preparePwaData().filter(
+      (pwa) =>
+        pwa.pwaName?.toLowerCase().includes(e.target.value.toLowerCase()),
     );
 
     setAvailablePWAs(filteredPWAs);
@@ -93,12 +94,12 @@ const MyPWAs = () => {
     <div className="px-[50px] pt-[110px] pb-[40px]">
       <div className="flex justify-between items-center mb-7">
         <span className="text-xl font-bold leading-8 text-white">Мои PWA</span>
-        <span
+        <button
           onClick={() => navigate("/create-PWA")}
-          className="text-[#00FF11] hover:underline text-base font-normal cursor-pointer"
+          className="bg-[#02E314] text-[#FFFFFF] flex items-center justify-center px-3 rounded box-border h-[42px] hover:opacity-80 hover:shadow-sm"
         >
           + Создать PWA
-        </span>
+        </button>
       </div>
       <div className="rounded-lg w-full min-h-[62vh] bg-[#20223B]">
         <Steps
@@ -114,7 +115,7 @@ const MyPWAs = () => {
           <MonsterInput
             onChange={handleSearch}
             className="w-[338px] h-10"
-            placeholder="Поиск по названию, id или домену "
+            placeholder="Поиск по названию"
           />
         </div>
 
