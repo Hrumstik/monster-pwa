@@ -1,9 +1,19 @@
-import { Form, Input, notification, Spin, Tooltip, Upload } from "antd";
+import {
+  Form,
+  Input,
+  message,
+  notification,
+  Spin,
+  Tooltip,
+  Upload,
+} from "antd";
 import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
 import DropdownIcon from "@shared/icons/DropdownIcon";
 import MonsterSelect from "@shared/elements/Select/MonsterSelect";
 import {
   ageValues,
+  allowedExtensions,
+  allowedExtensionsErrorMessage,
   casinoKeywords,
   casinoMessages,
   categories,
@@ -149,7 +159,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       content.images.map((image) => ({
         url: image.url,
         preview: image.url,
-      }))
+      })),
     );
   };
 
@@ -219,7 +229,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const addEmptyReview = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.preventDefault();
     setReviews((prev) => [
@@ -256,44 +266,70 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const [screens, setScreens] = useState<Picture[]>(
-    Array.from({ length: 4 }, () => ({ url: null, preview: null }))
+    Array.from({ length: 4 }, () => ({ url: null, preview: null })),
   );
 
   const removeAppIcon = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.stopPropagation();
     setAppIcon({ url: null, preview: null });
   };
 
   const beforeUpload = (file: File) => {
+    const extension = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+
+    if (!allowedExtensions.includes(extension)) {
+      message.error(allowedExtensionsErrorMessage);
+
+      return false;
+    }
+
     const reader = new FileReader();
+
     reader.onload = async () => {
       const response = await uploadImages([file]).unwrap();
+
       setAppIcon({
         url: response.imageUrls[0],
         preview: reader.result as string,
       });
+
       form.setFieldValue("appIcon", response.imageUrls[0]);
     };
+
     reader.readAsDataURL(file);
+
     return false;
   };
 
   const handleBeforeScreensUpload = (file: File, index: number) => {
+    const extension = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+
+    if (!allowedExtensions.includes(extension)) {
+      message.error(allowedExtensionsErrorMessage);
+      return false;
+    }
+
     const reader = new FileReader();
+
     reader.onload = async () => {
       const response = await uploadImages([file]).unwrap();
+
       setScreens((prev) => {
         const newScreens = [...prev];
+
         newScreens[index] = {
           url: response.imageUrls[0],
           preview: reader.result as string,
         };
+
         return newScreens;
       });
     };
+
     reader.readAsDataURL(file);
+
     return false;
   };
 
@@ -301,7 +337,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     const screen = screens[index];
 
     const handleRemoveScreen = (
-      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     ) => {
       e.stopPropagation();
       setScreens((prev) => {
@@ -352,7 +388,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const addEmptyScreen = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.preventDefault();
     setScreens((prev) => [
@@ -435,7 +471,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
             };
           }
           return step;
-        })
+        }),
       );
       if (!id) {
         setCurrentTab(EditorPWATabs.Domain);
@@ -449,7 +485,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     } catch (error) {
       if (error && typeof error === "object" && "errorFields" in error) {
         onFinishFailed(
-          error as { errorFields: { name: (string | number)[] }[] }
+          error as { errorFields: { name: (string | number)[] }[] },
         );
       } else {
         console.error(error);
@@ -491,7 +527,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     const lowerSliders = updatedSliders.slice(index + 1);
     const totalWeight = lowerSliders.reduce(
       (acc, _, i) => acc + (lowerSliders.length - i),
-      0
+      0,
     );
 
     for (let i = 0; i < lowerSliders.length; i++) {
@@ -710,7 +746,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                             generateRandomValue(
                               form,
                               "developerName",
-                              developerValue
+                              developerValue,
                             )
                           }
                         >
@@ -768,7 +804,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                               generateRandomValue(
                                 form,
                                 "countOfDownloads",
-                                countOfDownloadsValues
+                                countOfDownloadsValues,
                               )
                             }
                           >
@@ -902,7 +938,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                           generateRandomValue(
                             form,
                             "shortDescription",
-                            casinoMessages
+                            casinoMessages,
                           )
                         }
                       >
@@ -995,7 +1031,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                         generateRandomValue(
                           form,
                           "countOfReviews",
-                          countOfReviews
+                          countOfReviews,
                         )
                       }
                     >

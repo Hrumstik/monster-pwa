@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Form, FormInstance, Input, Spin, Upload } from "antd";
+import { Form, FormInstance, Input, message, Spin, Upload } from "antd";
 import { Review } from "@models/review";
 import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
 import MonsterDatePicker from "@shared/elements/DatePicker/MonsterDatePicker";
@@ -9,6 +9,10 @@ import { useUploadImagesMutation } from "@store/slices/filesApi";
 import { useWatch } from "antd/es/form/Form";
 import { requiredValidator } from "@shared/form/validators/validators";
 import RemoveIcon from "@icons/RemoveIcon";
+import {
+  allowedExtensions,
+  allowedExtensionsErrorMessage,
+} from "../DesignOptionHelpers.ts";
 
 const { TextArea } = Input;
 
@@ -37,7 +41,7 @@ const ReviewItem = ({
             isActive: true,
           };
         } else return review;
-      })
+      }),
     );
   };
 
@@ -58,11 +62,11 @@ const ReviewItem = ({
             ...review,
             isActive: false,
             reviewAuthorName: form.getFieldValue(
-              `reviewAuthorName${reviewContent.id}`
+              `reviewAuthorName${reviewContent.id}`,
             ),
             reviewAuthorIcon: uploadIconResponse.imageUrls[0],
             reviewAuthorRating: form.getFieldValue(
-              `reviewAuthorRating${reviewContent.id}`
+              `reviewAuthorRating${reviewContent.id}`,
             ),
             reviewText: form.getFieldValue(`reviewText${reviewContent.id}`),
             devResponse: form.getFieldValue(`devResponse${reviewContent.id}`),
@@ -97,19 +101,30 @@ const ReviewItem = ({
   }, [reviewContent]);
 
   const beforeUpload = (file: File) => {
+    const extension = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+
+    if (!allowedExtensions.includes(extension)) {
+      message.error(allowedExtensionsErrorMessage);
+
+      return false;
+    }
+
     const reader = new FileReader();
+
     reader.onload = () => {
       setReviewAuthorIcon({
         file,
         preview: reader.result as string,
       });
     };
+
     reader.readAsDataURL(file);
+
     return false;
   };
 
   const removeReviewIcon = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.stopPropagation();
     e.preventDefault();
@@ -255,13 +270,13 @@ const ReviewItem = ({
                 <div className="flex gap-5">
                   <button
                     onClick={saveReview}
-                    className="bg-[#02E314] text-[#161724] flex items-center justify-center px-3 rounded box-border h-[42px]"
+                    className="bg-[#02E314] text-[#161724] flex items-center justify-center px-3 rounded box-border h-[42px] hover:opacity-80 hover:shadow-sm"
                   >
                     Сохранить
                   </button>
                   <button
                     onClick={removeReview}
-                    className="w-[42px] bg-[#F56060] h-[42px] flex items-center justify-center rounded cursor-pointer"
+                    className="w-[42px] bg-[#F56060] h-[42px] flex items-center justify-center rounded cursor-pointer hover:opacity-80 hover:shadow-sm"
                   >
                     <RemoveIcon />
                   </button>

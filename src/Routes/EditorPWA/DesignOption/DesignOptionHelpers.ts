@@ -1,6 +1,10 @@
 import { FormInstance } from "antd";
 import { DesignOptionFormValues } from "./DesignOption";
 
+export const allowedExtensions = [".png", ".jpeg", ".jpg", ".svg", ".webp"];
+export const allowedExtensionsErrorMessage = `Допустимые форматы: ${allowedExtensions.join(
+  ", ",
+)}`;
 export const languages = [
   { value: "en-US", label: "Английский (США)" },
   { value: "en-GB", label: "Английский (Великобритания)" },
@@ -41,7 +45,7 @@ export const categories = [
 export const generateRandomValue = (
   form: FormInstance<DesignOptionFormValues>,
   field: string,
-  values: string[]
+  values: string[],
 ) => {
   const randomValue = values[Math.floor(Math.random() * values.length)];
   form.setFieldsValue({ [field]: randomValue });

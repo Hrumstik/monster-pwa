@@ -15,6 +15,7 @@ const Sidebar = () => {
           text="Мои PWA"
           onClick={() => navigate("/")}
           path="/"
+          defaultTextColor="white"
           icon={
             <IoLogoPwa
               color="white"
@@ -31,7 +32,7 @@ const Sidebar = () => {
           onClick={() =>
             window.open(
               "https://vibegamesteam.notion.site/PWA-Monster-506fc22fe0ec4b99a2cb47420a17e324",
-              "_blank"
+              "_blank",
             )
           }
         />

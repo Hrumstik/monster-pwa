@@ -80,12 +80,6 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
   const generateDropDownItems = (pwa: PreparedPWADataItem) => {
     return [
       {
-        label: <span className="text-xs text-white">Редактировать</span>,
-        key: "edit",
-        icon: <MdOutlineEdit style={{ color: "white" }} />,
-        onClick: () => navigate(`/edit-PWA/${pwa.id}`),
-      },
-      {
         label: <span className="text-xs text-white">Переименовать</span>,
         key: "rename",
         icon: <FiFileText style={{ color: "white" }} />,
@@ -131,7 +125,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         ({
           ...prev,
           pwaName: e.target.value,
-        } as PwaContent)
+        }) as PwaContent,
     );
   };
 
@@ -139,6 +133,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
     <>
       <tr
         key={pwa.id}
+        onClick={() => navigate(`/edit-PWA/${pwa.id}`)}
         className="hover:bg-[#383B66] group h-14 focus:bg-gray-300 w-full text-white cursor-pointer"
       >
         <Tooltip
@@ -158,7 +153,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         <td className="px-8 py-3 truncate ...">{getPwaStatus(pwaStatus!)}</td>
         <td className="px-8 py-3 flex gap-[10px]">
           <MonsterDropdown
-            trigger={["click"]}
+            trigger={["hover"]}
             menu={{ items: generateDropDownItems(pwa) }}
           >
             <button className="hover:bg-[#20223B] rounded flex items-center justify-center w-[30px] h-[30px] border-none bg-[#383B66] group-hover:bg-[#20223B]">
