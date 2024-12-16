@@ -124,7 +124,10 @@ const MainView = ({
           <div className="text-[11px] text-gray-600 font-medium">Возраст</div>
         </div>
       </div>
-      <button className="bg-[#1357CD] rounded-[60px] h-9 w-full text-white mb-5">
+      <button
+        onClick={(e) => e.preventDefault()}
+        className="bg-[#1357CD] rounded-[60px] h-9 w-full text-white mb-5"
+      >
         Установить
       </button>
       <ScreensSlider

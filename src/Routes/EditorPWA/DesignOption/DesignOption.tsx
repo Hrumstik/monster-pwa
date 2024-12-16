@@ -1106,7 +1106,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                 <ClassicButton onClick={onFinish} text={"Продолжить"} />
               </div>
             </div>
-            <div className="w-[360px] flex  sticky top-4 right-0 h-[671px] rounded-[32px] box-border border-[9px] border-solid border-[#515ACA] bg-white overflow-auto scrollbar-hidden">
+            <div className="w-[360px] flex  sticky top-4 right-0 h-[671px] rounded-[32px] box-border border-[5px] border-solid border-[#515ACA] bg-white overflow-auto scrollbar-hidden">
               <Preview
                 sliders={sliders}
                 previewPwaContent={previewContent}
