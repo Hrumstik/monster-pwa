@@ -1,4 +1,4 @@
-import { Form, Input, notification, Spin, Upload } from "antd";
+import { Form, Input, notification, Spin, Tooltip, Upload } from "antd";
 import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
 import DropdownIcon from "@shared/icons/DropdownIcon";
 import MonsterSelect from "@shared/elements/Select/MonsterSelect";
@@ -194,6 +194,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     securityUI: true,
     hasPaidContentTitle: true,
     wideScreens: false,
+    hasMenu: true,
   });
 
   const handleValuesChange = () => {
@@ -213,6 +214,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       securityUI: form.getFieldValue("securityUI"),
       hasPaidContentTitle: form.getFieldValue("hasPaidContentTitle"),
       wideScreens: form.getFieldValue("wideScreens"),
+      hasMenu: form.getFieldValue("hasMenu"),
     });
   };
 
@@ -515,6 +517,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
           hasPaidContentTitle: true,
           age: "18+",
           hasMenu: true,
+          wideScreens: false,
           hasLoadingScreen: true,
         }}
         onValuesChange={handleValuesChange}
@@ -580,8 +583,17 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                 <div className="text-[#E3CC02] text-base font-bold leading-[19px]">
                   Язык и категория PWA
                 </div>
+
                 <div>
-                  <InfoIcon />
+                  <Tooltip
+                    color="grey"
+                    placement="topRight"
+                    title="Выберите все языки на которые будет переводиться pwa и все системные надписи на странице установки PWA. Выбранная категория будет влиять на некоторые надписи на странице установки, а также на стиль и тематику при генерации описания и комментариев."
+                  >
+                    <div>
+                      <InfoIcon />
+                    </div>
+                  </Tooltip>
                 </div>
               </div>
               <Form.Item

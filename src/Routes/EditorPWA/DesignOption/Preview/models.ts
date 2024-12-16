@@ -28,4 +28,5 @@ export interface PreviewPwaContent {
   fullDescription: string;
   version: string;
   wideScreens: boolean;
+  hasMenu: boolean;
 }

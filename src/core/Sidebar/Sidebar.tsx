@@ -19,7 +19,7 @@ const Sidebar = () => {
             <IoLogoPwa
               color="white"
               style={{
-                fontSize: "28px",
+                fontSize: "26px",
               }}
             />
           }
@@ -27,6 +27,7 @@ const Sidebar = () => {
         <MenuItem
           icon={<DocumentationIcon />}
           text="Документация"
+          defaultTextColor="white"
           onClick={() =>
             window.open(
               "https://vibegamesteam.notion.site/PWA-Monster-506fc22fe0ec4b99a2cb47420a17e324",
