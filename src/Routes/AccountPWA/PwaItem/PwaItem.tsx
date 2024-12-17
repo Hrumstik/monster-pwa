@@ -17,7 +17,7 @@ import { Modal, notification, Spin, Tooltip } from "antd";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { FiFileText } from "react-icons/fi";
-import { MdDelete, MdOutlineEdit } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 import { VscPreview } from "react-icons/vsc";
 import { useNavigate } from "react-router-dom";
 import { PreviewPwaContent } from "../../EditorPWA/DesignOption/Preview/models.ts";
@@ -125,7 +125,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         ({
           ...prev,
           pwaName: e.target.value,
-        }) as PwaContent,
+        } as PwaContent)
     );
   };
 
