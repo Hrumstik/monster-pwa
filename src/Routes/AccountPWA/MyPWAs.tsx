@@ -51,7 +51,7 @@ const MyPWAs = () => {
           }),
         );
         break;
-      case MyPWAsTabs.Draft:
+      case MyPWAsTabs.Built:
         setAvailablePWAs(
           preparePwaData().filter((pwa) => {
             const actualStatus = getPwaInfo(pwa.id!).status;
@@ -59,15 +59,24 @@ const MyPWAs = () => {
           }),
         );
         break;
-      case MyPWAsTabs.CreatedAt:
+      case MyPWAsTabs.BuildFailed:
         setAvailablePWAs(
-          preparePwaData().sort(
-            (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-          ),
+          preparePwaData().filter((pwa) => {
+            const actualStatus = getPwaInfo(pwa.id!).status;
+            return actualStatus === PwaStatus.BUILD_FAILED;
+          }),
+        );
+        break;
+      case MyPWAsTabs.WaitingNS:
+        setAvailablePWAs(
+          preparePwaData().filter((pwa) => {
+            const actualStatus = getPwaInfo(pwa.id!).status;
+            return actualStatus === PwaStatus.WAITING_NS;
+          }),
         );
         break;
       default:
-        setAvailablePWAs(preparePwaData);
+        setAvailablePWAs(preparePwaData());
         break;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

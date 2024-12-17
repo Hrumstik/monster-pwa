@@ -10,21 +10,16 @@ const useGetPwaInfo = () => {
   const getPwaInfo = (pwaId: string) => {
     const pwaContent = allPwaInfo.data?.find((pwa) => pwa._id === pwaId);
     const user = userInfo.data;
-    const domain = user?.pwas.find(
-      (pwa) => pwa.pwaContentId === pwaId
-    )?.domainName;
-    const nsRecords = user?.pwas.find(
-      (pwa) => pwa.pwaContentId === pwaId
-    )?.nsRecords;
-    const status = user?.pwas.find((pwa) => pwa.pwaContentId === pwaId)?.status;
+    const userPwa = user?.pwas.find((pwa) => pwa.pwaContentId === pwaId);
 
     return {
-      domain,
+      domain: userPwa?.domainName,
       appName: pwaContent?.appName,
       pwaName: pwaContent?.pwaName,
       createdAt: pwaContent?.createdAt,
-      nsRecords,
-      status: status,
+      nsRecords: userPwa?.nsRecords,
+      status: userPwa?.status,
+      readyDomainId: userPwa?.readyDomainId,
     };
   };
 
