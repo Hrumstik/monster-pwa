@@ -39,7 +39,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
   const { getPwaInfo } = useGetPwaInfo();
   const [readyDomains, setReadyDomains] = useState<DefaultOptionType[]>([]);
   const [selectedReadyDomain, setSelectedReadyDomain] = useState<string | null>(
-    null
+    null,
   );
   let savedNsRecords:
     | {
@@ -47,9 +47,15 @@ const DomainOption: React.FC<DomainOptionProps> = ({
         _id: string;
       }[]
     | undefined;
+  let domain;
+  let readyDomainId;
 
   if (pwaContentId) {
-    savedNsRecords = getPwaInfo(pwaContentId).nsRecords;
+    const userPwa = getPwaInfo(pwaContentId);
+
+    savedNsRecords = userPwa.nsRecords;
+    domain = userPwa.domain;
+    readyDomainId = userPwa.readyDomainId;
   }
 
   useEffect(() => {
@@ -88,7 +94,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
             };
           }
           return step;
-        })
+        }),
       );
       return;
     }
@@ -108,7 +114,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
               };
             }
             return step;
-          })
+          }),
         );
       })
       .catch(() => {
@@ -124,7 +130,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
           domain: extractDomain(form.getFieldValue("domain")),
           email: form.getFieldValue("email"),
           gApiKey: form.getFieldValue("gApiKey"),
-        }
+        },
       );
 
       if (domainValidation.data.canBeAdded) {
@@ -158,7 +164,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
             };
           }
           return step;
-        })
+        }),
       );
       return;
     }
@@ -187,7 +193,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
               };
             }
             return step;
-          })
+          }),
         );
         api.success({
           message: "Успешно",
@@ -315,23 +321,34 @@ const DomainOption: React.FC<DomainOptionProps> = ({
                           message: "Выберите домен",
                         },
                       ]}
+                      initialValue={
+                        readyDomainId
+                          ? {
+                              label: domain,
+                              value: readyDomainId,
+                            }
+                          : undefined
+                      }
                     >
                       <MonsterSelect
+                        disabled={!!readyDomainId}
                         options={readyDomains}
                         className="w-full"
                         placeholder="Домен"
-                        onChange={(value) => setSelectedReadyDomain(value)}
+                        onChange={setSelectedReadyDomain}
                       />
                     </Form.Item>
                   </Form>
                 </div>
-                <div className="flex-1">
-                  <ClassicButton
-                    htmlType="submit"
-                    text={domainsData ? "Очистить" : "Продолжить"}
-                    onClick={handleSelectReadyDomain}
-                  />
-                </div>
+                {!domain && (
+                  <div className="flex-1">
+                    <ClassicButton
+                      htmlType="submit"
+                      text={domainsData ? "Очистить" : "Продолжить"}
+                      onClick={handleSelectReadyDomain}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -348,7 +365,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
                     onClick={() =>
                       window.open(
                         "https://vibegamesteam.notion.site/86ca016f4984469db74d7c2eca83c16f",
-                        "_blank"
+                        "_blank",
                       )
                     }
                     className="underline cursor-pointer"
@@ -373,6 +390,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
                     ]}
                   >
                     <MonsterInput
+                      disabled={!!domain}
                       placeholder="Домен"
                       className="!bg-[#161724]"
                       autoComplete="off"
@@ -393,6 +411,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
                     ]}
                   >
                     <MonsterInput
+                      disabled={!!domain}
                       placeholder="Cloudflare Email"
                       className="!bg-[#161724]"
                       autoComplete="off"
@@ -409,6 +428,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
                     ]}
                   >
                     <MonsterInput
+                      disabled={!!domain}
                       placeholder="Cloudflare API Key"
                       className="!bg-[#161724]"
                       autoComplete="off"
@@ -434,11 +454,12 @@ const DomainOption: React.FC<DomainOptionProps> = ({
                   </a>
                   . Вам будет нужен Global API key.
                 </div>
-
-                <ClassicButton
-                  onClick={onFinish}
-                  text={domainsData ? "Очистить" : "Продолжить"}
-                />
+                {!domain && (
+                  <ClassicButton
+                    onClick={onFinish}
+                    text={domainsData ? "Очистить" : "Продолжить"}
+                  />
+                )}
               </div>
             </div>
           )}

@@ -18,6 +18,7 @@ export interface User {
   pwas: {
     domainName?: string;
     pwaContentId: string;
+    readyDomainId?: string;
     nsRecords: {
       name: string;
       _id: string;

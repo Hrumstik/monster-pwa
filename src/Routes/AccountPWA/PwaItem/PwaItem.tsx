@@ -83,7 +83,9 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         label: <span className="text-xs text-white">Переименовать</span>,
         key: "rename",
         icon: <FiFileText style={{ color: "white" }} />,
-        onClick: () => {
+        onClick: (e: any) => {
+          e.domEvent.stopPropagation();
+          e.domEvent.nativeEvent.stopImmediatePropagation();
           const renamePwa = (data || []).find(({ _id }) => _id === pwa.id);
 
           setRenamePwa({
@@ -96,7 +98,9 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         label: <span className="text-xs text-white">Предпросмотр</span>,
         key: "preview",
         icon: <VscPreview style={{ color: "white" }} />,
-        onClick: () => {
+        onClick: (e: any) => {
+          e.domEvent.stopPropagation();
+          e.domEvent.nativeEvent.stopImmediatePropagation();
           const preview = (data || []).find(({ _id }) => _id === pwa.id);
           setPreviewPwa(preview);
         },
@@ -106,7 +110,11 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         key: "delete",
         icon: <MdDelete />,
         danger: true,
-        onClick: () => handleDelete(pwa.id as string),
+        onClick: (e: any) => {
+          e.domEvent.stopPropagation();
+          e.domEvent.nativeEvent.stopImmediatePropagation();
+          handleDelete(pwa.id as string);
+        },
       },
     ];
   };
@@ -125,7 +133,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         ({
           ...prev,
           pwaName: e.target.value,
-        } as PwaContent)
+        }) as PwaContent,
     );
   };
 
@@ -156,7 +164,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
             trigger={["hover"]}
             menu={{ items: generateDropDownItems(pwa) }}
           >
-            <button className="hover:bg-[#20223B] rounded flex items-center justify-center w-[30px] h-[30px] border-none bg-[#383B66] group-hover:bg-[#20223B]">
+            <button className="details hover:bg-[#20223B] rounded flex items-center justify-center w-[30px] h-[30px] border-none bg-[#383B66] group-hover:bg-[#20223B]">
               <MoreOutlined style={{ color: "white", fontSize: "15px" }} />
             </button>
           </MonsterDropdown>
@@ -198,6 +206,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
           paddingBottom: 0,
           padding: 0,
         }}
+        closeIcon={null}
         onCancel={() => setPreviewPwa(null)}
       >
         {previewPwa && (
