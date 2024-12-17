@@ -21,10 +21,10 @@ const ScreensSlider: React.FC<ScreensSliderProps> = ({
   return (
     <Swiper
       spaceBetween={16}
-      slidesPerView={"auto"}
       freeMode={true}
       centerInsufficientSlides={true}
       className="mb-6"
+      slidesPerView="auto"
       grabCursor={true}
     >
       {actualScreens.map((screen, index) => (

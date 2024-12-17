@@ -87,7 +87,7 @@ const MainView = ({
             {previewPwaContent.verified && <VerifiedIcon />}
           </div>
           {previewPwaContent.hasPaidContentTitle && (
-            <div className="flex gap-1 text-[8px] text-[#444444] items-center">
+            <div className="flex gap-1 text-[10px] text-[#444444] items-center">
               <div>Нет рекламы</div>
               <div className="rounded-full w-0.5 h-0.5 bg-[#444444]" />
               <div>Нет платного контента</div>

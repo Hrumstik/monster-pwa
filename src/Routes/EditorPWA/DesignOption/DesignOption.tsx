@@ -49,7 +49,6 @@ import { useMount } from "react-use";
 import InfoIcon from "@icons/InfoIcon";
 import VerifiedIcon from "@icons/VerifiedIcon";
 import GenerateIcon from "@icons/GenerateIcon";
-import MonsterRate from "@shared/elements/Rate/MonsterRate";
 import ClassicButton from "@shared/elements/ClassicButton/ClassibButton.tsx";
 
 export interface DesignOptionFormValues {
@@ -159,7 +158,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       content.images.map((image) => ({
         url: image.url,
         preview: image.url,
-      })),
+      }))
     );
   };
 
@@ -229,7 +228,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const addEmptyReview = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
     setReviews((prev) => [
@@ -266,11 +265,11 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const [screens, setScreens] = useState<Picture[]>(
-    Array.from({ length: 4 }, () => ({ url: null, preview: null })),
+    Array.from({ length: 4 }, () => ({ url: null, preview: null }))
   );
 
   const removeAppIcon = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
     setAppIcon({ url: null, preview: null });
@@ -337,7 +336,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     const screen = screens[index];
 
     const handleRemoveScreen = (
-      e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
       e.stopPropagation();
       setScreens((prev) => {
@@ -388,7 +387,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const addEmptyScreen = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
     setScreens((prev) => [
@@ -471,7 +470,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
             };
           }
           return step;
-        }),
+        })
       );
       if (!id) {
         setCurrentTab(EditorPWATabs.Domain);
@@ -485,7 +484,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     } catch (error) {
       if (error && typeof error === "object" && "errorFields" in error) {
         onFinishFailed(
-          error as { errorFields: { name: (string | number)[] }[] },
+          error as { errorFields: { name: (string | number)[] }[] }
         );
       } else {
         console.error(error);
@@ -510,31 +509,8 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     setTags(randomTags);
   };
   const handleSliderChange = (index: number, value: number) => {
-    const maxTotal = 5;
     const updatedSliders = [...sliders];
     updatedSliders[index] = value;
-
-    const remaining =
-      maxTotal -
-      updatedSliders.slice(0, index + 1).reduce((sum, val) => sum + val, 0);
-
-    if (remaining < 0) {
-      updatedSliders[index] += remaining;
-      setSliders(updatedSliders);
-      return;
-    }
-
-    const lowerSliders = updatedSliders.slice(index + 1);
-    const totalWeight = lowerSliders.reduce(
-      (acc, _, i) => acc + (lowerSliders.length - i),
-      0,
-    );
-
-    for (let i = 0; i < lowerSliders.length; i++) {
-      const weight = lowerSliders.length - i;
-      const allocated = (remaining / totalWeight) * weight;
-      updatedSliders[index + 1 + i] = allocated;
-    }
     setSliders(updatedSliders);
   };
 
@@ -746,7 +722,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                             generateRandomValue(
                               form,
                               "developerName",
-                              developerValue,
+                              developerValue
                             )
                           }
                         >
@@ -804,7 +780,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                               generateRandomValue(
                                 form,
                                 "countOfDownloads",
-                                countOfDownloadsValues,
+                                countOfDownloadsValues
                               )
                             }
                           >
@@ -839,14 +815,6 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                   </div>
                 </div>
                 <div className="flex flex-1 flex-col gap-9">
-                  <div className="flex relative">
-                    <div className="text-[#8F919D] text-xs absolute top-[-24px] whitespace-nowrap">
-                      Рейтинг приложения
-                    </div>
-                    <Form.Item name="countOfStars" className="mb-0">
-                      <MonsterRate className="flex whitespace-nowrap" />
-                    </Form.Item>
-                  </div>
                   <div className="flex gap-5 items-center">
                     <div className="flex gap-1">
                       <div className="text-sm text-white leading-4 items-center flex gap-[10px] justify-start">
@@ -938,7 +906,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                           generateRandomValue(
                             form,
                             "shortDescription",
-                            casinoMessages,
+                            casinoMessages
                           )
                         }
                       >
@@ -1009,56 +977,69 @@ const DesignOption: React.FC<DesignOptionProps> = ({
             </div>
           </div>
           <div className="flex lg:flex-row sm:flex-col gap-[30px]">
-            <div className="bg-cardColor flex-1 rounded-lg px-[50px] py-[30px]  flex flex-col gap-5">
+            <div className="bg-cardColor flex-1  rounded-lg px-[50px] py-[30px] gap-5">
               <div className="Оценки и отзывы font-bold text-base leading-[18px] text-orangeSubtitle mb-[25px]">
                 Оценки и отзывы
               </div>
-              <div className="text-[#8F919D] text-sm leading-[14px] mb-[9px]">
-                Количество отзывов
-              </div>
-              <Form.Item
-                name="countOfReviews"
-                className="mb-0"
-                validateTrigger="onChange"
-                rules={[requiredValidator("Укажите количество отзывов")]}
-              >
-                <MonsterInput
-                  className="!bg-[#161724] !h-[42px] mb-5 max-w-[130px]"
-                  suffix={
-                    <div
-                      className="cursor-pointer"
-                      onClick={() =>
-                        generateRandomValue(
-                          form,
-                          "countOfReviews",
-                          countOfReviews,
-                        )
-                      }
-                    >
-                      <GenerateIcon />
-                    </div>
-                  }
-                />
-              </Form.Item>
-
-              <div>
-                {sliders.map((_, index) => (
-                  <div className="flex gap-3 items-center" key={index}>
-                    <span className="text-white font-bold text-xs">
-                      {index + 1}
-                    </span>
-                    <MonsterSlider
-                      className="flex-1"
-                      value={sliders[index]}
-                      onChange={(newValue) =>
-                        handleSliderChange(index, newValue)
-                      }
-                      step={0.1}
-                      min={0}
-                      max={5}
-                    />
+              <div className="flex gap-[30px]">
+                <div className="max-w-1/3">
+                  <div className="text-xs text-[#8F919D] mb-[9px]">Рейтинг</div>
+                  <Form.Item
+                    name="countOfStars"
+                    className="mb-0"
+                    validateTrigger="onChange"
+                    rules={[requiredValidator("Укажите рейтинг")]}
+                  >
+                    <MonsterInput className="!bg-[#161724] !h-[42px] mb-5 max-w-[130px]" />
+                  </Form.Item>
+                  <div className="text-xs text-[#8F919D] mb-[9px]">
+                    Количество отзывов
                   </div>
-                ))}
+                  <Form.Item
+                    name="countOfReviews"
+                    className="mb-0"
+                    validateTrigger="onChange"
+                    rules={[requiredValidator("Укажите количество отзывов")]}
+                  >
+                    <MonsterInput
+                      className="!bg-[#161724] !h-[42px] mb-5 max-w-[130px]"
+                      suffix={
+                        <div
+                          className="cursor-pointer"
+                          onClick={() =>
+                            generateRandomValue(
+                              form,
+                              "countOfReviews",
+                              countOfReviews
+                            )
+                          }
+                        >
+                          <GenerateIcon />
+                        </div>
+                      }
+                    />
+                  </Form.Item>
+                </div>
+
+                <div className="flex-1">
+                  {sliders.map((_, index) => (
+                    <div className="flex gap-3 items-center" key={index}>
+                      <span className="text-white font-bold text-xs">
+                        {sliders.length - index}
+                      </span>
+                      <MonsterSlider
+                        className="flex-1"
+                        value={sliders[index]}
+                        onChange={(newValue) =>
+                          handleSliderChange(index, newValue)
+                        }
+                        step={0.1}
+                        min={0}
+                        max={5}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
             <div className="bg-cardColor flex-1 rounded-lg px-[50px] py-[30px] flex flex-col gap-[30px]">

@@ -41,7 +41,7 @@ const ReviewItem = ({
             isActive: true,
           };
         } else return review;
-      }),
+      })
     );
   };
 
@@ -62,11 +62,11 @@ const ReviewItem = ({
             ...review,
             isActive: false,
             reviewAuthorName: form.getFieldValue(
-              `reviewAuthorName${reviewContent.id}`,
+              `reviewAuthorName${reviewContent.id}`
             ),
             reviewAuthorIcon: uploadIconResponse.imageUrls[0],
             reviewAuthorRating: form.getFieldValue(
-              `reviewAuthorRating${reviewContent.id}`,
+              `reviewAuthorRating${reviewContent.id}`
             ),
             reviewText: form.getFieldValue(`reviewText${reviewContent.id}`),
             devResponse: form.getFieldValue(`devResponse${reviewContent.id}`),
@@ -124,7 +124,7 @@ const ReviewItem = ({
   };
 
   const removeReviewIcon = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
     e.preventDefault();
@@ -204,6 +204,7 @@ const ReviewItem = ({
                 <MonsterDatePicker
                   defaultValue={dayjs()}
                   className="w-[130px] !h-[42px]"
+                  allowClear={false}
                   readOnly={!reviewContent.isActive}
                   disabled={!reviewContent.isActive}
                   style={{ backgroundColor: "#161724", color: "white" }}

@@ -232,12 +232,6 @@ const EditorPWA = () => {
           <div className="flex gap-5">
             <IconButton
               disabled
-              icon={<MdOutlineNotStarted color="white" />}
-              text="Запустить"
-              onclick={() => {}}
-            />
-            <IconButton
-              disabled
               icon={<VscPreview color="white" />}
               text="Предпросмотр"
             />
