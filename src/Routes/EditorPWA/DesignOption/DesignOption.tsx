@@ -422,7 +422,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         rating: "4.9",
         countOfReviewsFull: form.getFieldValue("countOfReviews"),
         appIcon: appIcon.url!,
-        countOfStars: form.getFieldValue("countOfStars"),
+        countOfStars: +form.getFieldValue("countOfStars"),
         age: form.getFieldValue("age"),
         images: screens
           .filter((screen) => screen.url !== null)
@@ -986,11 +986,13 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                   <div className="text-xs text-[#8F919D] mb-[9px]">Рейтинг</div>
                   <Form.Item
                     name="countOfStars"
-                    className="mb-0"
                     validateTrigger="onChange"
                     rules={[requiredValidator("Укажите рейтинг")]}
                   >
-                    <MonsterInput className="!bg-[#161724] !h-[42px] mb-5 max-w-[130px]" />
+                    <MonsterInput
+                      type="number"
+                      className="!bg-[#161724] !h-[42px] max-w-[130px]"
+                    />
                   </Form.Item>
                   <div className="text-xs text-[#8F919D] mb-[9px]">
                     Количество отзывов
