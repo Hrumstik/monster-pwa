@@ -48,7 +48,7 @@ const MyPWAs = () => {
           preparePwaData().filter((pwa) => {
             const actualStatus = getPwaInfo(pwa.id!).status;
             return actualStatus === PwaStatus.ACTIVE;
-          }),
+          })
         );
         break;
       case MyPWAsTabs.Built:
@@ -56,7 +56,7 @@ const MyPWAs = () => {
           preparePwaData().filter((pwa) => {
             const actualStatus = getPwaInfo(pwa.id!).status;
             return actualStatus === PwaStatus.BUILDED;
-          }),
+          })
         );
         break;
       case MyPWAsTabs.BuildFailed:
@@ -64,7 +64,7 @@ const MyPWAs = () => {
           preparePwaData().filter((pwa) => {
             const actualStatus = getPwaInfo(pwa.id!).status;
             return actualStatus === PwaStatus.BUILD_FAILED;
-          }),
+          })
         );
         break;
       case MyPWAsTabs.WaitingNS:
@@ -72,7 +72,7 @@ const MyPWAs = () => {
           preparePwaData().filter((pwa) => {
             const actualStatus = getPwaInfo(pwa.id!).status;
             return actualStatus === PwaStatus.WAITING_NS;
-          }),
+          })
         );
         break;
       default:
@@ -89,9 +89,8 @@ const MyPWAs = () => {
       return;
     }
 
-    const filteredPWAs = preparePwaData().filter(
-      (pwa) =>
-        pwa.pwaName?.toLowerCase().includes(e.target.value.toLowerCase()),
+    const filteredPWAs = preparePwaData().filter((pwa) =>
+      pwa.pwaName?.toLowerCase().includes(e.target.value.toLowerCase())
     );
 
     setAvailablePWAs(filteredPWAs);
@@ -105,7 +104,7 @@ const MyPWAs = () => {
         <span className="text-xl font-bold leading-8 text-white">Мои PWA</span>
         <button
           onClick={() => navigate("/create-PWA")}
-          className="bg-[#02E314] text-[#FFFFFF] flex items-center justify-center px-3 rounded box-border h-[42px] hover:opacity-80 hover:shadow-sm"
+          className="bg-[#02E314] text-[#161724] flex items-center justify-center px-3 rounded box-border h-[42px] hover:opacity-80 hover:shadow-sm"
         >
           + Создать PWA
         </button>

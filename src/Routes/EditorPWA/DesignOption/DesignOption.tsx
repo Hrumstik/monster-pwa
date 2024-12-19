@@ -213,7 +213,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       countOfDownloads: form.getFieldValue("countOfDownloads"),
       countOfReviews: form.getFieldValue("countOfReviews"),
       verified: form.getFieldValue("verified"),
-      rating: form.getFieldValue("countOfStars").toString(),
+      rating: form.getFieldValue("countOfStars"),
       shortDescription: form.getFieldValue("shortDescription"),
       fullDescription: form.getFieldValue("fullDescription"),
       countOfReviewsFull: form.getFieldValue("countOfReviews"),
@@ -422,7 +422,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         rating: "4.9",
         countOfReviewsFull: form.getFieldValue("countOfReviews"),
         appIcon: appIcon.url!,
-        countOfStars: +form.getFieldValue("countOfStars"),
+        countOfStars: Number(form.getFieldValue("countOfStars")) || 5,
         age: form.getFieldValue("age"),
         images: screens
           .filter((screen) => screen.url !== null)
@@ -521,7 +521,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         onFinish={onFinish}
         initialValues={{
           verified: false,
-          countOfStars: 5,
+          countOfStars: "5",
           countOfDownloads: "1,000+",
           countOfReviews: "100",
           securityUI: true,

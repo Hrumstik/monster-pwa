@@ -22,13 +22,19 @@ export const pwaSlice = createApi({
         body: data,
       }),
     }),
-    updatePwaContent: builder.mutation<PwaContent, PwaContent>({
-      query: (data) => ({
-        url: `/pwa-content/${data.id}`,
+    updatePwaName: builder.mutation<
+      PwaContent,
+      {
+        id: string;
+        pwaName: string;
+      }
+    >({
+      query: ({ id, pwaName }) => ({
+        url: `/pwa-content/${id}`,
         method: "PATCH",
-        body: { ...data, id: undefined },
+        body: { pwaName },
       }),
-      invalidatesTags: ["PwaContent"],
+      invalidatesTags: ["PwaContent", "User"],
     }),
     deletePwaContent: builder.mutation<void, string>({
       query: (id) => ({
@@ -121,7 +127,7 @@ export const pwaSlice = createApi({
 
 export const {
   useCreatePwaContentMutation,
-  useUpdatePwaContentMutation,
+  useUpdatePwaNameMutation,
   useGetAllPwaContentQuery,
   useDeletePwaContentMutation,
   useDeletePwaContentForcedMutation,

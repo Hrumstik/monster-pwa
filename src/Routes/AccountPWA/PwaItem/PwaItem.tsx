@@ -11,7 +11,7 @@ import {
   useGetAllPwaContentQuery,
   useGetMyUserQuery,
   useLazyCheckDomainStatusQuery,
-  useUpdatePwaContentMutation,
+  useUpdatePwaNameMutation,
 } from "@store/slices/pwaApi";
 import { Modal, notification, Spin, Tooltip } from "antd";
 import moment from "moment";
@@ -19,23 +19,22 @@ import { useEffect, useState } from "react";
 import { FiFileText } from "react-icons/fi";
 import { MdDelete } from "react-icons/md";
 import { VscPreview } from "react-icons/vsc";
-import { useNavigate } from "react-router-dom";
 import { PreviewPwaContent } from "../../EditorPWA/DesignOption/Preview/models.ts";
 import Preview from "../../EditorPWA/DesignOption/Preview/Preview.tsx";
 import useGetPwaInfo from "@shared/hooks/useGetPwaInfo";
 import { PwaStatus } from "@models/domain";
 import { getPwaStatus } from "../MyPWAsHelpers.tsx";
+import type { MenuInfo } from "rc-menu/lib/interface";
 
 const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
   const { data } = useGetAllPwaContentQuery();
-  const navigate = useNavigate();
   const [renamePwa, setRenamePwa] = useState<PwaContent | null>();
   const [previewPwa, setPreviewPwa] = useState<PwaContent | null>();
   const { data: userData } = useGetMyUserQuery();
   const [deletePwaContent, { isLoading: deletePwaLoading }] =
     useDeletePwaContentForcedMutation();
   const [updatePwaContent, { isLoading: updatePwaLoading }] =
-    useUpdatePwaContentMutation();
+    useUpdatePwaNameMutation();
   const [checkDomainStatus] = useLazyCheckDomainStatusQuery();
   const [pwaStatus, setPwaStatus] = useState<PwaStatus>();
 
@@ -45,6 +44,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
   }, [userData]);
 
   const { getPwaInfo } = useGetPwaInfo();
+
   useEffect(() => {
     if (pwaStatus === PwaStatus.ACTIVE) return;
     let interval: NodeJS.Timeout;
@@ -83,7 +83,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         label: <span className="text-xs text-white">Переименовать</span>,
         key: "rename",
         icon: <FiFileText style={{ color: "white" }} />,
-        onClick: (e: any) => {
+        onClick: (e: MenuInfo) => {
           e.domEvent.stopPropagation();
           e.domEvent.nativeEvent.stopImmediatePropagation();
           const renamePwa = (data || []).find(({ _id }) => _id === pwa.id);
@@ -98,7 +98,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         label: <span className="text-xs text-white">Предпросмотр</span>,
         key: "preview",
         icon: <VscPreview style={{ color: "white" }} />,
-        onClick: (e: any) => {
+        onClick: (e: MenuInfo) => {
           e.domEvent.stopPropagation();
           e.domEvent.nativeEvent.stopImmediatePropagation();
           const preview = (data || []).find(({ _id }) => _id === pwa.id);
@@ -110,7 +110,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         key: "delete",
         icon: <MdDelete />,
         danger: true,
-        onClick: (e: any) => {
+        onClick: (e: MenuInfo) => {
           e.domEvent.stopPropagation();
           e.domEvent.nativeEvent.stopImmediatePropagation();
           handleDelete(pwa.id as string);
@@ -121,9 +121,9 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
 
   const handleSubmitRenamePwa = async () =>
     updatePwaContent({
-      pwaName: renamePwa?.pwaName,
-      id: renamePwa?._id,
-    } as PwaContent).then(() => {
+      id: renamePwa!._id!,
+      pwaName: renamePwa!.pwaName!,
+    }).then(() => {
       setRenamePwa(undefined);
     });
 
@@ -133,7 +133,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         ({
           ...prev,
           pwaName: e.target.value,
-        }) as PwaContent,
+        } as PwaContent)
     );
   };
 
@@ -141,7 +141,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
     <>
       <tr
         key={pwa.id}
-        onClick={() => navigate(`/edit-PWA/${pwa.id}`)}
+        onClick={() => window.open(`/edit-PWA/${pwa.id}`, "_blank")}
         className="hover:bg-[#383B66] group h-14 focus:bg-gray-300 w-full text-white cursor-pointer"
       >
         <Tooltip
@@ -173,7 +173,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
       <Spin spinning={deletePwaLoading || updatePwaLoading} fullscreen />
       <Modal
         className="rename-pwa-modal"
-        title={<div className="mb-5">Переименовать PWA</div>}
+        title={<div className="mb-5 text-white">Переименовать PWA</div>}
         open={!!renamePwa}
         footer={
           <div
