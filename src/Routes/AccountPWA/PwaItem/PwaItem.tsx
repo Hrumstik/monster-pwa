@@ -25,6 +25,7 @@ import useGetPwaInfo from "@shared/hooks/useGetPwaInfo";
 import { PwaStatus } from "@models/domain";
 import { getPwaStatus } from "../MyPWAsHelpers.tsx";
 import type { MenuInfo } from "rc-menu/lib/interface";
+import { useNavigate } from "react-router-dom";
 
 const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
   const { data } = useGetAllPwaContentQuery();
@@ -44,6 +45,8 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
   }, [userData]);
 
   const { getPwaInfo } = useGetPwaInfo();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (pwaStatus === PwaStatus.ACTIVE) return;
@@ -141,7 +144,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
     <>
       <tr
         key={pwa.id}
-        onClick={() => window.open(`/edit-PWA/${pwa.id}`, "_blank")}
+        onClick={() => navigate(`/edit-PWA/${pwa.id}`)}
         className="hover:bg-[#383B66] group h-14 focus:bg-gray-300 w-full text-white cursor-pointer"
       >
         <Tooltip
