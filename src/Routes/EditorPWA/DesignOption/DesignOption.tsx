@@ -67,7 +67,7 @@ export interface DesignOptionFormValues {
   rating: string;
   description: string;
   countOfReviewsFull: string;
-  countOfStars: number;
+  countOfStars: number | string;
   fullDescription: string;
   shortDescription: string;
   version: string;
@@ -123,7 +123,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       pwaLink: content.pwaLink,
       rating: content.rating,
       countOfReviewsFull: content.countOfReviewsFull,
-      countOfStars: content.countOfStars,
+      countOfStars: content.countOfStars.toString(),
       version: content.version,
       fullDescription: content.fullDescription.originalLanguage,
       appIcon: content.appIcon,
