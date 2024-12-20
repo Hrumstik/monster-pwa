@@ -21,7 +21,7 @@ const LoginPage = () => {
     try {
       setLoading(true);
       const loginResponce = await submitCredentials(
-        form.getFieldsValue()
+        form.getFieldsValue(),
       ).unwrap();
       login(loginResponce.access_token);
       navigate("/");
@@ -52,7 +52,7 @@ const LoginPage = () => {
             <div className="flex justify-center font-normal font-reemkufi text-[22px] text-white leading-[56px] mb-[25px]">
               MONSTER PWA
             </div>
-            <Form form={form}>
+            <Form form={form} onFinish={handleSubmit}>
               <Form.Item name="email" className="mb-[25px]">
                 <MonsterInput placeholder="Email" className="!bg-[#161724]" />
               </Form.Item>
@@ -63,16 +63,16 @@ const LoginPage = () => {
                   className="!bg-[#161724]"
                 />
               </Form.Item>
+              <div className="flex justify-center">
+                <MonsterButton
+                  type="primary"
+                  className="w-2/3 h-10"
+                  htmlType="submit"
+                >
+                  Войти
+                </MonsterButton>
+              </div>
             </Form>
-            <div className="flex justify-center">
-              <MonsterButton
-                type="primary"
-                className="w-2/3 h-10"
-                onClick={handleSubmit}
-              >
-                Войти
-              </MonsterButton>
-            </div>
           </div>
         ) : (
           <Spin />
