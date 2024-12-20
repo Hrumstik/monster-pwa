@@ -1,5 +1,5 @@
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
 
 const htaccessContent = `
 RewriteEngine On
@@ -11,7 +11,7 @@ RewriteRule ^ - [L]
 RewriteRule ^ index.html [L]
 `;
 
-const outputPath = path.join(__dirname, "dist", ".htaccess");
+const outputPath = path.join(process.cwd(), "dist", ".htaccess");
 
 fs.writeFileSync(outputPath, htaccessContent, "utf8");
 console.log(`.htaccess файл создан по пути: ${outputPath}`);
