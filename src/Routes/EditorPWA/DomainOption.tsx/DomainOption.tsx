@@ -14,6 +14,7 @@ import { EditorPWATabs, getTabIcon } from "../EditorPWAHelpers";
 import { useGetReadyDomainsQuery } from "@store/slices/pwaApi";
 import { DefaultOptionType } from "antd/es/select";
 import ClassicButton from "@shared/elements/ClassicButton/ClassibButton";
+import { scrollToTop } from "@shared/helpers/common.ts";
 
 interface DomainOptionProps {
   setDomainsData: (domainData?: CloudflareData) => void;
@@ -199,6 +200,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
           message: "Успешно",
           description: "Приложение PWA можно сохранить",
         });
+        scrollToTop(".overflow-auto");
       }
     } catch (error) {
       if (error instanceof Error) {

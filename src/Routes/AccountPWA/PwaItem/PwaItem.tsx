@@ -26,6 +26,7 @@ import { PwaStatus } from "@models/domain";
 import { getPwaStatus } from "../MyPWAsHelpers.tsx";
 import type { MenuInfo } from "rc-menu/lib/interface";
 import { useNavigate } from "react-router-dom";
+import DomainCell from "@shared/elements/DomainCell/DomainCell.tsx";
 
 const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
   const { data } = useGetAllPwaContentQuery();
@@ -136,7 +137,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         ({
           ...prev,
           pwaName: e.target.value,
-        } as PwaContent)
+        }) as PwaContent,
     );
   };
 
@@ -156,7 +157,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
             {pwa.pwaName ?? pwa.appName}
           </td>
         </Tooltip>
-        <td className="px-8 py-3 truncate ...">{pwa.domain}</td>
+        <DomainCell domain={pwa.domain} />
         <td className="px-8 py-3 truncate ...">{pwa.geo}</td>
         <td className="px-8 py-3 truncate ...">
           {moment(pwa.createdAt).format("DD.MM.YYYY")}
@@ -164,10 +165,13 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         <td className="px-8 py-3 truncate ...">{getPwaStatus(pwaStatus!)}</td>
         <td className="px-8 py-3 flex gap-[10px]">
           <MonsterDropdown
-            trigger={["hover"]}
+            trigger={["click"]}
             menu={{ items: generateDropDownItems(pwa) }}
           >
-            <button className="details hover:bg-[#20223B] rounded flex items-center justify-center w-[30px] h-[30px] border-none bg-[#383B66] group-hover:bg-[#20223B]">
+            <button
+              onClick={(e) => e.stopPropagation()}
+              className="ml-auto details hover:bg-[#20223B] rounded flex items-center justify-center w-[30px] h-[30px] border-none bg-[#383B66] group-hover:bg-[#20223B]"
+            >
               <MoreOutlined style={{ color: "white", fontSize: "15px" }} />
             </button>
           </MonsterDropdown>

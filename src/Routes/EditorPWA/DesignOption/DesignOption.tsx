@@ -50,6 +50,7 @@ import InfoIcon from "@icons/InfoIcon";
 import VerifiedIcon from "@icons/VerifiedIcon";
 import GenerateIcon from "@icons/GenerateIcon";
 import ClassicButton from "@shared/elements/ClassicButton/ClassibButton.tsx";
+import { scrollToTop } from "@shared/helpers/common.ts";
 
 export interface DesignOptionFormValues {
   languages: string[];
@@ -158,7 +159,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       content.images.map((image) => ({
         url: image.url,
         preview: image.url,
-      }))
+      })),
     );
   };
 
@@ -228,7 +229,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const addEmptyReview = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.preventDefault();
     setReviews((prev) => [
@@ -265,11 +266,11 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const [screens, setScreens] = useState<Picture[]>(
-    Array.from({ length: 4 }, () => ({ url: null, preview: null }))
+    Array.from({ length: 4 }, () => ({ url: null, preview: null })),
   );
 
   const removeAppIcon = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.stopPropagation();
     setAppIcon({ url: null, preview: null });
@@ -336,7 +337,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     const screen = screens[index];
 
     const handleRemoveScreen = (
-      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     ) => {
       e.stopPropagation();
       setScreens((prev) => {
@@ -387,7 +388,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const addEmptyScreen = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.preventDefault();
     setScreens((prev) => [
@@ -470,21 +471,21 @@ const DesignOption: React.FC<DesignOptionProps> = ({
             };
           }
           return step;
-        })
+        }),
       );
       if (!id) {
         setCurrentTab(EditorPWATabs.Domain);
       } else {
-        console.log("PWA сохранен");
         notification.success({
           message: "Успешно",
           description: "Вы можете сохранить PWA",
         });
+        scrollToTop(".overflow-auto");
       }
     } catch (error) {
       if (error && typeof error === "object" && "errorFields" in error) {
         onFinishFailed(
-          error as { errorFields: { name: (string | number)[] }[] }
+          error as { errorFields: { name: (string | number)[] }[] },
         );
       } else {
         console.error(error);
@@ -538,7 +539,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       >
         <div className="flex flex-col gap-[30px] mb-[134px]">
           <div className="bg-cardColor rounded-lg p-[50px] pb-[30px]">
-            <div className="flex gap-[30px] sm:flex-col lg:flex-row">
+            <div className="flex gap-[30px] sm:flex-col lg:flex-row sm:items-center">
               <div className="flex-1 flex flex-col gap-[30px]">
                 <div className="text-base-lg leading-[25px] text-white">
                   Настройки оформления
@@ -722,7 +723,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                             generateRandomValue(
                               form,
                               "developerName",
-                              developerValue
+                              developerValue,
                             )
                           }
                         >
@@ -780,7 +781,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                               generateRandomValue(
                                 form,
                                 "countOfDownloads",
-                                countOfDownloadsValues
+                                countOfDownloadsValues,
                               )
                             }
                           >
@@ -863,13 +864,16 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               вы также можете добовлять широкоформатные скрины!
             </div>
             {
-              <div className="flex gap-5">
+              <div className="w-full overflow-x-auto flex gap-5">
                 {screens.map((_, index) => (
                   <div key={index}>{generateScreen(index)}</div>
                 ))}
                 {!screens.some((screen) => screen.url === null) ? (
                   <button
                     onClick={addEmptyScreen}
+                    style={{
+                      minWidth: wideScreensIsActive ? "220px" : "100px",
+                    }}
                     className="border-none hover:border-[#36395a] hover:border hover:border-solid bg-[#161724] h-[166px] rounded-lg w-[100px]  flex justify-center items-center cursor-pointer relative"
                   >
                     <IoAddOutline color="white" />
@@ -906,7 +910,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                           generateRandomValue(
                             form,
                             "shortDescription",
-                            casinoMessages
+                            casinoMessages,
                           )
                         }
                       >
@@ -1012,7 +1016,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                             generateRandomValue(
                               form,
                               "countOfReviews",
-                              countOfReviews
+                              countOfReviews,
                             )
                           }
                         >
@@ -1084,15 +1088,16 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               </div>
             </div>
           </div>
-          <div className="flex xl:flex-row sm:flex-col gap-[30px] mb-[30px] relative">
+          <div className="flex xl:flex-row sm:flex-col sm:items-center gap-[30px] mb-[30px] relative">
             <div className="flex flex-col gap-[30px] flex-1">
-              <div className="bg-cardColor rounded-lg py-[30px] px-[50px]">
-                <div className="flex flex-col gap-5">
-                  <div className="flex justify-between items-center">
-                    <div className="text-[#E3CC02] font-bold text-base leading-[18px] ">
-                      Комментарии
-                    </div>
+              <div className="max-h-[600px] overflow-y-auto bg-cardColor rounded-lg py-[30px] px-[50px]">
+                <div className="flex justify-between items-center">
+                  <div className="text-[#E3CC02] font-bold text-base leading-[18px] ">
+                    Комментарии
                   </div>
+                </div>
+
+                <div className="flex flex-col gap-5">
                   {reviews.map((review, index) => (
                     <ReviewItem
                       key={index}
@@ -1122,7 +1127,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                 </div>
               </div>
               <div>
-                <ClassicButton onClick={onFinish} text={"Продолжить"} />
+                <ClassicButton onClick={onFinish} text="Продолжить" />
               </div>
             </div>
             <div className="w-[360px] flex  sticky top-4 right-0 h-[671px] rounded-[32px] box-border border-[5px] border-solid border-[#515ACA] bg-white overflow-auto scrollbar-hidden">
