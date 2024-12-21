@@ -3,22 +3,21 @@ import { DesignOptionFormValues } from "./DesignOption";
 
 export const allowedExtensions = [".png", ".jpeg", ".jpg", ".svg", ".webp"];
 export const allowedExtensionsErrorMessage = `Допустимые форматы: ${allowedExtensions.join(
-  ", ",
+  ", "
 )}`;
 export const languages = [
   { value: "en-US", label: "Английский (США)" },
-  { value: "en-GB", label: "Английский (Великобритания)" },
   { value: "DE", label: "Немецкий" },
   { value: "FR", label: "Французский" },
   { value: "ES", label: "Испанский" },
   { value: "IT", label: "Итальянский" },
-  { value: "PT", label: "Португальский" },
+  { value: "PT-BR", label: "Португальский" },
   { value: "NL", label: "Нидерландский" },
   { value: "SV", label: "Шведский" },
   { value: "DA", label: "Датский" },
   { value: "FI", label: "Финский" },
   { value: "PL", label: "Польский" },
-  { value: "ZH", label: "Китайский" },
+  { value: "ZH-HANS", label: "Китайский" },
   { value: "JA", label: "Японский" },
   { value: "ET", label: "Эстонский" },
   { value: "LT", label: "Литовский" },
@@ -45,7 +44,7 @@ export const categories = [
 export const generateRandomValue = (
   form: FormInstance<DesignOptionFormValues>,
   field: string,
-  values: string[],
+  values: string[]
 ) => {
   const randomValue = values[Math.floor(Math.random() * values.length)];
   form.setFieldsValue({ [field]: randomValue });
