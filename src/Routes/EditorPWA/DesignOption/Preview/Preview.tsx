@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { PreviewPwaContent, PwaViews } from "./models";
 import MainView from "./MainView/MainView";
 import AboutView from "./AboutView/AboutView";
@@ -25,28 +25,7 @@ const Preview = ({
   myPWAsPage?: boolean;
 }) => {
   const [view, setView] = useState<PwaViews>(PwaViews.Main);
-  const [isMenuVisible, setIsMenuVisible] = useState(true);
   const containerRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (containerRef.current) {
-        const scrollTop = containerRef.current.scrollTop;
-        setIsMenuVisible(scrollTop === 0);
-      }
-    };
-
-    const container = containerRef.current;
-    if (container) {
-      container.addEventListener("scroll", handleScroll);
-    }
-
-    return () => {
-      if (container) {
-        container.removeEventListener("scroll", handleScroll);
-      }
-    };
-  }, []);
 
   let currentView;
 
@@ -89,7 +68,7 @@ const Preview = ({
   return (
     <div ref={containerRef} className="relative h-full w-full overflow-y-auto">
       <div className="w-full h-full bg-white rounded-3xl">{currentView}</div>
-      {previewPwaContent.hasMenu && <PwaMenu isVisible={isMenuVisible} />}
+      {previewPwaContent.hasMenu && <PwaMenu />}
     </div>
   );
 };
