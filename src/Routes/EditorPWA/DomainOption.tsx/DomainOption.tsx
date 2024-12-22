@@ -40,7 +40,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
   const { getPwaInfo } = useGetPwaInfo();
   const [readyDomains, setReadyDomains] = useState<DefaultOptionType[]>([]);
   const [selectedReadyDomain, setSelectedReadyDomain] = useState<string | null>(
-    null,
+    null
   );
   let savedNsRecords:
     | {
@@ -95,7 +95,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
             };
           }
           return step;
-        }),
+        })
       );
       return;
     }
@@ -115,7 +115,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
               };
             }
             return step;
-          }),
+          })
         );
       })
       .catch(() => {
@@ -131,7 +131,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
           domain: extractDomain(form.getFieldValue("domain")),
           email: form.getFieldValue("email"),
           gApiKey: form.getFieldValue("gApiKey"),
-        },
+        }
       );
 
       if (domainValidation.data.canBeAdded) {
@@ -165,7 +165,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
             };
           }
           return step;
-        }),
+        })
       );
       return;
     }
@@ -194,7 +194,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
               };
             }
             return step;
-          }),
+          })
         );
         api.success({
           message: "Успешно",
@@ -223,21 +223,23 @@ const DomainOption: React.FC<DomainOptionProps> = ({
         <Result
           status="success"
           title={
-            <h1 className="font-bold text-base leading-5 text-[#00FF11] mb-4">
-              Домен успешно добавлен!
+            <h1 className="font-bold text-base leading-5 text-[#00FF11] cursor-default mb-4">
+              Домен <span className="underline cursor-auto">{domain}</span>{" "}
+              успешно добавлен!
             </h1>
           }
           subTitle={
             <>
-              <p className="text-xs leading-4 text-[#8F919D] mb-2">
+              <p className="text-xs leading-4 text-[#8F919D] mb-2 cursor-default">
                 Пожалуйста, обновите записи NS у вашего <br /> провайдера,
                 указав следующие серверы:
               </p>
               <ul className="text-white text-xs">
                 {savedNsRecords?.map((record, i) => (
-                  <li key={record.name}>{`NS-сервер ${i + 1}: ${
-                    record.name
-                  }`}</li>
+                  <li className="cursor-default" key={record.name}>
+                    {`NS-сервер ${i + 1}:`}{" "}
+                    <span className="cursor-auto">{record.name}</span>
+                  </li>
                 ))}
               </ul>
             </>
@@ -367,7 +369,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
                     onClick={() =>
                       window.open(
                         "https://vibegamesteam.notion.site/86ca016f4984469db74d7c2eca83c16f",
-                        "_blank",
+                        "_blank"
                       )
                     }
                     className="underline cursor-pointer"

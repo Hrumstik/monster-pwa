@@ -15,23 +15,19 @@ const handleCopy = (text?: string): void => {
     });
 };
 
-interface DomainCellProps {
-  domain?: string;
-}
-
-const DomainCell = ({ domain }: DomainCellProps) => {
+const DomainCell = ({ domain }: { domain?: string }) => {
   const handleCopyClick: MouseEventHandler<HTMLSpanElement> = (e) => {
     e.stopPropagation();
     handleCopy(domain);
   };
 
   return (
-    <td className="px-8 py-3 truncate flex items-center">
-      <span className="flex-1 truncate">{domain || "–"}</span>
+    <td className="py-3 truncate flex flex-start items-center gap-3">
+      <span>{domain ?? "–"}</span>
       {!!domain && (
         <Tooltip title="Копировать">
           <CopyOutlined
-            className="ml-2 cursor-pointer text-gray-500 hover:text-blue-500"
+            className="cursor-pointer text-gray-500 hover:text-blue-500"
             onClick={handleCopyClick}
           />
         </Tooltip>

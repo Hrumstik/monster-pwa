@@ -6,7 +6,8 @@ export const allowedExtensionsErrorMessage = `Допустимые формат�
   ", "
 )}`;
 export const languages = [
-  { value: "en-US", label: "Английский (США)" },
+  { label: "Все языки", value: "all" },
+  { value: "en-US", label: "Английский" },
   { value: "DE", label: "Немецкий" },
   { value: "FR", label: "Французский" },
   { value: "ES", label: "Испанский" },

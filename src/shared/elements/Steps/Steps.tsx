@@ -33,7 +33,7 @@ const Steps: React.FC<StepsProps> = ({
 
   return (
     <div className="text-sm font-medium text-center text-white border-b border-[#161724]">
-      <ul className="flex flex-wrap -mb-px px-7 items-center gap-3">
+      <ul className="flex flex-no-wrap -mb-px px-7 items-center gap-3">
         {steps.map((step, index) => (
           <React.Fragment key={step.label}>
             <li className="flex items-center">
@@ -51,7 +51,9 @@ const Steps: React.FC<StepsProps> = ({
               >
                 <div className="flex gap-2.5 uppercase">
                   {step.icon}
-                  <div className={getTextColor(step)}>{step.label}</div>
+                  <div className={`${getTextColor(step)} truncate ...`}>
+                    {step.label}
+                  </div>
                 </div>
               </div>
             </li>

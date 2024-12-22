@@ -90,7 +90,7 @@ const MainView = ({
             <div className="flex gap-1 text-[10px] text-[#444444] items-center">
               <div>Нет рекламы</div>
               <div className="rounded-full w-0.5 h-0.5 bg-[#444444]" />
-              <div>Нет платного контента</div>
+              <div className="text-[20px]">Нет платного контента</div>
             </div>
           )}
         </div>
@@ -141,10 +141,10 @@ const MainView = ({
             setView(PwaViews.About);
           }}
         >
-          <span className="text-[#605D64] leading-6 font-medium text-base">
+          <span className="text-[#1D1D1D] leading-6 font-medium text-base">
             Описание
           </span>
-          <ArrowRightOutlined />
+          <ArrowRightOutlined style={{ color: "#1D1D1D" }} />
         </div>
         <div className="text-[#605D64] text-[14px] leading-5 text-left">
           {previewPwaContent.shortDescription}
@@ -157,10 +157,10 @@ const MainView = ({
           setView(PwaViews.Reviews);
         }}
       >
-        <span className="text-[#605D64] leading-6 font-medium text-base">
+        <span className="text-[#1D1D1D] leading-6 font-medium text-base">
           Оценки и отзывы
         </span>
-        <ArrowRightOutlined />
+        <ArrowRightOutlined style={{ color: "#1D1D1D" }} />
       </div>
       <div className="text-[#605D64] text-xs leading-4 mb-4">
         Оценки и отзывы подтверждены. Их оставили пользователи с таким же типом

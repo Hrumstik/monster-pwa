@@ -27,6 +27,7 @@ import { getPwaStatus } from "../MyPWAsHelpers.tsx";
 import type { MenuInfo } from "rc-menu/lib/interface";
 import { useNavigate } from "react-router-dom";
 import DomainCell from "@shared/elements/DomainCell/DomainCell.tsx";
+import { useUpdateEffect } from "react-use";
 
 const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
   const { data } = useGetAllPwaContentQuery();
@@ -39,17 +40,16 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
     useUpdatePwaNameMutation();
   const [checkDomainStatus] = useLazyCheckDomainStatusQuery();
   const [pwaStatus, setPwaStatus] = useState<PwaStatus>();
+  const { getPwaInfo } = useGetPwaInfo();
 
   useEffect(() => {
     const actualStatus = getPwaInfo(pwa.id!).status!;
     setPwaStatus(actualStatus);
-  }, [userData]);
-
-  const { getPwaInfo } = useGetPwaInfo();
+  }, [userData, getPwaInfo, pwa.id]);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
+  useUpdateEffect(() => {
     if (pwaStatus === PwaStatus.ACTIVE) return;
     let interval: NodeJS.Timeout;
     const getDomainStatus = async (pwaContentID: string) => {
@@ -137,7 +137,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         ({
           ...prev,
           pwaName: e.target.value,
-        }) as PwaContent,
+        } as PwaContent)
     );
   };
 
@@ -154,16 +154,16 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
           title={pwa.pwaName ?? pwa.appName}
         >
           <td className="px-8 py-3 truncate overflow-hidden whitespace-nowrap">
+            <Spin spinning={deletePwaLoading || updatePwaLoading} fullscreen />
             {pwa.pwaName ?? pwa.appName}
           </td>
         </Tooltip>
         <DomainCell domain={pwa.domain} />
-        <td className="px-8 py-3 truncate ...">{pwa.geo}</td>
-        <td className="px-8 py-3 truncate ...">
+        <td className="py-3 truncate ...">
           {moment(pwa.createdAt).format("DD.MM.YYYY")}
         </td>
-        <td className="px-8 py-3 truncate ...">{getPwaStatus(pwaStatus!)}</td>
-        <td className="px-8 py-3 flex gap-[10px]">
+        <td className="py-3 truncate ...">{getPwaStatus(pwaStatus!)}</td>
+        <td className="pr-8 py-3 flex gap-[10px]">
           <MonsterDropdown
             trigger={["click"]}
             menu={{ items: generateDropDownItems(pwa) }}
@@ -177,7 +177,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
           </MonsterDropdown>
         </td>
       </tr>
-      <Spin spinning={deletePwaLoading || updatePwaLoading} fullscreen />
+
       <Modal
         className="rename-pwa-modal"
         title={<div className="mb-5 text-white">Переименовать PWA</div>}

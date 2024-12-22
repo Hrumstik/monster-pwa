@@ -132,25 +132,23 @@ const MyPWAs = () => {
         ) : (
           <>
             {availablePWAs && availablePWAs?.length > 0 && (
-              <table className="table-fixed bg-transparent border-collapse w-full">
+              <table className="table-auto bg-transparent border-collapse w-full">
                 <thead>
-                  <tr>
-                    <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white truncate ...">
+                  <tr className="">
+                    <th className="bg-[#515ACA] text-left pl-8 py-3 leading-5 text-base font-bold text-white truncate ...">
                       Название
                     </th>
-                    <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white truncate ...">
+                    <th className="bg-[#515ACA] text-left  py-3 leading-5 text-base font-bold text-white truncate ...">
                       Домен
                     </th>
-                    <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white truncate ...">
-                      ГЕО
-                    </th>
-                    <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white truncate ...">
+
+                    <th className="bg-[#515ACA] text-left py-3 leading-5 text-base font-bold text-white truncate ...">
                       Дата создания
                     </th>
-                    <th className="bg-[#515ACA] text-left px-8 py-3 leading-5 text-base font-bold text-white truncate ...">
+                    <th className="bg-[#515ACA] text-left py-3 leading-5 text-base font-bold text-white truncate ...">
                       Статус
                     </th>
-                    <th className="bg-[#515ACA] px-8 py-3"></th>
+                    <th className="bg-[#515ACA] py-3"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -161,7 +159,7 @@ const MyPWAs = () => {
                 </tbody>
               </table>
             )}
-            {availablePWAs?.length === 0 && (
+            {!availablePWAs?.length && (
               <Empty
                 description={<span style={{ color: "white" }}>Нет PWA</span>}
                 className="p-[40px]"

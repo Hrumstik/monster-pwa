@@ -159,7 +159,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       content.images.map((image) => ({
         url: image.url,
         preview: image.url,
-      })),
+      }))
     );
   };
 
@@ -229,7 +229,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const addEmptyReview = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
     setReviews((prev) => [
@@ -266,11 +266,11 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const [screens, setScreens] = useState<Picture[]>(
-    Array.from({ length: 4 }, () => ({ url: null, preview: null })),
+    Array.from({ length: 4 }, () => ({ url: null, preview: null }))
   );
 
   const removeAppIcon = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
     setAppIcon({ url: null, preview: null });
@@ -337,7 +337,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     const screen = screens[index];
 
     const handleRemoveScreen = (
-      e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
       e.stopPropagation();
       setScreens((prev) => {
@@ -388,7 +388,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const addEmptyScreen = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
     setScreens((prev) => [
@@ -471,7 +471,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
             };
           }
           return step;
-        }),
+        })
       );
       if (!id) {
         setCurrentTab(EditorPWATabs.Domain);
@@ -485,7 +485,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     } catch (error) {
       if (error && typeof error === "object" && "errorFields" in error) {
         onFinishFailed(
-          error as { errorFields: { name: (string | number)[] }[] },
+          error as { errorFields: { name: (string | number)[] }[] }
         );
       } else {
         console.error(error);
@@ -723,7 +723,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                             generateRandomValue(
                               form,
                               "developerName",
-                              developerValue,
+                              developerValue
                             )
                           }
                         >
@@ -781,7 +781,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                               generateRandomValue(
                                 form,
                                 "countOfDownloads",
-                                countOfDownloadsValues,
+                                countOfDownloadsValues
                               )
                             }
                           >
@@ -910,7 +910,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                           generateRandomValue(
                             form,
                             "shortDescription",
-                            casinoMessages,
+                            casinoMessages
                           )
                         }
                       >
@@ -1016,7 +1016,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                             generateRandomValue(
                               form,
                               "countOfReviews",
-                              countOfReviews,
+                              countOfReviews
                             )
                           }
                         >
@@ -1088,9 +1088,9 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               </div>
             </div>
           </div>
-          <div className="flex xl:flex-row sm:flex-col sm:items-center gap-[30px] mb-[30px] relative">
+          <div className="flex xl:flex-row sm:flex-col  gap-[30px] mb-[30px] relative">
             <div className="flex flex-col gap-[30px] flex-1">
-              <div className="max-h-[600px] overflow-y-auto bg-cardColor rounded-lg py-[30px] px-[50px]">
+              <div className="overflow-y-auto bg-cardColor rounded-lg py-[30px] px-[50px]">
                 <div className="flex justify-between items-center">
                   <div className="text-[#E3CC02] font-bold text-base leading-[18px] ">
                     Комментарии

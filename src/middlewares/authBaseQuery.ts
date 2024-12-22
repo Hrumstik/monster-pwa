@@ -23,7 +23,7 @@ const baseQuery: BaseQueryFn<
   const token = JSON.parse(localStorageToken);
 
   const customFetchBase = fetchBaseQuery({
-    baseUrl: "http://localhost:3000/",
+    baseUrl: "https://pwac.world/",
     prepareHeaders: (headers) => {
       if (token) {
         headers.set("authorization", `Bearer ${token}`);
