@@ -51,6 +51,7 @@ import VerifiedIcon from "@icons/VerifiedIcon";
 import GenerateIcon from "@icons/GenerateIcon";
 import ClassicButton from "@shared/elements/ClassicButton/ClassibButton.tsx";
 import { scrollToTop } from "@shared/helpers/common.ts";
+import PwaMenu from "../DesignOption/Preview/Menu/Menu.tsx";
 
 export interface DesignOptionFormValues {
   languages: string[];
@@ -159,7 +160,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       content.images.map((image) => ({
         url: image.url,
         preview: image.url,
-      }))
+      })),
     );
   };
 
@@ -229,7 +230,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const addEmptyReview = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.preventDefault();
     setReviews((prev) => [
@@ -266,11 +267,11 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const [screens, setScreens] = useState<Picture[]>(
-    Array.from({ length: 4 }, () => ({ url: null, preview: null }))
+    Array.from({ length: 4 }, () => ({ url: null, preview: null })),
   );
 
   const removeAppIcon = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.stopPropagation();
     setAppIcon({ url: null, preview: null });
@@ -337,7 +338,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     const screen = screens[index];
 
     const handleRemoveScreen = (
-      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     ) => {
       e.stopPropagation();
       setScreens((prev) => {
@@ -388,7 +389,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const addEmptyScreen = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.preventDefault();
     setScreens((prev) => [
@@ -471,7 +472,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
             };
           }
           return step;
-        })
+        }),
       );
       if (!id) {
         setCurrentTab(EditorPWATabs.Domain);
@@ -485,7 +486,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     } catch (error) {
       if (error && typeof error === "object" && "errorFields" in error) {
         onFinishFailed(
-          error as { errorFields: { name: (string | number)[] }[] }
+          error as { errorFields: { name: (string | number)[] }[] },
         );
       } else {
         console.error(error);
@@ -723,7 +724,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                             generateRandomValue(
                               form,
                               "developerName",
-                              developerValue
+                              developerValue,
                             )
                           }
                         >
@@ -781,7 +782,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                               generateRandomValue(
                                 form,
                                 "countOfDownloads",
-                                countOfDownloadsValues
+                                countOfDownloadsValues,
                               )
                             }
                           >
@@ -910,7 +911,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                           generateRandomValue(
                             form,
                             "shortDescription",
-                            casinoMessages
+                            casinoMessages,
                           )
                         }
                       >
@@ -1016,7 +1017,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                             generateRandomValue(
                               form,
                               "countOfReviews",
-                              countOfReviews
+                              countOfReviews,
                             )
                           }
                         >
@@ -1130,7 +1131,11 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                 <ClassicButton onClick={onFinish} text="Продолжить" />
               </div>
             </div>
-            <div className="w-[360px] flex  sticky top-4 right-0 h-[671px] rounded-[32px] box-border border-[5px] border-solid border-[#515ACA] bg-white overflow-auto scrollbar-hidden">
+            <div
+              style={{ zIndex: 80 }}
+              // tailwind почему-то не работает для zindex ^^
+              className="w-[360px] relative flex top-4 right-0 h-[671px] rounded-[32px] box-border border-[5px] border-solid border-[#515ACA] bg-white overflow-hidden scrollbar-hidden"
+            >
               <Preview
                 sliders={sliders}
                 previewPwaContent={previewContent}
@@ -1139,6 +1144,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                 tags={tags}
                 reviews={reviews}
               />
+              {previewContent.hasMenu && <PwaMenu />}
             </div>
           </div>
         </div>
@@ -1149,25 +1155,3 @@ const DesignOption: React.FC<DesignOptionProps> = ({
 };
 
 export default DesignOption;
-
-<div className="flex-1 flex-col flex gap-4">
-  <div className="font-bold text-end text-white text-base leading-[18px]">
-    Дополнительные блоки:
-  </div>
-  <div className="flex gap-4 justify-end items-center">
-    <Form.Item name="securityUI" noStyle>
-      <MonsterSwitch />
-    </Form.Item>
-    <div className="text-white text-base leading-5">
-      Безопасность и <br /> передача данных
-    </div>
-  </div>
-  <div className="flex gap-4 justify-end items-center">
-    <Form.Item name="hasPaidContentTitle" noStyle>
-      <MonsterSwitch />
-    </Form.Item>
-    <div className="text-white text-base leading-5">
-      Реклама и <br /> платный контент
-    </div>
-  </div>
-</div>;

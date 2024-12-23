@@ -5,11 +5,7 @@ import SearchIcon from "@icons/SearchIcon";
 
 const PwaMenu = () => {
   return (
-    <div
-      className={`left-0 -bottom-3 right-0 h-[70px] fixed z-10 
-        transition-all duration-200 
-        `}
-    >
+    <div className="h-[70px] z-10 transition-all duration-200 absolute -bottom-3 left-0 w-full">
       <div className="h-[58px] bg-[#f0f3f8] px-6 py-1.5 flex gap-5">
         <div className="flex-1 flex flex-col items-center">
           <GamesIcon />

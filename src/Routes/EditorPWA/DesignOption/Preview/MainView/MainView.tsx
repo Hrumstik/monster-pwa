@@ -88,9 +88,9 @@ const MainView = ({
           </div>
           {previewPwaContent.hasPaidContentTitle && (
             <div className="flex gap-1 text-[10px] text-[#444444] items-center">
-              <div>Нет рекламы</div>
+              <div className="text-[10px]">Нет рекламы</div>
               <div className="rounded-full w-0.5 h-0.5 bg-[#444444]" />
-              <div className="text-[20px]">Нет платного контента</div>
+              <div className="text-[10px]">Нет платного контента</div>
             </div>
           )}
         </div>
@@ -310,7 +310,12 @@ const MainView = ({
           </div>
         </>
       )}
-      <div className="h-[30px]"></div>
+
+      {previewPwaContent.hasMenu ? (
+        <div className="h-[80px]"></div>
+      ) : (
+        <div className="h-[30px]"></div>
+      )}
     </div>
   );
 };

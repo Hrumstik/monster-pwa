@@ -5,7 +5,6 @@ import AboutView from "./AboutView/AboutView";
 import ReviewsView from "./ReviewsView/ReviewsView";
 import { Picture } from "@models/pwa";
 import { Review } from "@models/review";
-import PwaMenu from "./Menu/Menu";
 
 const Preview = ({
   previewPwaContent,
@@ -66,9 +65,11 @@ const Preview = ({
   }
 
   return (
-    <div ref={containerRef} className="relative h-full w-full overflow-y-auto">
+    <div
+      ref={containerRef}
+      className="relative h-full w-full overflow-y-auto pb-[30px]"
+    >
       <div className="w-full h-full bg-white rounded-3xl">{currentView}</div>
-      {previewPwaContent.hasMenu && <PwaMenu />}
     </div>
   );
 };
