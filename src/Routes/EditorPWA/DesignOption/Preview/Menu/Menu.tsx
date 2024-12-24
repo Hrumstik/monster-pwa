@@ -9,19 +9,39 @@ const PwaMenu = () => {
       <div className="h-[58px] bg-[#f0f3f8] px-6 py-1.5 flex gap-5">
         <div className="flex-1 flex flex-col items-center">
           <GamesIcon />
-          <div className="font-medium text-xs">Игры</div>
+          <div
+            style={{ fontWeight: 600, color: "#605D64" }}
+            className="font-medium text-xs"
+          >
+            Игры
+          </div>
         </div>
         <div className="flex-1 flex flex-col items-center">
           <AppsIcon />
-          <div className="font-medium text-xs">Приложения</div>
+          <div
+            style={{ fontWeight: 600, color: "#056890" }}
+            className="font-medium text-xs"
+          >
+            Приложения
+          </div>
         </div>
         <div className="flex-1 flex flex-col items-center">
           <SearchIcon />
-          <div className="font-medium text-xs">Поиск</div>
+          <div
+            style={{ fontWeight: 600, color: "#605D64" }}
+            className="font-medium text-xs"
+          >
+            Поиск
+          </div>
         </div>
         <div className="flex-1 flex flex-col items-center">
           <BooksIcon />
-          <div className="font-medium text-xs">Книги</div>
+          <div
+            style={{ fontWeight: 600, color: "#605D64" }}
+            className="font-medium text-xs"
+          >
+            Книги
+          </div>
         </div>
       </div>
     </div>
