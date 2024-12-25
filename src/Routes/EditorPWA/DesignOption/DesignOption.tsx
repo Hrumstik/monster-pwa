@@ -37,8 +37,8 @@ import ReviewItem from "./ReviewItem/ReviewItem";
 import { useWatch } from "antd/es/form/Form";
 import { v4 as uuidv4 } from "uuid";
 import { requiredValidator } from "@shared/form/validators/validators";
-import { useUploadImagesMutation } from "@store/slices/filesApi";
-import { useGetPwaContentByIdQuery } from "@store/slices/pwaApi";
+import { useUploadImagesMutation } from "@store/apis/filesApi.ts";
+import { useGetPwaContentByIdQuery } from "@store/apis/pwaApi.ts";
 import { PreviewPwaContent } from "./Preview/models.ts";
 import Preview from "./Preview/Preview.tsx";
 import { useParams } from "react-router-dom";
@@ -160,7 +160,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       content.images.map((image) => ({
         url: image.url,
         preview: image.url,
-      })),
+      }))
     );
   };
 
@@ -230,7 +230,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const addEmptyReview = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
     setReviews((prev) => [
@@ -267,11 +267,11 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const [screens, setScreens] = useState<Picture[]>(
-    Array.from({ length: 4 }, () => ({ url: null, preview: null })),
+    Array.from({ length: 4 }, () => ({ url: null, preview: null }))
   );
 
   const removeAppIcon = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
     setAppIcon({ url: null, preview: null });
@@ -338,7 +338,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     const screen = screens[index];
 
     const handleRemoveScreen = (
-      e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
       e.stopPropagation();
       setScreens((prev) => {
@@ -389,7 +389,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const addEmptyScreen = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
     setScreens((prev) => [
@@ -472,7 +472,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
             };
           }
           return step;
-        }),
+        })
       );
       if (!id) {
         setCurrentTab(EditorPWATabs.Domain);
@@ -486,7 +486,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     } catch (error) {
       if (error && typeof error === "object" && "errorFields" in error) {
         onFinishFailed(
-          error as { errorFields: { name: (string | number)[] }[] },
+          error as { errorFields: { name: (string | number)[] }[] }
         );
       } else {
         console.error(error);
@@ -724,7 +724,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                             generateRandomValue(
                               form,
                               "developerName",
-                              developerValue,
+                              developerValue
                             )
                           }
                         >
@@ -782,7 +782,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                               generateRandomValue(
                                 form,
                                 "countOfDownloads",
-                                countOfDownloadsValues,
+                                countOfDownloadsValues
                               )
                             }
                           >
@@ -911,7 +911,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                           generateRandomValue(
                             form,
                             "shortDescription",
-                            casinoMessages,
+                            casinoMessages
                           )
                         }
                       >
@@ -1017,7 +1017,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                             generateRandomValue(
                               form,
                               "countOfReviews",
-                              countOfReviews,
+                              countOfReviews
                             )
                           }
                         >

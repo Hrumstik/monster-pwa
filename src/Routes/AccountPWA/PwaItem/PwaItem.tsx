@@ -12,7 +12,7 @@ import {
   useGetMyUserQuery,
   useLazyCheckDomainStatusQuery,
   useUpdatePwaNameMutation,
-} from "@store/slices/pwaApi";
+} from "@store/apis/pwaApi.ts";
 import { Modal, notification, Spin, Tooltip } from "antd";
 import moment from "moment";
 import { useEffect, useState } from "react";
@@ -28,9 +28,11 @@ import type { MenuInfo } from "rc-menu/lib/interface";
 import { useNavigate } from "react-router-dom";
 import DomainCell from "@shared/elements/DomainCell/DomainCell.tsx";
 import { useUpdateEffect } from "react-use";
+import PwaTags from "./TagItem/PwaTags.tsx";
 
 const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
   const { data } = useGetAllPwaContentQuery();
+
   const [renamePwa, setRenamePwa] = useState<PwaContent | null>();
   const [previewPwa, setPreviewPwa] = useState<PwaContent | null>();
   const { data: userData } = useGetMyUserQuery();
@@ -146,7 +148,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
       <tr
         key={pwa.id}
         onClick={() => navigate(`/edit-PWA/${pwa.id}`)}
-        className="hover:bg-[#383B66] group h-14 focus:bg-gray-300 w-full text-white cursor-pointer"
+        className="hover:bg-[#383B66] group text-xs focus:bg-gray-300 w-full text-white cursor-pointer"
       >
         <Tooltip
           color="grey"
@@ -155,22 +157,32 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         >
           <td className="px-8 py-3 truncate overflow-hidden whitespace-nowrap">
             <Spin spinning={deletePwaLoading || updatePwaLoading} fullscreen />
-            {pwa.pwaName ?? pwa.appName}
+            <div className="flex justify-center">
+              {pwa.pwaName ?? pwa.appName}
+            </div>
           </td>
         </Tooltip>
         <DomainCell domain={pwa.domain} />
-        <td className="py-3 truncate ...">
+        <td className="text-center py-3 truncate ... ">
           {moment(pwa.createdAt).format("DD.MM.YYYY")}
         </td>
-        <td className="py-3 truncate ...">{getPwaStatus(pwaStatus!)}</td>
-        <td className="pr-8 py-3 flex gap-[10px]">
+        <td className="py-3 truncate ... text-center">
+          {getPwaStatus(pwaStatus!)}
+        </td>
+        <td className="py-3">
+          <PwaTags
+            pwaTags={getPwaInfo(pwa.id!).pwaTags ?? []}
+            pwaId={pwa.id!}
+          />
+        </td>
+        <td className="py-3 text-center">
           <MonsterDropdown
             trigger={["click"]}
             menu={{ items: generateDropDownItems(pwa) }}
           >
             <button
               onClick={(e) => e.stopPropagation()}
-              className="ml-auto details hover:bg-[#20223B] rounded flex items-center justify-center w-[30px] h-[30px] border-none bg-[#383B66] group-hover:bg-[#20223B]"
+              className="details mx-auto hover:bg-[#20223B] rounded flex items-center justify-center w-[30px] h-[30px] border-none bg-[#383B66] group-hover:bg-[#20223B]"
             >
               <MoreOutlined style={{ color: "white", fontSize: "15px" }} />
             </button>

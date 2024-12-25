@@ -5,7 +5,7 @@ import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
 import MonsterDatePicker from "@shared/elements/DatePicker/MonsterDatePicker";
 import dayjs from "dayjs";
 import MonsterRate from "@shared/elements/Rate/MonsterRate";
-import { useUploadImagesMutation } from "@store/slices/filesApi";
+import { useUploadImagesMutation } from "@store/apis/filesApi.ts";
 import { useWatch } from "antd/es/form/Form";
 import { requiredValidator } from "@shared/form/validators/validators";
 import RemoveIcon from "@icons/RemoveIcon";
@@ -41,7 +41,7 @@ const ReviewItem = ({
             isActive: true,
           };
         } else return review;
-      }),
+      })
     );
   };
 
@@ -62,11 +62,11 @@ const ReviewItem = ({
             ...review,
             isActive: false,
             reviewAuthorName: form.getFieldValue(
-              `reviewAuthorName${reviewContent.id}`,
+              `reviewAuthorName${reviewContent.id}`
             ),
             reviewAuthorIcon: uploadIconResponse.imageUrls[0],
             reviewAuthorRating: form.getFieldValue(
-              `reviewAuthorRating${reviewContent.id}`,
+              `reviewAuthorRating${reviewContent.id}`
             ),
             reviewText: form.getFieldValue(`reviewText${reviewContent.id}`),
             devResponse: form.getFieldValue(`devResponse${reviewContent.id}`),
@@ -124,7 +124,7 @@ const ReviewItem = ({
   };
 
   const removeReviewIcon = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
     e.preventDefault();

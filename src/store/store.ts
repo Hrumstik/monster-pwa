@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { authSlice } from "./slices/authApi";
-import { filesSlice } from "./slices/filesApi";
-import { pwaSlice } from "./slices/pwaApi";
+import { authSlice } from "./apis/authApi";
+import { filesSlice } from "./apis/filesApi";
+import { pwaSlice } from "./apis/pwaApi";
+import { pwaTagsSlice } from "./slices/pwaTagsSlice";
 
 const store = configureStore({
   reducer: {
+    [pwaTagsSlice.reducerPath]: pwaTagsSlice.reducer,
     [authSlice.reducerPath]: authSlice.reducer,
     [filesSlice.reducerPath]: filesSlice.reducer,
     [pwaSlice.reducerPath]: pwaSlice.reducer,

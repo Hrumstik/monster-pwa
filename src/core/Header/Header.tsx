@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import MonsterDropdown from "../../shared/elements/Dropdown/Dropdown";
 import { createAuthProvider } from "../../middlewares/authProvider";
-import { useGetMyUserQuery } from "@store/slices/pwaApi";
+import { useGetMyUserQuery } from "@store/apis/pwaApi";
 
 const Header = () => {
   const navigate = useNavigate();

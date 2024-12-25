@@ -3,7 +3,7 @@ import MonsterInput from "../../shared/elements/MonsterInput/MonsterInput";
 import MonsterButton from "../../shared/elements/MonsterButton/MonsterButton";
 import { createAuthProvider } from "../../middlewares/authProvider";
 import { useNavigate } from "react-router-dom";
-import { useLoginMutation } from "../../store/slices/authApi";
+import { useLoginMutation } from "../../store/apis/authApi";
 import { useState } from "react";
 import { LoginBody } from "../../models/user";
 
@@ -21,7 +21,7 @@ const LoginPage = () => {
     try {
       setLoading(true);
       const loginResponce = await submitCredentials(
-        form.getFieldsValue(),
+        form.getFieldsValue()
       ).unwrap();
       login(loginResponce.access_token);
       navigate("/");

@@ -5,6 +5,7 @@ export interface Picture {
 
 export interface PwaContent {
   appName: string;
+  pwaTags?: string[];
   pwaName?: string;
   hasPaidContentTitle: boolean;
   developerName: string;

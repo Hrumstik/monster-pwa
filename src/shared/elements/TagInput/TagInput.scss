@@ -1,0 +1,32 @@
+.rti--container {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px !important;
+  border: 1px solid #00ff11 !important;
+  background: #121320 !important;
+  min-height: 28px !important;
+  border-radius: 12px !important;
+
+  .rti--tag {
+    user-select: none !important;
+    height: 18px;
+    background-color: #515aca !important;
+    border-radius: 12px !important;
+    font-size: 12px !important;
+    line-height: 12px !important;
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+  }
+
+  .rti--input {
+    background: #121320 !important;
+    display: flex;
+    align-items: center;
+  }
+
+  .rti--tag button {
+    font-size: 9px !important;
+    padding: 0px 4px;
+  }
+}

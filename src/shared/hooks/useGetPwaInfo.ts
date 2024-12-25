@@ -1,7 +1,7 @@
 import {
   useGetAllPwaContentQuery,
   useGetMyUserQuery,
-} from "@store/slices/pwaApi";
+} from "@store/apis/pwaApi";
 
 const useGetPwaInfo = () => {
   const allPwaInfo = useGetAllPwaContentQuery();
@@ -20,6 +20,7 @@ const useGetPwaInfo = () => {
       nsRecords: userPwa?.nsRecords,
       status: userPwa?.status,
       readyDomainId: userPwa?.readyDomainId,
+      pwaTags: pwaContent?.pwaTags,
     };
   };
 

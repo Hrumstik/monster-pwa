@@ -11,6 +11,7 @@ import {
 
 export const pwaSlice = createApi({
   reducerPath: "pwaApi",
+  keepUnusedDataFor: 3000,
   baseQuery: baseQuery,
   refetchOnFocus: true,
   tagTypes: ["PwaContent", "User"],
@@ -35,6 +36,41 @@ export const pwaSlice = createApi({
         body: { pwaName },
       }),
       invalidatesTags: ["PwaContent", "User"],
+    }),
+    updatePwaTags: builder.mutation<
+      PwaContent,
+      {
+        id: string;
+        pwaTags: string[];
+      }
+    >({
+      query: ({ id, pwaTags }) => ({
+        url: `/pwa-content/${id}`,
+        method: "PATCH",
+        body: { pwaTags },
+      }),
+      async onQueryStarted({ id, pwaTags }, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          pwaSlice.util.updateQueryData(
+            "getAllPwaContent",
+            undefined,
+            (draft) => {
+              draft?.forEach((pwa) => {
+                if (pwa._id === id) {
+                  pwa.pwaTags = [...pwaTags];
+                }
+              });
+            }
+          )
+        );
+
+        try {
+          await queryFulfilled;
+        } catch (error) {
+          patchResult.undo();
+          console.error("Failed to update PWA tags", error);
+        }
+      },
     }),
     deletePwaContent: builder.mutation<void, string>({
       query: (id) => ({
@@ -141,4 +177,5 @@ export const {
   useLazyCheckDomainStatusQuery,
   useGetReadyDomainsQuery,
   useAttachReadyDomainMutation,
+  useUpdatePwaTagsMutation,
 } = pwaSlice;

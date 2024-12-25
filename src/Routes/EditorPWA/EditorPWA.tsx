@@ -21,7 +21,7 @@ import {
   useGetMyUserQuery,
   useGetReadyDomainsQuery,
   useLazyBuildPwaContentQuery,
-} from "@store/slices/pwaApi";
+} from "@store/apis/pwaApi.ts";
 import useCheckBuildStatus from "@shared/hooks/useCheckBuildStatus";
 import { notification } from "antd";
 import { Hourglass } from "react-loader-spinner";

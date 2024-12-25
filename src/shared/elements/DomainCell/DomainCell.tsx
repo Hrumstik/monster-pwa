@@ -1,6 +1,7 @@
 import { message, Tooltip } from "antd";
-import { CopyOutlined } from "@ant-design/icons";
+
 import { MouseEventHandler } from "react";
+import CopyIcon from "@icons/CopyIcon";
 
 const handleCopy = (text?: string): void => {
   if (!text) return;
@@ -22,16 +23,17 @@ const DomainCell = ({ domain }: { domain?: string }) => {
   };
 
   return (
-    <td className="py-3 truncate flex flex-start items-center gap-3">
-      <span>{domain ?? "–"}</span>
-      {!!domain && (
-        <Tooltip title="Копировать">
-          <CopyOutlined
-            className="cursor-pointer text-gray-500 hover:text-blue-500"
-            onClick={handleCopyClick}
-          />
-        </Tooltip>
-      )}
+    <td className="px-8 py-3 truncate overflow-hidden whitespace-nowrap">
+      <div className="flex justify-center gap-3">
+        <div className="text-center truncate ...">{domain ?? "–"}</div>
+        {!!domain && (
+          <Tooltip title="Копировать">
+            <div onClick={handleCopyClick} className="cursor-pointer">
+              <CopyIcon />
+            </div>
+          </Tooltip>
+        )}
+      </div>
     </td>
   );
 };

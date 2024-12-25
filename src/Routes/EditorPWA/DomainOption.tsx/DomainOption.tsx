@@ -11,7 +11,7 @@ import { extractDomain } from "@shared/helpers/formate-data";
 import { useNavigate } from "react-router-dom";
 import useGetPwaInfo from "@shared/hooks/useGetPwaInfo";
 import { EditorPWATabs, getTabIcon } from "../EditorPWAHelpers";
-import { useGetReadyDomainsQuery } from "@store/slices/pwaApi";
+import { useGetReadyDomainsQuery } from "@store/apis/pwaApi";
 import { DefaultOptionType } from "antd/es/select";
 import ClassicButton from "@shared/elements/ClassicButton/ClassibButton";
 import { scrollToTop } from "@shared/helpers/common.ts";

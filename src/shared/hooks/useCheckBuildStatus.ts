@@ -2,7 +2,7 @@ import { StatusData } from "@models/pwa";
 import {
   useGetMyUserQuery,
   useLazyGetPwaContentStatusQuery,
-} from "@store/slices/pwaApi";
+} from "@store/apis/pwaApi";
 import { notification } from "antd";
 
 const useCheckBuildStatus = () => {
