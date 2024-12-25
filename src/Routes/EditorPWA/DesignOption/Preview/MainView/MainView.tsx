@@ -11,6 +11,8 @@ import ReviewItem from "./Review/ReviewItem";
 import thirdPartyIcon from "@shared/images/thirdParties.png";
 import dataCollecting from "@shared/images/dataCollecting.png";
 import stopIcon from "@shared/images/stop.png";
+import DownloadIcon from "@shared/icons/DownloadIcon.tsx";
+import SmallInfoIcon from "@shared/icons/SmallInfoIcon.tsx";
 
 const MainView = ({
   previewPwaContent,
@@ -20,7 +22,6 @@ const MainView = ({
   tags,
   sliders,
   reviews,
-  myPWAsPage,
 }: {
   previewPwaContent: PreviewPwaContent;
   setView: (view: PwaViews) => void;
@@ -58,7 +59,7 @@ const MainView = ({
       : defaultReview;
 
   return (
-    <div className={myPWAsPage ? "p-0" : "pt-5 px-6"}>
+    <div className="p-[20px] pt-[20px] pb-[20px] pl-[14px] pr-[14px]">
       <div className="flex mb-4">
         <div className="relative block overflow-hidden w-[70px] h-[70px] rounded-lg mr-5">
           {appIcon.url ? (
@@ -95,35 +96,47 @@ const MainView = ({
           )}
         </div>
       </div>
-      <div className="flex mb-5">
-        <div className="flex-1 flex flex-col justify-center items-center h-[44px]">
-          <div className="font-medium text-[13px] text-[#030303] flex gap-[2px] items-center justify-center mb-[5px]">
+
+      <div className="flex items-center mb-5 no-scrollbar overflow-x-auto">
+        <div className="flex-1 flex flex-col justify-center items-center h-10 min-w-[126px] w-full mx-2">
+          <div className="font-medium text-sm text-[#020202] flex gap-0.5 items-center justify-center">
             {previewPwaContent.rating}
             <StarIcon />
           </div>
-          <div className="text-[11px] text-gray-600 font-medium">
-            {previewPwaContent.countOfReviews}&nbsp; отзывов
+          <div className="text-xs text-[#605D64] w-full flex justify-center items-center font-medium">
+            {previewPwaContent.countOfReviews}
+            тыс отзывов&nbsp;
+            <SmallInfoIcon />
           </div>
         </div>
-
-        <div className="flex-1 flex flex-col justify-center items-center h-[44px]">
-          <div className="font-medium text-[13px] text-[#030303] flex gap-[2px] items-center justify-center mb-[5px]">
+        <div className="h-[22px] bg-[#C4C4C4] w-px min-w-[1px]" />
+        <div className="flex-1 flex flex-col justify-center items-center h-[44px] min-w-[126px] mx-2">
+          <DownloadIcon />
+          <div className="text-xs text-[#605D64] font-medium">
+            {previewPwaContent.size.toUpperCase()}
+          </div>
+        </div>
+        <div className="h-[22px] bg-[#C4C4C4] w-px min-w-[1px] min-w-[126px] mx-2" />
+        <div className="flex-1 flex flex-col justify-center items-center h-[44px] min-w-[126px] mx-2">
+          <div className="font-medium text-sm text-[#030303] items-center justify-center">
             {previewPwaContent.countOfDownloads}
           </div>
-          <div className="text-[11px] text-gray-600 font-medium">
-            Скачиваний
-          </div>
+          <div className="text-xs text-[#605D64] font-medium">Скачивания</div>
         </div>
-
-        <div className="flex-1 flex flex-col justify-center items-center h-[44px]">
-          <div className="font-medium text-[13px] text-[#030303] flex gap-[2px] items-center justify-center mb-1">
-            <div className="mb-0.5 text-xs flex justify-center items-center font-bold border-2 border-solid border-black">
+        <div className="h-[22px] bg-[#C4C4C4] w-px min-w-[1px]" />
+        <div className="flex-1 flex flex-col justify-center items-center h-[44px] min-w-[126px] mx-2">
+          <div className="font-medium text-[13px] text-[#030303] flex gap-[2px] items-center justify-center mb-[5px]">
+            <div className="h-4 mb-0. border border-solid border-black flex items-center justify-center text-xs font-bold">
               18+
             </div>
           </div>
-          <div className="text-[11px] text-gray-600 font-medium">Возраст</div>
+          <div className="text-xs text-[#605D64] flex items-center font-medium">
+            18+&nbsp;
+            <SmallInfoIcon />
+          </div>
         </div>
       </div>
+
       <button
         onClick={(e) => e.preventDefault()}
         className="bg-[#1357CD] rounded-[60px] h-9 w-full text-white mb-5"
@@ -184,6 +197,7 @@ const MainView = ({
         <div className="flex mb-2" style={{ gridArea: "rating-stars" }}>
           <Rate
             value={Number(previewPwaContent.rating)}
+            allowHalf
             style={{ color: "#1357CD", fontSize: "14px" }}
             disabled
           />

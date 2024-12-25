@@ -191,7 +191,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     appName: "Plinko ASMR",
     developerName: "Supercent, Inc.",
     countOfDownloads: "10 000 +",
-    countOfReviews: "3 тыс.",
+    countOfReviews: "3",
     verified: true,
     rating: "5",
     countOfReviewsFull: "30,301",
