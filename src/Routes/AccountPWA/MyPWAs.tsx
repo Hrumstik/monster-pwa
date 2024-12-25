@@ -27,16 +27,19 @@ const MyPWAs = () => {
   const activePwaTags = useAppSelector(getActiveTags);
 
   useEffect(() => {
+    if (!data) return;
+
     if (activePwaTags.length === 0) {
       setAvailablePWAs(preparePwaData());
       return;
     }
+
     setAvailablePWAs(
       preparePwaData().filter((pwa) =>
         activePwaTags.some((tag) => pwa.pwaTags?.includes(tag))
       )
     );
-  }, [activePwaTags]);
+  }, [activePwaTags, data]);
 
   useEffect(() => {
     if (!data) return;

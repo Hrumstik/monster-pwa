@@ -52,6 +52,7 @@ import GenerateIcon from "@icons/GenerateIcon";
 import ClassicButton from "@shared/elements/ClassicButton/ClassibButton.tsx";
 import { scrollToTop } from "@shared/helpers/common.ts";
 import PwaMenu from "../DesignOption/Preview/Menu/Menu.tsx";
+import StarIcon from "@icons/StarIcon.tsx";
 
 export interface DesignOptionFormValues {
   languages: string[];
@@ -186,14 +187,14 @@ const DesignOption: React.FC<DesignOptionProps> = ({
 
   const [tags, setTags] = useState<string[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [sliders, setSliders] = useState<number[]>([4.5, 0, 0, 0, 0]);
+  const [sliders, setSliders] = useState<number[]>([3.4, 0.8, 0.3, 0.3, 0.2]);
   const [previewContent, setPreviewContent] = useState<PreviewPwaContent>({
     appName: "Plinko ASMR",
     developerName: "Supercent, Inc.",
     countOfDownloads: "10 000 +",
     countOfReviews: "3",
     verified: true,
-    rating: "5",
+    rating: "4.8",
     countOfReviewsFull: "30,301",
     version: "1.63.1",
     shortDescription:
@@ -424,7 +425,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         rating: "4.9",
         countOfReviewsFull: form.getFieldValue("countOfReviews"),
         appIcon: appIcon.url!,
-        countOfStars: Number(form.getFieldValue("countOfStars")) || 5,
+        countOfStars: Number(form.getFieldValue("countOfStars")) || 4.8,
         age: form.getFieldValue("age"),
         images: screens
           .filter((screen) => screen.url !== null)
@@ -510,10 +511,52 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     const randomTags = shuffled.slice(0, 5);
     setTags(randomTags);
   };
+
   const handleSliderChange = (index: number, value: number) => {
+    const maxTotal = 5;
+    const weights = [1, 0.8, 0.6, 0.4, 0.2];
     const updatedSliders = [...sliders];
+    const oldValue = updatedSliders[index];
+    const difference = value - oldValue;
+
     updatedSliders[index] = value;
+
+    if (difference !== 0) {
+      const remainingIndexes = updatedSliders
+        .map((_, i) => i)
+        .filter((i) => i !== index);
+
+      const totalRemaining = remainingIndexes.reduce(
+        (sum, i) => sum + updatedSliders[i],
+        0
+      );
+
+      remainingIndexes.forEach((i) => {
+        const proportionalAdjustment =
+          totalRemaining > 0
+            ? (updatedSliders[i] / totalRemaining) * difference
+            : 0;
+
+        updatedSliders[i] = Math.max(
+          0,
+          Math.min(maxTotal, updatedSliders[i] - proportionalAdjustment * 0.9)
+        );
+      });
+    }
+
+    const newCountOfStars = updatedSliders.reduce(
+      (sum, sliderValue, i) => sum + sliderValue * weights[i],
+      0
+    );
+
     setSliders(updatedSliders);
+
+    form.setFieldsValue({
+      countOfStars: Math.min(
+        maxTotal,
+        Number(newCountOfStars.toFixed(1))
+      ).toString(),
+    });
   };
 
   return (
@@ -523,7 +566,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         onFinish={onFinish}
         initialValues={{
           verified: false,
-          countOfStars: "5",
+          countOfStars: "4.3",
           countOfDownloads: "1,000+",
           countOfReviews: "100",
           securityUI: true,
@@ -988,17 +1031,15 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               </div>
               <div className="flex gap-[30px]">
                 <div className="max-w-1/3">
-                  <div className="text-xs text-[#8F919D] mb-[9px]">Рейтинг</div>
-                  <Form.Item
-                    name="countOfStars"
-                    validateTrigger="onChange"
-                    rules={[requiredValidator("Укажите рейтинг")]}
-                  >
-                    <MonsterInput
-                      type="number"
-                      className="!bg-[#161724] !h-[42px] max-w-[130px]"
-                    />
-                  </Form.Item>
+                  <div className="text-xs text-[#8F919D] mb-2">
+                    Рейтинг приложения:
+                  </div>
+                  <div className="gap-1.5 flex justify-center items-center mb-5">
+                    <div className="font-bold text-white text-[32px]">
+                      {form.getFieldValue("countOfStars")}
+                    </div>
+                    <StarIcon />
+                  </div>
                   <div className="text-xs text-[#8F919D] mb-[9px]">
                     Количество отзывов
                   </div>
@@ -1040,6 +1081,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                         onChange={(newValue) =>
                           handleSliderChange(index, newValue)
                         }
+                        tooltip={{ open: false }}
                         step={0.1}
                         min={0}
                         max={5}

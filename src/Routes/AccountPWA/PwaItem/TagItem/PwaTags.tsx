@@ -23,9 +23,8 @@ const PwaTags = ({ pwaTags, pwaId }: { pwaTags: string[]; pwaId: string }) => {
     setValue(pwaTags);
   }, [pwaTags]);
 
-  useClickAway(wrapperRef, async () => {
-    await updatePwaTags({ id: pwaId, pwaTags: value });
-    setShowSelectTag(false);
+  useClickAway(wrapperRef, () => {
+    saveTags();
   });
 
   useEffect(() => {
@@ -40,6 +39,11 @@ const PwaTags = ({ pwaTags, pwaId }: { pwaTags: string[]; pwaId: string }) => {
     }
   }, [showSelectTag]);
 
+  const saveTags = () => {
+    updatePwaTags({ id: pwaId, pwaTags: value });
+    setShowSelectTag(false);
+  };
+
   const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     const inputElement = document.querySelector(
       ".rti--input"
@@ -47,11 +51,10 @@ const PwaTags = ({ pwaTags, pwaId }: { pwaTags: string[]; pwaId: string }) => {
     setInputValue(inputElement.value);
 
     if (e.key === "Escape") {
-      setShowSelectTag(false);
+      saveTags();
     }
     if (e.key === "Enter" && inputValue === "") {
-      updatePwaTags({ id: pwaId, pwaTags: value });
-      setShowSelectTag(false);
+      saveTags();
     }
   };
 
