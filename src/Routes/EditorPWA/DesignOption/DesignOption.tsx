@@ -195,7 +195,6 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     countOfReviews: "3",
     verified: true,
     rating: "4.8",
-    countOfReviewsFull: "30,301",
     version: "1.63.1",
     shortDescription:
       "Обновление и опыт быть самым богатым! Не сдавайся до конца, ты можешь стать победителем",
@@ -207,6 +206,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     hasPaidContentTitle: true,
     wideScreens: false,
     hasMenu: true,
+    age: "18+",
   });
 
   const handleValuesChange = () => {
@@ -219,7 +219,6 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       rating: form.getFieldValue("countOfStars"),
       shortDescription: form.getFieldValue("shortDescription"),
       fullDescription: form.getFieldValue("fullDescription"),
-      countOfReviewsFull: form.getFieldValue("countOfReviews"),
       version: form.getFieldValue("version"),
       lastUpdate: form.getFieldValue("lastUpdate"),
       size: form.getFieldValue("size"),
@@ -227,6 +226,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       hasPaidContentTitle: form.getFieldValue("hasPaidContentTitle"),
       wideScreens: form.getFieldValue("wideScreens"),
       hasMenu: form.getFieldValue("hasMenu"),
+      age: form.getFieldValue("age"),
     });
   };
 
@@ -767,7 +767,9 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                             generateRandomValue(
                               form,
                               "developerName",
-                              developerValue
+                              developerValue,
+                              previewContent,
+                              setPreviewContent
                             )
                           }
                         >
@@ -795,7 +797,13 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                           <div
                             className="cursor-pointer"
                             onClick={() =>
-                              generateRandomValue(form, "size", sizeValues)
+                              generateRandomValue(
+                                form,
+                                "size",
+                                sizeValues,
+                                previewContent,
+                                setPreviewContent
+                              )
                             }
                           >
                             <GenerateIcon />
@@ -825,7 +833,9 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                               generateRandomValue(
                                 form,
                                 "countOfDownloads",
-                                countOfDownloadsValues
+                                countOfDownloadsValues,
+                                previewContent,
+                                setPreviewContent
                               )
                             }
                           >
@@ -843,13 +853,18 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                     <Form.Item name="age" className="mb-0">
                       <MonsterInput
                         className="!bg-[#161724] !h-[42px]"
-                        defaultValue={"18+"}
                         placeholder="Возраст"
                         suffix={
                           <div
                             className="cursor-pointer"
                             onClick={() =>
-                              generateRandomValue(form, "age", ageValues)
+                              generateRandomValue(
+                                form,
+                                "age",
+                                ageValues,
+                                previewContent,
+                                setPreviewContent
+                              )
                             }
                           >
                             <GenerateIcon />
@@ -954,7 +969,9 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                           generateRandomValue(
                             form,
                             "shortDescription",
-                            casinoMessages
+                            casinoMessages,
+                            previewContent,
+                            setPreviewContent
                           )
                         }
                       >
@@ -1058,7 +1075,9 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                             generateRandomValue(
                               form,
                               "countOfReviews",
-                              countOfReviews
+                              countOfReviews,
+                              previewContent,
+                              setPreviewContent
                             )
                           }
                         >

@@ -23,10 +23,10 @@ export interface PreviewPwaContent {
   securityUI: boolean;
   lastUpdate: string;
   rating: string;
-  countOfReviewsFull: string;
   shortDescription: string;
   fullDescription: string;
   version: string;
   wideScreens: boolean;
   hasMenu: boolean;
+  age: string;
 }

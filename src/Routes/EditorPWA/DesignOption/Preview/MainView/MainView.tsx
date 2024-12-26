@@ -104,8 +104,7 @@ const MainView = ({
             <StarIcon />
           </div>
           <div className="text-xs text-[#605D64] w-full flex justify-center items-center font-medium">
-            {previewPwaContent.countOfReviews}
-            тыс отзывов&nbsp;
+            {previewPwaContent.countOfReviews} тыс отзывов&nbsp;
             <SmallInfoIcon />
           </div>
         </div>
@@ -127,11 +126,11 @@ const MainView = ({
         <div className="flex-1 flex flex-col justify-center items-center h-[44px] min-w-[126px] mx-2">
           <div className="font-medium text-[13px] text-[#030303] flex gap-[2px] items-center justify-center mb-[5px]">
             <div className="h-4 mb-0. border border-solid border-black flex items-center justify-center text-xs font-bold">
-              18+
+              {previewPwaContent.age}
             </div>
           </div>
           <div className="text-xs text-[#605D64] flex items-center font-medium">
-            18+&nbsp;
+            {previewPwaContent.age}&nbsp;
             <SmallInfoIcon />
           </div>
         </div>
@@ -206,7 +205,7 @@ const MainView = ({
           className="font-medium text-[0.8em]"
           style={{ gridArea: "rating-count" }}
         >
-          {previewPwaContent.countOfReviewsFull}
+          {previewPwaContent.countOfReviews}
         </div>
         <div
           className="flex flex-col gap-[0.25em]"

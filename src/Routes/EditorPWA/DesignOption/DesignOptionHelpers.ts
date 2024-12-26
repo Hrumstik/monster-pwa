@@ -1,5 +1,6 @@
 import { FormInstance } from "antd";
 import { DesignOptionFormValues } from "./DesignOption";
+import { PreviewPwaContent } from "./Preview/models";
 
 export const allowedExtensions = [".png", ".jpeg", ".jpg", ".svg", ".webp"];
 export const allowedExtensionsErrorMessage = `Допустимые форматы: ${allowedExtensions.join(
@@ -45,10 +46,16 @@ export const categories = [
 export const generateRandomValue = (
   form: FormInstance<DesignOptionFormValues>,
   field: string,
-  values: string[]
+  values: string[],
+  previewContent: PreviewPwaContent,
+  setPreviewContent: (values: PreviewPwaContent) => void
 ) => {
   const randomValue = values[Math.floor(Math.random() * values.length)];
   form.setFieldsValue({ [field]: randomValue });
+  setPreviewContent({
+    ...previewContent,
+    [field]: randomValue,
+  });
 };
 
 export const sizeValues = [
