@@ -240,7 +240,6 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
                 countOfReviews: previewPwa.countOfReviews,
                 verified: previewPwa.verified,
                 rating: previewPwa.rating,
-                countOfReviewsFull: previewPwa.countOfReviewsFull,
                 shortDescription: previewPwa.shortDescription.originalLanguage,
                 fullDescription: previewPwa.fullDescription.originalLanguage,
               } as PreviewPwaContent
