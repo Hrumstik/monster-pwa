@@ -163,6 +163,25 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         preview: image.url,
       }))
     );
+
+    setPreviewContent({
+      appName: content.appName,
+      developerName: content.developerName,
+      countOfDownloads: content.countOfDownloads.originalLanguage,
+      countOfReviews: content.countOfReviews,
+      verified: content.verified,
+      rating: content.rating,
+      shortDescription: content.shortDescription.originalLanguage,
+      fullDescription: content.fullDescription.originalLanguage,
+      version: content.version,
+      lastUpdate: content.lastUpdate,
+      size: content.size,
+      securityUI: content.securityUI,
+      hasPaidContentTitle: content.hasPaidContentTitle,
+      wideScreens: content.wideScreens,
+      hasMenu: content.hasMenu,
+      age: content.age,
+    });
   };
 
   useEffect(() => {
@@ -556,6 +575,10 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         maxTotal,
         Number(newCountOfStars.toFixed(1))
       ).toString(),
+    });
+    setPreviewContent({
+      ...previewContent,
+      rating: Math.min(maxTotal, Number(newCountOfStars.toFixed(1))).toString(),
     });
   };
 

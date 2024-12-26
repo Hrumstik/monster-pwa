@@ -166,7 +166,16 @@ const MyPWAs = () => {
             className="w-[338px] h-10"
             placeholder="Поиск по названию"
           />
-          <div className="flex-1 rounded-[56px] border border-solid flex gap-2 flex-wrap border-[#161724] p-[9px]">
+          <div
+            className={`flex-1 rounded-[56px] flex gap-2 flex-wrap  p-[9px]
+              
+              ${
+                allPwaTags.length > 0
+                  ? "border border-solid border-[#161724]"
+                  : ""
+              }
+              `}
+          >
             {allPwaTags.map((tag) => {
               const isActive = activePwaTags.includes(tag);
               return (

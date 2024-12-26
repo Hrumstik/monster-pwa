@@ -19,8 +19,6 @@ import { useEffect, useState } from "react";
 import { FiFileText } from "react-icons/fi";
 import { MdDelete } from "react-icons/md";
 import { VscPreview } from "react-icons/vsc";
-import { PreviewPwaContent } from "../../EditorPWA/DesignOption/Preview/models.ts";
-import Preview from "../../EditorPWA/DesignOption/Preview/Preview.tsx";
 import useGetPwaInfo from "@shared/hooks/useGetPwaInfo";
 import { PwaStatus } from "@models/domain";
 import { getPwaStatus } from "../MyPWAsHelpers.tsx";
@@ -34,7 +32,6 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
   const { data } = useGetAllPwaContentQuery();
 
   const [renamePwa, setRenamePwa] = useState<PwaContent | null>();
-  const [previewPwa, setPreviewPwa] = useState<PwaContent | null>();
   const { data: userData } = useGetMyUserQuery();
   const [deletePwaContent, { isLoading: deletePwaLoading }] =
     useDeletePwaContentForcedMutation();
@@ -86,14 +83,13 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
   const generateDropDownItems = (pwa: PreparedPWADataItem) => {
     return [
       {
-        label: <span className="text-xs text-white">Переименовать</span>,
+        label: <span className={`text-xs text-white`}>Переименовать</span>,
         key: "rename",
         icon: <FiFileText style={{ color: "white" }} />,
         onClick: (e: MenuInfo) => {
           e.domEvent.stopPropagation();
           e.domEvent.nativeEvent.stopImmediatePropagation();
           const renamePwa = (data || []).find(({ _id }) => _id === pwa.id);
-
           setRenamePwa({
             ...renamePwa,
             pwaName: renamePwa?.pwaName ?? renamePwa?.appName,
@@ -101,14 +97,25 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         },
       },
       {
-        label: <span className="text-xs text-white">Предпросмотр</span>,
+        label: (
+          <span
+            className={`text-xs text-white  ${
+              pwaStatus !== PwaStatus.ACTIVE
+                ? "cursor-not-allowed"
+                : "cursor-pointer"
+            }`}
+          >
+            Перейти на сайт с PWA
+          </span>
+        ),
         key: "preview",
         icon: <VscPreview style={{ color: "white" }} />,
+
         onClick: (e: MenuInfo) => {
           e.domEvent.stopPropagation();
           e.domEvent.nativeEvent.stopImmediatePropagation();
-          const preview = (data || []).find(({ _id }) => _id === pwa.id);
-          setPreviewPwa(preview);
+          if (pwaStatus !== PwaStatus.ACTIVE) return;
+          window.open(`https://${pwa.domain}`, "_blank");
         },
       },
       {
@@ -213,52 +220,6 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
           value={renamePwa?.pwaName}
           onChange={handleNameChange}
         />
-      </Modal>
-      <Modal
-        open={!!previewPwa}
-        footer={[]}
-        className="w-[360px] h-[671px] rounded-[32px] box-border border-[9px] border-solid border-[#515ACA] bg-white overflow-auto scrollbar-hidden"
-        style={{
-          overflow: "scroll",
-          maxHeight: "80vh",
-          maxWidth: "360px",
-          paddingBottom: 0,
-          padding: 0,
-        }}
-        closeIcon={null}
-        onCancel={() => setPreviewPwa(null)}
-      >
-        {previewPwa && (
-          <Preview
-            myPWAsPage
-            sliders={previewPwa.sliders}
-            previewPwaContent={
-              {
-                appName: previewPwa.appName,
-                developerName: previewPwa.developerName,
-                countOfDownloads: previewPwa.countOfDownloads.originalLanguage,
-                countOfReviews: previewPwa.countOfReviews,
-                verified: previewPwa.verified,
-                rating: previewPwa.rating,
-                shortDescription: previewPwa.shortDescription.originalLanguage,
-                fullDescription: previewPwa.fullDescription.originalLanguage,
-              } as PreviewPwaContent
-            }
-            appIcon={{ url: previewPwa.appIcon, preview: null }}
-            screens={previewPwa.images?.map(({ url }) => ({
-              url,
-              preview: null,
-            }))}
-            tags={previewPwa.tags}
-            reviews={previewPwa.reviews.map((review) => {
-              return {
-                ...review,
-                reviewText: review.reviewText.originalLanguage,
-                devResponse: review.devResponse?.originalLanguage,
-              };
-            })}
-          />
-        )}
       </Modal>
     </>
   );
