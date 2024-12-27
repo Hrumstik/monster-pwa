@@ -53,6 +53,7 @@ import ClassicButton from "@shared/elements/ClassicButton/ClassibButton.tsx";
 import { scrollToTop } from "@shared/helpers/common.ts";
 import PwaMenu from "../DesignOption/Preview/Menu/Menu.tsx";
 import StarIcon from "@icons/StarIcon.tsx";
+import ArrowDownIcon from "@icons/ArrowDownIcon.tsx";
 
 export interface DesignOptionFormValues {
   languages: string[];
@@ -289,6 +290,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   const [screens, setScreens] = useState<Picture[]>(
     Array.from({ length: 4 }, () => ({ url: null, preview: null }))
   );
+  const [showReviews, setShowReviews] = useState(true);
 
   const removeAppIcon = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -1175,23 +1177,31 @@ const DesignOption: React.FC<DesignOptionProps> = ({
           </div>
           <div className="flex xl:flex-row sm:flex-col  gap-[30px] mb-[30px] relative">
             <div className="flex flex-col gap-[30px] flex-1">
-              <div className="overflow-y-auto bg-cardColor rounded-lg py-[30px] px-[50px]">
+              <div className="overflow-y-auto bg-cardColor flex flex-col gap-5 rounded-lg py-[30px] px-[50px]">
                 <div className="flex justify-between items-center">
                   <div className="text-[#E3CC02] font-bold text-base leading-[18px] ">
                     Комментарии
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-5">
-                  {reviews.map((review, index) => (
-                    <ReviewItem
-                      key={index}
-                      reviewContent={review}
-                      allReviews={reviews}
-                      setAllReviews={setReviews}
-                      form={form}
-                    />
-                  ))}
+                <div className={`flex flex-col gap-5 `}>
+                  <div
+                    className={`transition-all duration-300 ease-in-out ${
+                      showReviews
+                        ? "opacity-100 max-h-screen"
+                        : "opacity-0 max-h-0"
+                    } overflow-hidden`}
+                  >
+                    {reviews.map((review, index) => (
+                      <ReviewItem
+                        key={index}
+                        reviewContent={review}
+                        allReviews={reviews}
+                        setAllReviews={setReviews}
+                        form={form}
+                      />
+                    ))}
+                  </div>
                   <div className="flex justify-between gap-[52px]">
                     <div className="flex gap-[30px]">
                       {reviews.some((review) => review.isActive) ? null : (
@@ -1209,6 +1219,23 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                       />
                     </div>
                   </div>
+                  {reviews.length > 0 && (
+                    <div
+                      className="uppercase hover:underline cursor-pointer text-[#8F919D] text-xs flex justify-center leading-[14px]"
+                      onClick={() => setShowReviews(!showReviews)}
+                    >
+                      {!showReviews ? (
+                        <div className="flex justify-center items-center flex-col gap-1.5">
+                          Все Комментарии
+                          <ArrowDownIcon />
+                        </div>
+                      ) : (
+                        <div className="flex justify-center items-center flex-col gap-1.5">
+                          СКРЫТЬ КОММЕНТАРИИ
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
               <div>

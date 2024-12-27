@@ -13,6 +13,7 @@ import {
   allowedExtensions,
   allowedExtensionsErrorMessage,
 } from "../DesignOptionHelpers.ts";
+import EditIcon from "@icons/EditIcon.tsx";
 
 const { TextArea } = Input;
 
@@ -141,7 +142,7 @@ const ReviewItem = ({
     <>
       <Spin spinning={isIconUploading} fullscreen></Spin>
       <div
-        className={`pt-5 mb-2 box-border pb-7 ${
+        className={`mb-2 box-border pb-7 ${
           reviewContent.isActive
             ? ""
             : " border-0 border-b border-solid border-[#383B66]"
@@ -304,9 +305,11 @@ const ReviewItem = ({
               {!reviewContent.isActive && (
                 <button
                   onClick={editReview}
-                  className="text-[#E3CC02] font-bold hover:underline text-base cursor-pointer"
+                  className="text-[#E3CC02] items-center font-bold text-base cursor-pointer flex gap-3
+                  hover:opacity-80"
                 >
                   Редактировать
+                  <EditIcon />
                 </button>
               )}
             </div>
