@@ -254,6 +254,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
+    setShowReviews(true);
     setReviews((prev) => [
       ...prev,
       {
@@ -398,10 +399,11 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         ) : (
           <button
             onClick={(e) => e.preventDefault()}
-            className={`border-none hover:border-[#36395a] hover:border hover:border-solid bg-[#161724] h-[166px] rounded-lg 
-              ${wideScreensIsActive ? "w-[220px]" : "w-[100px]"} 
-              flex justify-center items-center cursor-pointer relative 
-              transition-all duration-300 ease-in-out`}
+            className={`border-none bg-[#161724] h-[166px] rounded-lg 
+            ${wideScreensIsActive ? "w-[220px]" : "w-[100px]"} 
+            flex justify-center items-center cursor-pointer relative 
+            transition-[width,height] duration-300 ease-in-out 
+            hover:border-[#36395a] hover:border hover:border-solid`}
           >
             <UploadImageIcon />
           </button>
