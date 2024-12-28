@@ -13,6 +13,7 @@ import dataCollecting from "@shared/images/dataCollecting.png";
 import stopIcon from "@shared/images/stop.png";
 import DownloadIcon from "@shared/icons/DownloadIcon.tsx";
 import SmallInfoIcon from "@shared/icons/SmallInfoIcon.tsx";
+import { MouseEventHandler, useRef } from "react";
 
 const MainView = ({
   previewPwaContent,
@@ -32,6 +33,10 @@ const MainView = ({
   reviews: Review[];
   myPWAsPage?: boolean;
 }) => {
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  let isDragging = false;
+  let startX: number;
+  let scrollLeft: number;
   const defaultReview: Review[] = [
     {
       reviewAuthorIcon: "",
@@ -58,8 +63,31 @@ const MainView = ({
         : reviews
       : defaultReview;
 
+  const onMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
+    if (!scrollRef.current) return;
+    isDragging = true;
+    scrollRef.current.classList.add("grabbing");
+    startX = e.pageX - scrollRef.current.offsetLeft;
+    scrollLeft = scrollRef.current.scrollLeft;
+  };
+
+  const onMouseMove: MouseEventHandler<HTMLDivElement> = (e) => {
+    if (!scrollRef.current) return;
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 2;
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const onMouseUp = () => {
+    if (!scrollRef.current) return;
+    isDragging = false;
+    scrollRef.current.classList.remove("grabbing");
+  };
+
   return (
-    <div className="p-[20px] pt-[20px] pb-[20px] pl-[14px] pr-[14px]">
+    <div className="p-[20px] pt-[20px] pb-[20px] pl-[14px] pr-[14px] select-none">
       <div className="flex mb-4">
         <div className="relative block overflow-hidden w-[70px] h-[70px] rounded-lg mr-5">
           {appIcon.url ? (
@@ -89,22 +117,29 @@ const MainView = ({
           </div>
           {previewPwaContent.hasPaidContentTitle && (
             <div className="flex gap-1 text-[10px] text-[#444444] items-center">
-              <div className="text-[10px]">Нет рекламы</div>
+              <div className="text-[12px]">Нет рекламы</div>
               <div className="rounded-full w-0.5 h-0.5 bg-[#444444]" />
-              <div className="text-[10px]">Нет платного контента</div>
+              <div className="text-[12px]">Нет платного контента</div>
             </div>
           )}
         </div>
       </div>
 
-      <div className="flex items-center mb-5 no-scrollbar overflow-x-auto">
+      <div
+        ref={scrollRef}
+        className="flex items-center mb-5 no-scrollbar overflow-x-auto cursor-grab"
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
+        onMouseLeave={onMouseUp}
+      >
         <div className="flex-1 flex flex-col justify-center items-center h-10 min-w-[126px] w-full mx-2">
           <div className="font-medium text-sm text-[#020202] flex gap-0.5 items-center justify-center">
             {previewPwaContent.rating}
             <StarIcon />
           </div>
           <div className="text-xs text-[#605D64] w-full flex justify-center items-center font-medium">
-            {previewPwaContent.countOfReviews} тыс отзывов&nbsp;
+            {previewPwaContent.countOfReviews}&nbsp;тыс отзывов&nbsp;
             <SmallInfoIcon />
           </div>
         </div>
@@ -205,7 +240,7 @@ const MainView = ({
           className="font-medium text-[0.8em]"
           style={{ gridArea: "rating-count" }}
         >
-          {previewPwaContent.countOfReviews}
+          {previewPwaContent.countOfReviews} тыс отзывов
         </div>
         <div
           className="flex flex-col gap-[0.25em]"
@@ -252,7 +287,7 @@ const MainView = ({
       {previewPwaContent.securityUI && (
         <>
           <div className="flex justify-between items-center cursor-pointer mb-3">
-            <span className="text-[#605D64] leading-6 font-medium text-base">
+            <span className="text-[#1D1D1D] leading-6 font-medium text-base">
               Безопасность данных
             </span>
           </div>

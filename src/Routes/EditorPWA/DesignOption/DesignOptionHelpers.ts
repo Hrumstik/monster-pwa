@@ -4,7 +4,7 @@ import { PreviewPwaContent } from "./Preview/models";
 
 export const allowedExtensions = [".png", ".jpeg", ".jpg", ".svg", ".webp"];
 export const allowedExtensionsErrorMessage = `Допустимые форматы: ${allowedExtensions.join(
-  ", "
+  ", ",
 )}`;
 export const languages = [
   { label: "Все языки", value: "all" },
@@ -48,7 +48,7 @@ export const generateRandomValue = (
   field: string,
   values: string[],
   previewContent: PreviewPwaContent,
-  setPreviewContent: (values: PreviewPwaContent) => void
+  setPreviewContent: (values: PreviewPwaContent) => void,
 ) => {
   const randomValue = values[Math.floor(Math.random() * values.length)];
   form.setFieldsValue({ [field]: randomValue });
@@ -202,7 +202,6 @@ export const countOfReviews = [
   "700",
   "800",
   "900",
-  "1000",
 ];
 
 export const developerValue = [

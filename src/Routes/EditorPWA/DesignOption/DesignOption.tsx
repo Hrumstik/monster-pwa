@@ -162,7 +162,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       content.images.map((image) => ({
         url: image.url,
         preview: image.url,
-      }))
+      })),
     );
 
     setPreviewContent({
@@ -214,7 +214,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     countOfDownloads: "10 000 +",
     countOfReviews: "3",
     verified: true,
-    rating: "4.8",
+    rating: "4.3",
     version: "1.63.1",
     shortDescription:
       "Обновление и опыт быть самым богатым! Не сдавайся до конца, ты можешь стать победителем",
@@ -251,7 +251,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const addEmptyReview = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.preventDefault();
     setShowReviews(true);
@@ -289,12 +289,12 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const [screens, setScreens] = useState<Picture[]>(
-    Array.from({ length: 4 }, () => ({ url: null, preview: null }))
+    Array.from({ length: 4 }, () => ({ url: null, preview: null })),
   );
   const [showReviews, setShowReviews] = useState(true);
 
   const removeAppIcon = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.stopPropagation();
     setAppIcon({ url: null, preview: null });
@@ -361,7 +361,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     const screen = screens[index];
 
     const handleRemoveScreen = (
-      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     ) => {
       e.stopPropagation();
       setScreens((prev) => {
@@ -413,7 +413,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const addEmptyScreen = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.preventDefault();
     setScreens((prev) => [
@@ -496,7 +496,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
             };
           }
           return step;
-        })
+        }),
       );
       if (!id) {
         setCurrentTab(EditorPWATabs.Domain);
@@ -510,7 +510,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     } catch (error) {
       if (error && typeof error === "object" && "errorFields" in error) {
         onFinishFailed(
-          error as { errorFields: { name: (string | number)[] }[] }
+          error as { errorFields: { name: (string | number)[] }[] },
         );
       } else {
         console.error(error);
@@ -551,7 +551,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
 
       const totalRemaining = remainingIndexes.reduce(
         (sum, i) => sum + updatedSliders[i],
-        0
+        0,
       );
 
       remainingIndexes.forEach((i) => {
@@ -562,14 +562,14 @@ const DesignOption: React.FC<DesignOptionProps> = ({
 
         updatedSliders[i] = Math.max(
           0,
-          Math.min(maxTotal, updatedSliders[i] - proportionalAdjustment * 0.9)
+          Math.min(maxTotal, updatedSliders[i] - proportionalAdjustment * 0.9),
         );
       });
     }
 
     const newCountOfStars = updatedSliders.reduce(
       (sum, sliderValue, i) => sum + sliderValue * weights[i],
-      0
+      0,
     );
 
     setSliders(updatedSliders);
@@ -577,7 +577,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     form.setFieldsValue({
       countOfStars: Math.min(
         maxTotal,
-        Number(newCountOfStars.toFixed(1))
+        Number(newCountOfStars.toFixed(1)),
       ).toString(),
     });
     setPreviewContent({
@@ -595,7 +595,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
           verified: false,
           countOfStars: "4.3",
           countOfDownloads: "1,000+",
-          countOfReviews: "100",
+          countOfReviews: "3",
           securityUI: true,
           size: "4 mb",
           hasPaidContentTitle: true,
@@ -796,7 +796,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                               "developerName",
                               developerValue,
                               previewContent,
-                              setPreviewContent
+                              setPreviewContent,
                             )
                           }
                         >
@@ -829,7 +829,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                                 "size",
                                 sizeValues,
                                 previewContent,
-                                setPreviewContent
+                                setPreviewContent,
                               )
                             }
                           >
@@ -862,7 +862,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                                 "countOfDownloads",
                                 countOfDownloadsValues,
                                 previewContent,
-                                setPreviewContent
+                                setPreviewContent,
                               )
                             }
                           >
@@ -890,7 +890,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                                 "age",
                                 ageValues,
                                 previewContent,
-                                setPreviewContent
+                                setPreviewContent,
                               )
                             }
                           >
@@ -998,7 +998,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                             "shortDescription",
                             casinoMessages,
                             previewContent,
-                            setPreviewContent
+                            setPreviewContent,
                           )
                         }
                       >
@@ -1085,7 +1085,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                     <StarIcon />
                   </div>
                   <div className="text-xs text-[#8F919D] mb-[9px]">
-                    Количество отзывов
+                    Количество тыс. отзывов
                   </div>
                   <Form.Item
                     name="countOfReviews"
@@ -1104,7 +1104,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                               "countOfReviews",
                               countOfReviews,
                               previewContent,
-                              setPreviewContent
+                              setPreviewContent,
                             )
                           }
                         >
