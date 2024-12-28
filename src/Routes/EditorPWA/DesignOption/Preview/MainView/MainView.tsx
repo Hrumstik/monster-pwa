@@ -86,6 +86,19 @@ const MainView = ({
     scrollRef.current.classList.remove("grabbing");
   };
 
+  const adjustRating = (rating: number) => {
+    const numericRating = Number(rating);
+    const decimalPart = numericRating % 1;
+
+    if (decimalPart >= 0.25 && decimalPart <= 0.9) {
+      return Math.floor(numericRating) + 0.5;
+    }
+    if (decimalPart > 0.7) {
+      return Math.ceil(numericRating);
+    }
+    return Math.floor(numericRating);
+  };
+
   return (
     <div className="p-[20px] pt-[20px] pb-[20px] pl-[14px] pr-[14px] select-none">
       <div className="flex mb-4">
@@ -230,7 +243,7 @@ const MainView = ({
         </div>
         <div className="flex mb-2" style={{ gridArea: "rating-stars" }}>
           <Rate
-            value={Number(previewPwaContent.rating)}
+            value={adjustRating(Number(previewPwaContent.rating))}
             allowHalf
             style={{ color: "#1357CD", fontSize: "14px" }}
             disabled
