@@ -54,6 +54,7 @@ import { scrollToTop } from "@shared/helpers/common.ts";
 import PwaMenu from "../DesignOption/Preview/Menu/Menu.tsx";
 import StarIcon from "@icons/StarIcon.tsx";
 import ArrowDownIcon from "@icons/ArrowDownIcon.tsx";
+import { motion } from "framer-motion";
 
 export interface DesignOptionFormValues {
   languages: string[];
@@ -162,7 +163,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       content.images.map((image) => ({
         url: image.url,
         preview: image.url,
-      })),
+      }))
     );
 
     setPreviewContent({
@@ -251,7 +252,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const addEmptyReview = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
     setShowReviews(true);
@@ -289,12 +290,12 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const [screens, setScreens] = useState<Picture[]>(
-    Array.from({ length: 4 }, () => ({ url: null, preview: null })),
+    Array.from({ length: 4 }, () => ({ url: null, preview: null }))
   );
   const [showReviews, setShowReviews] = useState(true);
 
   const removeAppIcon = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
     setAppIcon({ url: null, preview: null });
@@ -361,7 +362,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     const screen = screens[index];
 
     const handleRemoveScreen = (
-      e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
       e.stopPropagation();
       setScreens((prev) => {
@@ -413,7 +414,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   const addEmptyScreen = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
     setScreens((prev) => [
@@ -496,7 +497,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
             };
           }
           return step;
-        }),
+        })
       );
       if (!id) {
         setCurrentTab(EditorPWATabs.Domain);
@@ -510,7 +511,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     } catch (error) {
       if (error && typeof error === "object" && "errorFields" in error) {
         onFinishFailed(
-          error as { errorFields: { name: (string | number)[] }[] },
+          error as { errorFields: { name: (string | number)[] }[] }
         );
       } else {
         console.error(error);
@@ -551,7 +552,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
 
       const totalRemaining = remainingIndexes.reduce(
         (sum, i) => sum + updatedSliders[i],
-        0,
+        0
       );
 
       remainingIndexes.forEach((i) => {
@@ -562,14 +563,14 @@ const DesignOption: React.FC<DesignOptionProps> = ({
 
         updatedSliders[i] = Math.max(
           0,
-          Math.min(maxTotal, updatedSliders[i] - proportionalAdjustment * 0.9),
+          Math.min(maxTotal, updatedSliders[i] - proportionalAdjustment * 0.9)
         );
       });
     }
 
     const newCountOfStars = updatedSliders.reduce(
       (sum, sliderValue, i) => sum + sliderValue * weights[i],
-      0,
+      0
     );
 
     setSliders(updatedSliders);
@@ -577,7 +578,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     form.setFieldsValue({
       countOfStars: Math.min(
         maxTotal,
-        Number(newCountOfStars.toFixed(1)),
+        Number(newCountOfStars.toFixed(1))
       ).toString(),
     });
     setPreviewContent({
@@ -796,7 +797,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                               "developerName",
                               developerValue,
                               previewContent,
-                              setPreviewContent,
+                              setPreviewContent
                             )
                           }
                         >
@@ -829,7 +830,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                                 "size",
                                 sizeValues,
                                 previewContent,
-                                setPreviewContent,
+                                setPreviewContent
                               )
                             }
                           >
@@ -862,7 +863,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                                 "countOfDownloads",
                                 countOfDownloadsValues,
                                 previewContent,
-                                setPreviewContent,
+                                setPreviewContent
                               )
                             }
                           >
@@ -890,7 +891,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                                 "age",
                                 ageValues,
                                 previewContent,
-                                setPreviewContent,
+                                setPreviewContent
                               )
                             }
                           >
@@ -998,7 +999,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                             "shortDescription",
                             casinoMessages,
                             previewContent,
-                            setPreviewContent,
+                            setPreviewContent
                           )
                         }
                       >
@@ -1104,7 +1105,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                               "countOfReviews",
                               countOfReviews,
                               previewContent,
-                              setPreviewContent,
+                              setPreviewContent
                             )
                           }
                         >
@@ -1187,12 +1188,14 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                 </div>
 
                 <div className={`flex flex-col gap-5 `}>
-                  <div
-                    className={`transition-all duration-300 ease-in-out ${
-                      showReviews
-                        ? "opacity-100 max-h-screen"
-                        : "opacity-0 max-h-0"
-                    } overflow-hidden`}
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{
+                      opacity: showReviews ? 1 : 0,
+                      height: showReviews ? "auto" : 0,
+                    }}
+                    transition={{ duration: 0.5 }}
+                    className="overflow-hidden"
                   >
                     {reviews.map((review, index) => (
                       <ReviewItem
@@ -1203,7 +1206,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                         form={form}
                       />
                     ))}
-                  </div>
+                  </motion.div>
                   <div className="flex justify-between gap-[52px]">
                     <div className="flex gap-[30px]">
                       {reviews.some((review) => review.isActive) ? null : (

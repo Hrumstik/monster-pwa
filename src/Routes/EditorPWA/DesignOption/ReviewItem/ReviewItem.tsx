@@ -305,10 +305,11 @@ const ReviewItem = ({
               {!reviewContent.isActive && (
                 <button
                   onClick={editReview}
-                  className="text-[#E3CC02] items-center font-bold text-base cursor-pointer flex gap-3
+                  className="text-[#E3CC02] text-sm items-center font-bold 
+                  cursor-pointer flex gap-3 leading-4
                   hover:opacity-80"
                 >
-                  Редактировать
+                  Edit
                   <EditIcon />
                 </button>
               )}

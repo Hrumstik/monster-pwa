@@ -49,7 +49,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
   const navigate = useNavigate();
 
   useUpdateEffect(() => {
-    if (pwaStatus === PwaStatus.ACTIVE) return;
+    if (pwaStatus !== PwaStatus.WAITING_NS) return;
     let interval: NodeJS.Timeout;
     const getDomainStatus = async (pwaContentID: string) => {
       const status = await checkDomainStatus(pwaContentID).unwrap();
@@ -60,7 +60,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
             clearInterval(interval);
             setPwaStatus(PwaStatus.ACTIVE);
           }
-        }, 300000);
+        }, 20000);
       }
     };
 
