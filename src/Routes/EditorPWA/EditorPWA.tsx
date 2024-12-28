@@ -98,6 +98,7 @@ const EditorPWA = () => {
           ...domainsData,
           pwaId: pwaContent._id!,
         }).unwrap();
+        setIsFinished(true);
       } else {
         const domainId = readyDomainsData?.find(
           (domain) => domain.domain === domainsData.domain

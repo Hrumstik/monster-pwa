@@ -9,7 +9,6 @@ import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
 import {
   useDeletePwaContentForcedMutation,
   useGetAllPwaContentQuery,
-  useGetMyUserQuery,
   useLazyCheckDomainStatusQuery,
   useUpdatePwaNameMutation,
 } from "@store/apis/pwaApi.ts";
@@ -32,7 +31,6 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
   const { data } = useGetAllPwaContentQuery();
 
   const [renamePwa, setRenamePwa] = useState<PwaContent | null>();
-  const { data: userData } = useGetMyUserQuery();
   const [deletePwaContent, { isLoading: deletePwaLoading }] =
     useDeletePwaContentForcedMutation();
   const [updatePwaContent, { isLoading: updatePwaLoading }] =
@@ -44,7 +42,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
   useEffect(() => {
     const actualStatus = getPwaInfo(pwa.id!).status!;
     setPwaStatus(actualStatus);
-  }, [userData, getPwaInfo, pwa.id]);
+  }, []);
 
   const navigate = useNavigate();
 
@@ -53,12 +51,13 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
     let interval: NodeJS.Timeout;
     const getDomainStatus = async (pwaContentID: string) => {
       const status = await checkDomainStatus(pwaContentID).unwrap();
+
       if (status === DomainCheckStatus.Pending) {
         interval = setInterval(async () => {
           const status = await checkDomainStatus(pwaContentID).unwrap();
           if (status === DomainCheckStatus.Active) {
-            clearInterval(interval);
             setPwaStatus(PwaStatus.ACTIVE);
+            clearInterval(interval);
           }
         }, 20000);
       }
