@@ -22,9 +22,11 @@ interface DomainOptionProps {
   steps: Step[];
   setSteps: (steps: Step[]) => void;
   pwaContentId: string | null;
+  cfAccounts?: { email: string; gApiKey: string }[];
 }
 
 const DomainOption: React.FC<DomainOptionProps> = ({
+  cfAccounts,
   setDomainsData,
   steps,
   setSteps,
@@ -40,7 +42,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
   const { getPwaInfo } = useGetPwaInfo();
   const [readyDomains, setReadyDomains] = useState<DefaultOptionType[]>([]);
   const [selectedReadyDomain, setSelectedReadyDomain] = useState<string | null>(
-    null
+    null,
   );
   let savedNsRecords:
     | {
@@ -95,7 +97,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
             };
           }
           return step;
-        })
+        }),
       );
       return;
     }
@@ -115,7 +117,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
               };
             }
             return step;
-          })
+          }),
         );
       })
       .catch(() => {
@@ -129,9 +131,13 @@ const DomainOption: React.FC<DomainOptionProps> = ({
         "https://pwac.world/domains/check-addition",
         {
           domain: extractDomain(form.getFieldValue("domain")),
-          email: form.getFieldValue("email"),
-          gApiKey: form.getFieldValue("gApiKey"),
-        }
+          email: cfAccounts?.length
+            ? cfAccounts[0].email
+            : form.getFieldValue("email"),
+          gApiKey: cfAccounts?.length
+            ? cfAccounts[0].gApiKey
+            : form.getFieldValue("gApiKey"),
+        },
       );
 
       if (domainValidation.data.canBeAdded) {
@@ -165,7 +171,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
             };
           }
           return step;
-        })
+        }),
       );
       return;
     }
@@ -181,6 +187,9 @@ const DomainOption: React.FC<DomainOptionProps> = ({
         }
         setDomainsData({
           ...values,
+          ...(cfAccounts?.length
+            ? { gApiKey: cfAccounts[0].gApiKey, email: cfAccounts[0].email }
+            : {}),
           domain: extractDomain(values.domain)!,
         });
 
@@ -194,7 +203,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
               };
             }
             return step;
-          })
+          }),
         );
         api.success({
           message: "Успешно",
@@ -369,7 +378,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
                     onClick={() =>
                       window.open(
                         "https://vibegamesteam.notion.site/86ca016f4984469db74d7c2eca83c16f",
-                        "_blank"
+                        "_blank",
                       )
                     }
                     className="underline cursor-pointer"
@@ -400,44 +409,48 @@ const DomainOption: React.FC<DomainOptionProps> = ({
                       autoComplete="off"
                     />
                   </Form.Item>
-                  <Form.Item
-                    name="email"
-                    className="mb-[25px]"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Введите Email",
-                      },
-                      {
-                        type: "email",
-                        message: "Введите корректный Email",
-                      },
-                    ]}
-                  >
-                    <MonsterInput
-                      disabled={!!domain}
-                      placeholder="Cloudflare Email"
-                      className="!bg-[#161724]"
-                      autoComplete="off"
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name="gApiKey"
-                    className="mb-[25px]"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Введите API ключ",
-                      },
-                    ]}
-                  >
-                    <MonsterInput
-                      disabled={!!domain}
-                      placeholder="Cloudflare API Key"
-                      className="!bg-[#161724]"
-                      autoComplete="off"
-                    />
-                  </Form.Item>
+                  {!Boolean(cfAccounts?.length) && (
+                    <Form.Item
+                      name="email"
+                      className="mb-[25px]"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Введите Email",
+                        },
+                        {
+                          type: "email",
+                          message: "Введите корректный Email",
+                        },
+                      ]}
+                    >
+                      <MonsterInput
+                        disabled={!!domain}
+                        placeholder="Cloudflare Email"
+                        className="!bg-[#161724]"
+                        autoComplete="off"
+                      />
+                    </Form.Item>
+                  )}
+                  {!Boolean(cfAccounts?.length) && (
+                    <Form.Item
+                      name="gApiKey"
+                      className="mb-[25px]"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Введите API ключ",
+                        },
+                      ]}
+                    >
+                      <MonsterInput
+                        disabled={!!domain}
+                        placeholder="Cloudflare API Key"
+                        className="!bg-[#161724]"
+                        autoComplete="off"
+                      />
+                    </Form.Item>
+                  )}
                 </Form>
               </div>
               <div className="flex-1">
