@@ -30,7 +30,7 @@ import useGetPwaInfo from "@shared/hooks/useGetPwaInfo.ts";
 const EditorPWA = () => {
   const { pwaId } = useParams();
   const [currentTab, setCurrentTab] = useState<EditorPWATabs>(
-    EditorPWATabs.Design
+    EditorPWATabs.Design,
   );
 
   const { id } = useParams();
@@ -66,7 +66,7 @@ const EditorPWA = () => {
             };
           }
           return step;
-        })
+        }),
       );
     }
   }, [id]);
@@ -100,7 +100,7 @@ const EditorPWA = () => {
         }).unwrap();
       } else {
         const domainId = readyDomainsData?.find(
-          (domain) => domain.domain === domainsData.domain
+          (domain) => domain.domain === domainsData.domain,
         )?._id;
 
         await addReadyDomain({
@@ -167,7 +167,7 @@ const EditorPWA = () => {
               ? () => setIsLoading(false)
               : () => addDomainData(pwaContentResponse),
           }),
-        10000
+        10000,
       );
     } catch (error) {
       notification.error({
@@ -185,7 +185,7 @@ const EditorPWA = () => {
       icon: getTabIcon(
         s.id as EditorPWATabs,
         s.isPassed ?? false,
-        s.id === step
+        s.id === step,
       ),
     }));
     setSteps(updatedSteps);
@@ -197,6 +197,7 @@ const EditorPWA = () => {
       case EditorPWATabs.Domain:
         return (
           <DomainOption
+            cfAccounts={userData?.cfAccounts}
             setDomainsData={setDomainsData}
             domainsData={domainsData}
             steps={steps}
