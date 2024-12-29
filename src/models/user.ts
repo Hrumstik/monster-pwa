@@ -15,6 +15,7 @@ export interface User {
   email: string;
   __v: 0;
   updatedAt: string;
+  cfAccounts: { email: string; gApiKey: string }[];
   pwas: {
     domainName?: string;
     pwaContentId: string;
