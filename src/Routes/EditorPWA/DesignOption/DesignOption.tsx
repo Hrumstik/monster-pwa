@@ -29,9 +29,7 @@ import { IoAddOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import MonsterSwitch from "@shared/elements/Switch/MonsterSwitch";
 import MonsterSlider from "@shared/elements/Slider/MonsterSlider";
-import GptIcon from "@shared/icons/GptIcon";
 import { Review } from "@models/review";
-import SimpleButton from "@shared/elements/SimpleButton/SimpleButton";
 import { Picture, PwaContent } from "@models/pwa";
 import ReviewItem from "./ReviewItem/ReviewItem";
 import { useWatch } from "antd/es/form/Form";
@@ -1019,12 +1017,6 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                     placeholder="Введите описание приложения:"
                   />
                 </Form.Item>
-                <button
-                  disabled
-                  className="text-white underline leading-[18px] text-base"
-                >
-                  Сгенерить описание при помощи ChatGPT
-                </button>
               </div>
             </div>
             <div className="bg-cardColor rounded-lg px-[50px] py-[30px] flex-1">
@@ -1217,11 +1209,6 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                           + добавить
                         </button>
                       )}
-                      <SimpleButton
-                        disabled
-                        icon={<GptIcon />}
-                        text="Сгенерить с ChatGPT"
-                      />
                     </div>
                   </div>
                   {reviews.length > 0 && (
