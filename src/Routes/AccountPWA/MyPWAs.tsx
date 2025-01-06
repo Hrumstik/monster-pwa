@@ -150,7 +150,7 @@ const MyPWAs = () => {
           + Создать PWA
         </button>
       </div>
-      <div className="rounded-lg w-full min-h-[62vh] bg-[#20223B]">
+      <div className="rounded-lg w-full bg-[#20223B]">
         <Steps
           steps={Object.values(MyPWAsTabs).map((tab) => ({
             label: getTabText(tab),
@@ -160,42 +160,44 @@ const MyPWAs = () => {
           currentStep={currentTab}
           onStepChange={(step: string) => setCurrentTab(step as MyPWAsTabs)}
         />
-        <div className="p-3 flex justify-start gap-5">
-          <MonsterInput
-            onChange={handleSearch}
-            className="w-[338px] h-10"
-            placeholder="Поиск по названию"
-          />
-          <div
-            className={`flex-1 rounded-[56px] flex gap-2 flex-wrap  p-[9px]
+        {availablePWAs && availablePWAs?.length > 0 && (
+          <div className="p-3 flex justify-start gap-5">
+            <MonsterInput
+              onChange={handleSearch}
+              className="w-[338px] h-10"
+              placeholder="Поиск по названию"
+            />
+            <div
+              className={`flex-1 rounded-[56px] flex gap-2 flex-wrap  p-[9px]
               
               ${
                 allPwaTags.length > 0
-                  ? "border border-solid border-[#161724]"
+                  ? "border border-solid border-[#161724] hover:border-[#515ACA]"
                   : ""
               }
               `}
-          >
-            {allPwaTags.map((tag) => {
-              const isActive = activePwaTags.includes(tag);
-              return (
-                <div
-                  onClick={() =>
-                    dispatch(
-                      isActive ? removeActiveTag(tag) : addActiveTag(tag)
-                    )
-                  }
-                  key={tag}
-                  className={`h-[22px] text-white select-none hover:scale-110 rounded-[3333px] text-xs cursor-pointer px-2 py-1 flex items-center gap-1
+            >
+              {allPwaTags.map((tag) => {
+                const isActive = activePwaTags.includes(tag);
+                return (
+                  <div
+                    onClick={() =>
+                      dispatch(
+                        isActive ? removeActiveTag(tag) : addActiveTag(tag)
+                      )
+                    }
+                    key={tag}
+                    className={`h-[22px] text-white select-none hover:scale-110 rounded-[3333px] text-xs cursor-pointer px-2 py-1 flex items-center gap-1
                     ${isActive ? "bg-[#515aca]" : "bg-[#383B66]"}
                     `}
-                >
-                  {tag}
-                </div>
-              );
-            })}
+                  >
+                    {tag}
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
 
         {shouldShowLoader ? (
           <Spin fullscreen />
@@ -221,7 +223,7 @@ const MyPWAs = () => {
                     <th className="bg-[#515ACA] py-3 text-center leading-5 text-sm font-bold text-white truncate ...">
                       #Tags
                     </th>
-                    <th className="bg-[#515ACA] py-3 w-20"></th>
+                    <th className="bg-[#515ACA] py-3 w-28"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -232,12 +234,14 @@ const MyPWAs = () => {
                 </tbody>
               </table>
             )}
+
             {!availablePWAs?.length && (
-              <Empty
-                description={<span style={{ color: "white" }}>Нет PWA</span>}
-                className="p-[40px]"
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-              />
+              <div className="flex items-center justify-center h-full flex-grow">
+                <Empty
+                  description={<span className="text-white">Нет PWA</span>}
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                />
+              </div>
             )}
           </>
         )}

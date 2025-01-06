@@ -26,6 +26,7 @@ import { useNavigate } from "react-router-dom";
 import DomainCell from "@shared/elements/DomainCell/DomainCell.tsx";
 import { useUpdateEffect } from "react-use";
 import PwaTags from "./TagItem/PwaTags.tsx";
+import { MdModeEdit } from "react-icons/md";
 
 const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
   const { data } = useGetAllPwaContentQuery();
@@ -153,8 +154,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
     <>
       <tr
         key={pwa.id}
-        onClick={() => navigate(`/edit-PWA/${pwa.id}`)}
-        className="hover:bg-[#383B66] group text-xs focus:bg-gray-300 w-full text-white cursor-pointer"
+        className="hover:bg-[#383B66] group text-xs focus:bg-gray-300 w-full text-white"
       >
         <Tooltip
           color="grey"
@@ -181,14 +181,20 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
             pwaId={pwa.id!}
           />
         </td>
-        <td className="py-3 text-center">
+        <td className="py-3  text-center flex justify-center items-center gap-2">
+          <button
+            onClick={() => navigate(`/edit-PWA/${pwa.id}`)}
+            className="details hover:bg-[#20223B] rounded flex items-center justify-center w-[30px] h-[30px] border-none bg-[#383B66] group-hover:bg-[#20223B]"
+          >
+            <MdModeEdit className="text-white text-base" />
+          </button>
           <MonsterDropdown
             trigger={["click"]}
             menu={{ items: generateDropDownItems(pwa) }}
           >
             <button
               onClick={(e) => e.stopPropagation()}
-              className="details mx-auto hover:bg-[#20223B] rounded flex items-center justify-center w-[30px] h-[30px] border-none bg-[#383B66] group-hover:bg-[#20223B]"
+              className="rounded flex items-center justify-center w-[30px] h-[30px] border-none bg-[#383B66] group-hover:bg-[#20223B]"
             >
               <MoreOutlined style={{ color: "white", fontSize: "15px" }} />
             </button>
