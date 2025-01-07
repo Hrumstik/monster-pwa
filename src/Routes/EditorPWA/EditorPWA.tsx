@@ -64,6 +64,12 @@ const EditorPWA = () => {
               isPassed: true,
               icon: getTabIcon(EditorPWATabs.Domain, true, false),
             };
+          } else if (step.id === EditorPWATabs.Analytics) {
+            return {
+              ...step,
+              isPassed: true,
+              icon: getTabIcon(EditorPWATabs.Analytics, true, false),
+            };
           }
           return step;
         })

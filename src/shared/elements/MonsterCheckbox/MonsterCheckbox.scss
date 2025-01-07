@@ -31,12 +31,12 @@
       }
 
       &:hover .ant-checkbox-inner {
-        border-color: lighten(#02e314, 10%);
+        border-color: lighten(#02e314, 10%) !important;
       }
     }
 
     &:hover .ant-checkbox-inner {
-      border-color: lighten(#515aca, 10%);
+      border-color: lighten(#515aca, 10%) !important;
     }
   }
 }
@@ -50,9 +50,27 @@
   border-color: lighten(#515aca, 10%) !important;
 }
 
+:where(.css-11lehqq).ant-checkbox-wrapper:not(
+    .ant-checkbox-wrapper-disabled
+  ):hover
+  .ant-checkbox-inner,
+:where(.css-11lehqq).ant-checkbox:not(.ant-checkbox-disabled):hover
+  .ant-checkbox-inner {
+  border-color: lighten(#515aca, 10%) !important;
+}
+
+:where(.css-11lehqq).ant-checkbox-wrapper:not(
+    .ant-checkbox-wrapper-disabled
+  ):hover
+  .ant-checkbox-checked:not(.ant-checkbox-disabled)
+  .ant-checkbox-inner {
+  background-color: #161724 !important;
+  border-color: lighten(#515aca, 10%) !important;
+}
+
 :where(.css-dev-only-do-not-override-11lehqq).ant-checkbox-wrapper {
-  display: flex;
-  align-items: center;
+  display: flex !important;
+  align-items: center !important;
 }
 
 :where(.css-dev-only-do-not-override-11lehqq).ant-checkbox-wrapper:not(
@@ -64,4 +82,9 @@
   ):hover
   .ant-checkbox-inner {
   border-color: lighten(#515aca, 10%) !important;
+}
+
+:where(.css-11lehqq).ant-checkbox-wrapper {
+  display: flex !important;
+  align-items: center !important;
 }
