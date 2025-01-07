@@ -25,6 +25,7 @@ import useCheckBuildStatus from "@shared/hooks/useCheckBuildStatus";
 import { notification } from "antd";
 import { Hourglass } from "react-loader-spinner";
 import useGetPwaInfo from "@shared/hooks/useGetPwaInfo.ts";
+import AnalyticOption from "./AnalyticOption/AnalyticOption.tsx";
 
 const EditorPWA = () => {
   const { pwaId } = useParams();
@@ -71,10 +72,11 @@ const EditorPWA = () => {
   }, [id]);
 
   useEffect(() => {
-    if (pwaContent && (id || domainsData)) {
-      setAvailableToSave(true);
-    }
-  }, [domainsData, id, pwaContent]);
+    const isAvailableToSave = Object.values(steps).every(
+      (step) => step.isPassed
+    );
+    setAvailableToSave(isAvailableToSave);
+  }, [steps]);
 
   const finishEditingPwa = () => {
     notification.success({
@@ -208,6 +210,16 @@ const EditorPWA = () => {
       case EditorPWATabs.Design:
         return (
           <DesignOption
+            pwaContent={pwaContent}
+            setPwaContent={setPwaContent}
+            setCurrentTab={setCurrentTab}
+            steps={steps}
+            setSteps={setSteps}
+          />
+        );
+      case EditorPWATabs.Analytics:
+        return (
+          <AnalyticOption
             pwaContent={pwaContent}
             setPwaContent={setPwaContent}
             setCurrentTab={setCurrentTab}

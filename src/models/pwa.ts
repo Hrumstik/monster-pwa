@@ -47,6 +47,11 @@ export interface PwaContent {
   id?: string;
   _id?: string;
   wideScreens: boolean;
+  pixel?: {
+    token: string;
+    pixelId: string;
+    events: string[];
+  };
 }
 
 export interface PreparedPWADataItem {

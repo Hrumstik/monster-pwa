@@ -43,7 +43,6 @@ import { useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import { EditorPWATabs, getTabIcon } from "../EditorPWAHelpers";
 import { Step } from "@shared/elements/Steps/Steps";
-import { useMount } from "react-use";
 import InfoIcon from "@icons/InfoIcon";
 import VerifiedIcon from "@icons/VerifiedIcon";
 import GenerateIcon from "@icons/GenerateIcon";
@@ -53,6 +52,7 @@ import PwaMenu from "../DesignOption/Preview/Menu/Menu.tsx";
 import StarIcon from "@icons/StarIcon.tsx";
 import ArrowDownIcon from "@icons/ArrowDownIcon.tsx";
 import { motion } from "framer-motion";
+import { useMount } from "react-use";
 
 export interface DesignOptionFormValues {
   languages: string[];
@@ -81,7 +81,7 @@ export interface DesignOptionFormValues {
   wideScreens: boolean;
 }
 
-interface DesignOptionProps {
+export interface PwaContentOptionProps {
   setPwaContent: (pwaContent: PwaContent) => void;
   setCurrentTab: (tab: EditorPWATabs) => void;
   steps: Step[];
@@ -91,7 +91,7 @@ interface DesignOptionProps {
 
 const { TextArea } = Input;
 
-const DesignOption: React.FC<DesignOptionProps> = ({
+const DesignOption: React.FC<PwaContentOptionProps> = ({
   setPwaContent,
   setCurrentTab,
   setSteps,
@@ -105,7 +105,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     });
 
   const setFormValues = (content: PwaContent) => {
-    const updatedReviews = content.reviews.map((review) => ({
+    const updatedReviews = content?.reviews?.map((review) => ({
       ...review,
       reviewText: review.reviewText.originalLanguage,
       devResponse: review.devResponse?.originalLanguage,
@@ -185,13 +185,13 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   };
 
   useEffect(() => {
-    if (!id || !fetchedPwaContent) return;
-    setFormValues(fetchedPwaContent);
-  }, [fetchedPwaContent]);
+    if (id && fetchedPwaContent) setFormValues(fetchedPwaContent);
+  }, [fetchedPwaContent, id]);
 
   useMount(() => {
-    if (!pwaContent) return;
-    setFormValues(pwaContent);
+    if (pwaContent?.appName) {
+      setFormValues(pwaContent);
+    }
   });
 
   const [form] = Form.useForm<DesignOptionFormValues>();
@@ -482,7 +482,10 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         languages: form.getFieldValue("languages"),
         wideScreens: form.getFieldValue("wideScreens"),
       };
-      setPwaContent(payload);
+      setPwaContent({
+        ...pwaContent,
+        ...payload,
+      });
       await form.validateFields();
 
       setSteps(
@@ -498,7 +501,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         })
       );
       if (!id) {
-        setCurrentTab(EditorPWATabs.Domain);
+        setCurrentTab(EditorPWATabs.Analytics);
       } else {
         notification.success({
           message: "Успешно",
