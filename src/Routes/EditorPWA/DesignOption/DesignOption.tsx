@@ -36,7 +36,10 @@ import { useWatch } from "antd/es/form/Form";
 import { v4 as uuidv4 } from "uuid";
 import { requiredValidator } from "@shared/form/validators/validators";
 import { useUploadImagesMutation } from "@store/apis/filesApi.ts";
-import { useGetPwaContentByIdQuery } from "@store/apis/pwaApi.ts";
+import {
+  useGetPwaContentByIdQuery,
+  useLazyGenerateAppDescriptionQuery,
+} from "@store/apis/pwaApi.ts";
 import { PreviewPwaContent } from "./Preview/models.ts";
 import Preview from "./Preview/Preview.tsx";
 import { useParams } from "react-router-dom";
@@ -103,6 +106,14 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
     useGetPwaContentByIdQuery(id!, {
       skip: !id,
     });
+
+  const [
+    generateAppDescription,
+    {
+      isLoading: isGeneratingDescription,
+      isFetching: isGeneratingDescriptionFetching,
+    },
+  ] = useLazyGenerateAppDescriptionQuery();
 
   const setFormValues = (content: PwaContent) => {
     const updatedReviews = content?.reviews?.map((review) => ({
@@ -247,6 +258,14 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
       hasMenu: form.getFieldValue("hasMenu"),
       age: form.getFieldValue("age"),
     });
+  };
+
+  const generateDescriptionViaAi = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    const { text } = await generateAppDescription().unwrap();
+    form.setFieldValue("fullDescription", text);
   };
 
   const addEmptyReview = (
@@ -608,7 +627,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
         }}
         onValuesChange={handleValuesChange}
         onFinishFailed={onFinishFailed}
-        validateTrigger={["onSubmit", "onBlur"]}
+        validateTrigger={["onSubmit"]}
       >
         <div className="flex flex-col gap-[30px] mb-[134px]">
           <div className="bg-cardColor rounded-lg p-[50px] pb-[30px]">
@@ -1020,6 +1039,12 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
                     placeholder="Введите описание приложения:"
                   />
                 </Form.Item>
+                <button
+                  onClick={generateDescriptionViaAi}
+                  className="text-white text-base hover:underline"
+                >
+                  Сгенерить описание при помощи ChatGPT
+                </button>
               </div>
             </div>
             <div className="bg-cardColor rounded-lg px-[50px] py-[30px] flex-1">
@@ -1086,7 +1111,6 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
                   <Form.Item
                     name="countOfReviews"
                     className="mb-0"
-                    validateTrigger="onChange"
                     rules={[requiredValidator("Укажите количество отзывов")]}
                   >
                     <MonsterInput
@@ -1255,7 +1279,15 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
           </div>
         </div>
       </Form>
-      <Spin spinning={pwaContentIsLoading || areImagesLoading} fullscreen />
+      <Spin
+        spinning={
+          pwaContentIsLoading ||
+          areImagesLoading ||
+          isGeneratingDescription ||
+          isGeneratingDescriptionFetching
+        }
+        fullscreen
+      />
     </>
   );
 };

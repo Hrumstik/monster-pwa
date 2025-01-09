@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { createTokenProvider } from "./tokenProvider";
+import { useNavigate } from "react-router-dom";
 
 export const createAuthProvider = () => {
   const tokenProvider = createTokenProvider();
@@ -17,6 +18,7 @@ export const createAuthProvider = () => {
     const [isLogged, setIsLogged] = useState(
       !!localStorage.getItem("REACT_TOKEN_AUTH")
     );
+    const navigate = useNavigate();
 
     useEffect(() => {
       const handleStorageChange = () => {
@@ -29,6 +31,12 @@ export const createAuthProvider = () => {
         window.removeEventListener("storage", handleStorageChange);
       };
     }, []);
+
+    useEffect(() => {
+      if (!isLogged) {
+        navigate("/login");
+      }
+    }, [isLogged]);
 
     return { isLogged };
   };

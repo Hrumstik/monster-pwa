@@ -1,4 +1,4 @@
-const GptIcon = () => (
+const OutlineGptIcon = () => (
   <svg
     width="24"
     height="21"
@@ -14,4 +14,4 @@ const GptIcon = () => (
   </svg>
 );
 
-export default GptIcon;
+export default OutlineGptIcon;

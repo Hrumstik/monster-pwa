@@ -15,6 +15,15 @@ import {
 } from "../DesignOptionHelpers.ts";
 import EditIcon from "@icons/EditIcon.tsx";
 
+import OutlineGptIcon from "@icons/GptIcon.tsx";
+import FilledGptIcon from "@icons/FilledGptIcon.tsx";
+import IconButton from "@shared/elements/IconButton/IconButton.tsx";
+import {
+  useGenerateResponseTextMutation,
+  useLazyGenerateReviewDateQuery,
+  useLazyGenerateReviewTextQuery,
+} from "@store/apis/pwaApi.ts";
+
 const { TextArea } = Input;
 
 const ReviewItem = ({
@@ -31,6 +40,39 @@ const ReviewItem = ({
   const [uploadIcon, { isLoading: isIconUploading }] =
     useUploadImagesMutation();
   useWatch(`reviewAuthorRating${reviewContent.id}`, form);
+  const [
+    generateReview,
+    { isLoading: isGeneratingReview, isFetching: isGeneratingReviewFetching },
+  ] = useLazyGenerateReviewDateQuery();
+  const [
+    generateReviewText,
+    {
+      isLoading: isGeneratingReviewText,
+      isFetching: isGeneratingReviewTextFetching,
+    },
+  ] = useLazyGenerateReviewTextQuery();
+  const [generateResponseText, { isLoading: isGeneratingResponseText }] =
+    useGenerateResponseTextMutation();
+
+  const generateReviewTextHandler = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    const { text } = await generateReviewText().unwrap();
+    form.setFieldsValue({ [`reviewText${reviewContent.id}`]: text });
+  };
+
+  const generateResponseTextHandler = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    const reviewText =
+      form.getFieldValue(`reviewText${reviewContent.id}`) ??
+      "Хорошее приложение";
+
+    const { text } = await generateResponseText({ text: reviewText }).unwrap();
+    form.setFieldsValue({ [`devResponse${reviewContent.id}`]: text });
+  };
 
   const editReview = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
@@ -138,9 +180,33 @@ const ReviewItem = ({
     setAllReviews(allReviews.filter((review) => review !== reviewContent));
   };
 
+  const generateReviewDate = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    const { reviewAuthor, reviewResponse, reviewText } =
+      await generateReview().unwrap();
+    form.setFieldsValue({
+      [`reviewAuthorName${reviewContent.id}`]: reviewAuthor,
+      [`reviewText${reviewContent.id}`]: reviewText,
+      [`devResponse${reviewContent.id}`]: reviewResponse,
+    });
+  };
+
   return (
     <>
-      <Spin spinning={isIconUploading} fullscreen></Spin>
+      <Spin
+        spinning={
+          isIconUploading ||
+          isGeneratingReview ||
+          isGeneratingReviewFetching ||
+          isGeneratingReviewFetching ||
+          isGeneratingReviewText ||
+          isGeneratingReviewTextFetching ||
+          isGeneratingResponseText
+        }
+        fullscreen
+      ></Spin>
       <div
         className={`mb-2 box-border pb-7 ${
           reviewContent.isActive
@@ -237,7 +303,7 @@ const ReviewItem = ({
               <div className="flex gap-2.5 ">
                 <Form.Item
                   name={`reviewAuthorRating${reviewContent.id}`}
-                  initialValue={2}
+                  initialValue={5}
                 >
                   <MonsterRate
                     disabled={!reviewContent.isActive}
@@ -269,10 +335,20 @@ const ReviewItem = ({
                   disabled={!reviewContent.isActive}
                 />
               </Form.Item>
+              <button
+                className="flex gap-2.5 items-center"
+                onClick={generateReviewTextHandler}
+              >
+                <FilledGptIcon />
+                <span className="text-sm text-white uppercase hover:underline truncate ...">
+                  Сгенерировать коммментарий
+                </span>
+              </button>
             </div>
           </div>
+
           <div className="flex-1">
-            <div className="mb-[9px] text-[#8F919D] text-xs leading-[14px]">
+            <div className="mb-[9px] text-[#8F919D] text-xs leading-[14px] truncate ...">
               Ответ разразработчика
             </div>
             <div className="mb-5">
@@ -284,8 +360,17 @@ const ReviewItem = ({
                   disabled={!reviewContent.isActive}
                 />
               </Form.Item>
+              <button
+                className="flex gap-2.5 items-center"
+                onClick={generateResponseTextHandler}
+              >
+                <FilledGptIcon />
+                <span className="text-sm text-white uppercase hover:underline truncate ...">
+                  Сгенерировать ответ
+                </span>
+              </button>
             </div>
-            <div className="flex justify-end items-center gap-5">
+            <div className={`flex justify-end items-center gap-5`}>
               {reviewContent?.isActive && (
                 <div className="flex gap-5">
                   <button
@@ -316,6 +401,11 @@ const ReviewItem = ({
             </div>
           </div>
         </div>
+        <IconButton
+          icon={<OutlineGptIcon />}
+          text="Сгенерить все  с ChatGPT"
+          onclick={generateReviewDate}
+        />
       </div>
     </>
   );

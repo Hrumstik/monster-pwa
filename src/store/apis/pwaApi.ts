@@ -158,6 +158,43 @@ export const pwaSlice = createApi({
       }),
       invalidatesTags: ["User", "PwaContent"],
     }),
+    generateReviewDate: builder.query<
+      {
+        reviewText: string;
+        reviewAuthor: string;
+        reviewResponse: string;
+      },
+      void
+    >({
+      query: () => "/content-generation/generate-review",
+    }),
+    generateAppDescription: builder.query<
+      {
+        text: string;
+      },
+      void
+    >({
+      query: () => ({
+        url: "/content-generation/generate-app-description",
+      }),
+    }),
+    generateReviewText: builder.query<{ text: string }, void>({
+      query: () => ({
+        url: "/content-generation/generate-review-text",
+      }),
+    }),
+    generateResponseText: builder.mutation<
+      { text: string },
+      {
+        text: string;
+      }
+    >({
+      query: ({ text }) => ({
+        url: "/content-generation/generate-review-response-text",
+        method: "POST",
+        body: { text },
+      }),
+    }),
   }),
 });
 
@@ -178,4 +215,8 @@ export const {
   useGetReadyDomainsQuery,
   useAttachReadyDomainMutation,
   useUpdatePwaTagsMutation,
+  useLazyGenerateReviewDateQuery,
+  useLazyGenerateAppDescriptionQuery,
+  useLazyGenerateReviewTextQuery,
+  useGenerateResponseTextMutation,
 } = pwaSlice;
