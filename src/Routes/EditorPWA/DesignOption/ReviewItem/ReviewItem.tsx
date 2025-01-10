@@ -335,15 +335,17 @@ const ReviewItem = ({
                   disabled={!reviewContent.isActive}
                 />
               </Form.Item>
-              <button
-                className="flex gap-2.5 items-center"
-                onClick={generateReviewTextHandler}
-              >
-                <FilledGptIcon />
-                <span className="text-sm text-white uppercase hover:underline truncate ...">
-                  Сгенерировать коммментарий
-                </span>
-              </button>
+              {reviewContent.isActive && (
+                <button
+                  className="flex gap-2.5 items-center"
+                  onClick={generateReviewTextHandler}
+                >
+                  <FilledGptIcon />
+                  <span className="text-sm text-white uppercase hover:underline truncate ...">
+                    Сгенерировать коммментарий
+                  </span>
+                </button>
+              )}
             </div>
           </div>
 
@@ -360,15 +362,17 @@ const ReviewItem = ({
                   disabled={!reviewContent.isActive}
                 />
               </Form.Item>
-              <button
-                className="flex gap-2.5 items-center"
-                onClick={generateResponseTextHandler}
-              >
-                <FilledGptIcon />
-                <span className="text-sm text-white uppercase hover:underline truncate ...">
-                  Сгенерировать ответ
-                </span>
-              </button>
+              {reviewContent.isActive && (
+                <button
+                  className="flex gap-2.5 items-center"
+                  onClick={generateResponseTextHandler}
+                >
+                  <FilledGptIcon />
+                  <span className="text-sm text-white uppercase hover:underline truncate ...">
+                    Сгенерировать ответ
+                  </span>
+                </button>
+              )}
             </div>
             <div className={`flex justify-end items-center gap-5`}>
               {reviewContent?.isActive && (
@@ -401,11 +405,13 @@ const ReviewItem = ({
             </div>
           </div>
         </div>
-        <IconButton
-          icon={<OutlineGptIcon />}
-          text="Сгенерить все  с ChatGPT"
-          onclick={generateReviewDate}
-        />
+        {reviewContent.isActive && (
+          <IconButton
+            icon={<OutlineGptIcon />}
+            text="Сгенерить все  с ChatGPT"
+            onclick={generateReviewDate}
+          />
+        )}
       </div>
     </>
   );
