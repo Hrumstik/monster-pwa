@@ -474,20 +474,22 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
             url: screen.url as string,
             type: "image",
           })),
-        reviews: reviews.map((review) => ({
-          reviewAuthorName: review.reviewAuthorName,
-          reviewAuthorIcon: review.reviewAuthorIcon,
-          reviewAuthorRating: review.reviewAuthorRating,
-          reviewText: {
-            originalLanguage: review.reviewText,
-          },
-          reviewDate: review.reviewDate,
-          devResponse: review.devResponse
-            ? {
-                originalLanguage: review.devResponse,
-              }
-            : undefined,
-        })),
+        reviews: reviews
+          .filter((review) => !review.isActive)
+          .map((review) => ({
+            reviewAuthorName: review.reviewAuthorName,
+            reviewAuthorIcon: review.reviewAuthorIcon,
+            reviewAuthorRating: review.reviewAuthorRating,
+            reviewText: {
+              originalLanguage: review.reviewText,
+            },
+            reviewDate: review.reviewDate,
+            devResponse: review.devResponse
+              ? {
+                  originalLanguage: review.devResponse,
+                }
+              : undefined,
+          })),
         shortDescription: {
           originalLanguage: form.getFieldValue("shortDescription"),
         },
