@@ -51,16 +51,18 @@ const AnalyticOption: React.FC<PwaContentOptionProps> = ({
     form
       .validateFields()
       .then(() => {
-        const pixel = {
-          token: form.getFieldValue("token"),
-          pixelId: form.getFieldValue("pixelId"),
-          events,
-        };
+        if (showPixel) {
+          const pixel = {
+            token: form.getFieldValue("token"),
+            pixelId: form.getFieldValue("pixelId"),
+            events,
+          };
 
-        setPwaContent({
-          ...pwaContent!,
-          pixel,
-        });
+          setPwaContent({
+            ...pwaContent!,
+            pixel,
+          });
+        }
 
         setSteps(
           steps.map((step) => {
