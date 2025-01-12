@@ -107,6 +107,8 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
       skip: !id,
     });
 
+  const dark = false;
+
   const [
     generateAppDescription,
     {
@@ -1269,6 +1271,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
               className="w-[360px] relative flex top-4 right-0 h-[671px] rounded-[32px] box-border border-[5px] border-solid border-[#515ACA] bg-white overflow-hidden scrollbar-hidden"
             >
               <Preview
+                dark={dark}
                 sliders={sliders}
                 previewPwaContent={previewContent}
                 appIcon={appIcon}
@@ -1276,7 +1279,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
                 tags={tags}
                 reviews={reviews}
               />
-              {previewContent.hasMenu && <PwaMenu />}
+              {previewContent.hasMenu && <PwaMenu dark={dark} />}
             </div>
           </div>
         </div>

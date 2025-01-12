@@ -10,6 +10,7 @@ interface Props {
   previewPwaContent: PreviewPwaContent;
   appIcon: string | null;
   reviews: Review[];
+  dark: boolean;
 }
 
 const ReviewsView: React.FC<Props> = ({
@@ -17,6 +18,7 @@ const ReviewsView: React.FC<Props> = ({
   reviews,
   previewPwaContent,
   appIcon,
+  dark,
 }) => {
   const slideVariants = {
     hidden: { x: "-100%", opacity: 0 },
@@ -32,6 +34,7 @@ const ReviewsView: React.FC<Props> = ({
       transition={{ duration: 0.25, ease: "easeInOut" }}
     >
       <ViewHeader
+        dark={dark}
         appIcon={appIcon}
         developerName={previewPwaContent.developerName}
         setView={setView}
@@ -42,6 +45,7 @@ const ReviewsView: React.FC<Props> = ({
           {reviews.map((review) => {
             return (
               <ReviewItem
+                dark={dark}
                 src={review.reviewAuthorIcon}
                 key={review.reviewAuthorName}
                 name={review.reviewAuthorName}

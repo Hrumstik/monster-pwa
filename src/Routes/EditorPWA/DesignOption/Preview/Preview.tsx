@@ -14,6 +14,7 @@ const Preview = ({
   sliders,
   reviews,
   myPWAsPage,
+  dark,
 }: {
   previewPwaContent: PreviewPwaContent;
   appIcon: Picture;
@@ -22,6 +23,7 @@ const Preview = ({
   sliders: number[];
   reviews: Review[];
   myPWAsPage?: boolean;
+  dark: boolean;
 }) => {
   const [view, setView] = useState<PwaViews>(PwaViews.Main);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -32,6 +34,7 @@ const Preview = ({
     case PwaViews.Main:
       currentView = (
         <MainView
+          dark={dark}
           myPWAsPage={myPWAsPage}
           appIcon={appIcon}
           screens={screens}
@@ -46,6 +49,7 @@ const Preview = ({
     case PwaViews.About:
       currentView = (
         <AboutView
+          dark={dark}
           setView={setView}
           previewPwaContent={previewPwaContent}
           appIcon={appIcon.url}
@@ -55,6 +59,7 @@ const Preview = ({
     case PwaViews.Reviews:
       currentView = (
         <ReviewsView
+          dark={dark}
           previewPwaContent={previewPwaContent}
           setView={setView}
           appIcon={appIcon.url}
@@ -67,9 +72,17 @@ const Preview = ({
   return (
     <div
       ref={containerRef}
-      className="relative h-full w-full overflow-y-auto pb-[30px]"
+      className={`relative h-full ${
+        dark && "bg-[#131313]"
+      } w-full overflow-y-auto pb-[30px]`}
     >
-      <div className="w-full h-full bg-white rounded-3xl">{currentView}</div>
+      <div
+        className={`w-full h-full ${
+          dark ? "bg-[#131313]" : "bg-white"
+        } rounded-3xl`}
+      >
+        {currentView}
+      </div>
     </div>
   );
 };

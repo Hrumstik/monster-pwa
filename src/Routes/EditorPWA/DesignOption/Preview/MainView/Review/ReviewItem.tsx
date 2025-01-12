@@ -10,6 +10,7 @@ interface ReviewProps {
   iconColor?: string;
   devResponse?: string;
   developerName?: string;
+  dark: boolean;
 }
 
 const ReviewItem: React.FC<ReviewProps> = ({
@@ -21,6 +22,7 @@ const ReviewItem: React.FC<ReviewProps> = ({
   iconColor,
   devResponse,
   developerName,
+  dark,
 }) => {
   const avatarName = name
     .split(" ")
@@ -50,17 +52,23 @@ const ReviewItem: React.FC<ReviewProps> = ({
               />
             )}
           </div>
-          <div className="font-roboto font-normal text-main text-[0.875rem] leading-[1.25rem]">
+          <div
+            style={dark ? { color: "#DFDFDF" } : {}}
+            className="font-roboto font-normal text-main text-[0.875rem] leading-[1.25rem]"
+          >
             {name}
           </div>
         </div>
         <div className="flex gap-[0.5em] items-center">
           <Rate
             value={stars}
-            style={{ color: "#1357CD", fontSize: "14px" }}
+            style={{ color: dark ? "#A8C8FB" : "#1357CD", fontSize: "14px" }}
             disabled
           />
-          <div className="leading-4 text-xs">
+          <div
+            style={dark ? { color: "#DFDFDF" } : {}}
+            className="leading-4 text-xs"
+          >
             {moment(date).format("DD.MM.YYYY")}
           </div>
         </div>
@@ -70,18 +78,24 @@ const ReviewItem: React.FC<ReviewProps> = ({
             textOverflow: "ellipsis",
             letterSpacing: "0.0142857143em",
             overflowWrap: "anywhere",
+            ...(dark && { color: "#DFDFDF" }),
           }}
         >
           {text}
         </div>
       </div>
       {devResponse && developerName && (
-        <div className="rounded bg-[#EBEBEB] px-3 py-3 flex flex-col gap-4 text-sm leading-5">
+        <div
+          style={dark ? { background: "rgb(48, 48, 48)" } : {}}
+          className="rounded bg-[#EBEBEB] px-3 py-3 flex flex-col gap-4 text-sm leading-5"
+        >
           <div className="flex justify-between">
-            <div>{developerName}</div>
-            <div> {moment(date).format("DD.MM.YYYY")}</div>
+            <div style={dark ? { color: "#DFDFDF" } : {}}>{developerName}</div>
+            <div style={dark ? { color: "#DFDFDF" } : {}}>
+              {moment(date).format("DD.MM.YYYY")}
+            </div>
           </div>
-          <div>{devResponse}</div>
+          <div style={dark ? { color: "#DFDFDF" } : {}}>{devResponse}</div>
         </div>
       )}
     </div>

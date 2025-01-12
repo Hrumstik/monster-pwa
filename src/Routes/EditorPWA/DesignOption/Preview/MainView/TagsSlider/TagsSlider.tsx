@@ -4,9 +4,10 @@ import "swiper/swiper-bundle.css";
 
 interface TagsSliderProps {
   tags: string[];
+  dark: boolean;
 }
 
-const TagsSlider: React.FC<TagsSliderProps> = ({ tags }) => {
+const TagsSlider: React.FC<TagsSliderProps> = ({ tags, dark }) => {
   const actualTags =
     tags.length > 0 ? tags : ["Casino", "Slots", "Online", "Offline", "Game"];
 
@@ -21,7 +22,10 @@ const TagsSlider: React.FC<TagsSliderProps> = ({ tags }) => {
       {actualTags.map((tag, index) => (
         <SwiperSlide key={index} className="!w-auto">
           {" "}
-          <div className="rounded-lg border border-solid border-[#49454F] flex items-center justify-center px-3 py-1.5 h-8 whitespace-nowrap">
+          <div
+            style={dark ? { color: "#DFDFDF" } : {}}
+            className="rounded-lg border border-solid border-[#49454F] flex items-center justify-center px-3 py-1.5 h-8 whitespace-nowrap"
+          >
             {tag}
           </div>
         </SwiperSlide>
