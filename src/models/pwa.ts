@@ -48,6 +48,10 @@ export interface PwaContent {
   _id?: string;
   wideScreens: boolean;
   pixel?: Pixel;
+  theme?: {
+    auto?: boolean;
+    dark?: boolean;
+  };
 }
 
 export interface Pixel {

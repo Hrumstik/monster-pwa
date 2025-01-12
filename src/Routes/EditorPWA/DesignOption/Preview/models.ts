@@ -29,4 +29,6 @@ export interface PreviewPwaContent {
   wideScreens: boolean;
   hasMenu: boolean;
   age: string;
+  darkTheme?: boolean;
+  autoTheme?: boolean;
 }

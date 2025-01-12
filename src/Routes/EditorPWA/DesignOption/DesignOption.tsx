@@ -82,6 +82,8 @@ export interface DesignOptionFormValues {
   hasLoadingScreen: boolean;
   hasMenu: boolean;
   wideScreens: boolean;
+  darkTheme: boolean;
+  autoTheme?: boolean;
 }
 
 export interface PwaContentOptionProps {
@@ -106,8 +108,6 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
     useGetPwaContentByIdQuery(id!, {
       skip: !id,
     });
-
-  const dark = false;
 
   const [
     generateAppDescription,
@@ -148,6 +148,8 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
       hasMenu: content.hasMenu,
       age: content.age,
       wideScreens: content.wideScreens,
+      darkTheme: content.theme?.dark,
+      autoTheme: content.theme?.auto,
     });
 
     updatedReviews.forEach((review) => {
@@ -194,6 +196,8 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
       wideScreens: content.wideScreens,
       hasMenu: content.hasMenu,
       age: content.age,
+      darkTheme: content.theme?.dark,
+      autoTheme: content.theme?.auto,
     });
   };
 
@@ -239,6 +243,8 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
     wideScreens: false,
     hasMenu: true,
     age: "18+",
+    darkTheme: false,
+    autoTheme: false,
   });
 
   const handleValuesChange = () => {
@@ -259,6 +265,8 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
       wideScreens: form.getFieldValue("wideScreens"),
       hasMenu: form.getFieldValue("hasMenu"),
       age: form.getFieldValue("age"),
+      darkTheme: form.getFieldValue("darkTheme"),
+      autoTheme: form.getFieldValue("autoTheme"),
     });
   };
 
@@ -504,6 +512,10 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
         hasMenu: form.getFieldValue("hasMenu"),
         languages: form.getFieldValue("languages"),
         wideScreens: form.getFieldValue("wideScreens"),
+        theme: {
+          auto: form.getFieldValue("autoTheme"),
+          dark: form.getFieldValue("darkTheme"),
+        },
       };
       setPwaContent({
         ...pwaContent,
@@ -1198,6 +1210,23 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
                     Меню внизу экрана
                   </div>
                 </div>
+                <div className="flex gap-4 justify-start items-center">
+                  <Form.Item name="darkTheme" noStyle>
+                    <MonsterSwitch />
+                  </Form.Item>
+                  <div className="text-white text-base leading-5">
+                    Черная тема
+                  </div>
+                </div>
+
+                <div className="flex gap-4 justify-start items-center">
+                  <Form.Item name="autoTheme" noStyle>
+                    <MonsterSwitch />
+                  </Form.Item>
+                  <div className="text-white text-base leading-5">
+                    Автопереключение темы под тему устройства
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1271,7 +1300,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
               className="w-[360px] relative flex top-4 right-0 h-[671px] rounded-[32px] box-border border-[5px] border-solid border-[#515ACA] bg-white overflow-hidden scrollbar-hidden"
             >
               <Preview
-                dark={dark}
+                dark={form.getFieldValue("darkTheme")}
                 sliders={sliders}
                 previewPwaContent={previewContent}
                 appIcon={appIcon}
@@ -1279,7 +1308,9 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
                 tags={tags}
                 reviews={reviews}
               />
-              {previewContent.hasMenu && <PwaMenu dark={dark} />}
+              {previewContent.hasMenu && (
+                <PwaMenu dark={form.getFieldValue("darkTheme")} />
+              )}
             </div>
           </div>
         </div>
