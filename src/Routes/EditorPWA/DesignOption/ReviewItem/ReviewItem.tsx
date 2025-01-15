@@ -179,7 +179,6 @@ const ReviewItem = ({
     e.preventDefault();
     if (!reviewContent.isActive) return;
     setReviewAuthorIcon({ file: null, preview: undefined });
-    setIsPopoverOpen(false);
   };
 
   const removeReview = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -207,7 +206,6 @@ const ReviewItem = ({
     e.preventDefault();
     const url = gerRandomImageUrl(male);
     setReviewAuthorIcon({ file: null, preview: url });
-    setIsPopoverOpen(false);
   };
 
   const popoverContent = (
@@ -269,8 +267,12 @@ const ReviewItem = ({
               content={popoverContent}
               placement="top"
               open={isPopoverOpen}
-              onOpenChange={(open) => setIsPopoverOpen(open)}
+              onOpenChange={(open) => {
+                if (!reviewContent.isActive) return;
+                setIsPopoverOpen(open);
+              }}
               mouseLeaveDelay={1}
+              trigger="hover"
             >
               <div className="flex items-center mr-[19px] cursor-pointer">
                 <Upload
@@ -278,15 +280,10 @@ const ReviewItem = ({
                   showUploadList={false}
                   beforeUpload={beforeUpload}
                 >
-                  {reviewAuthorIcon.preview ||
-                  reviewContent?.reviewAuthorIcon ? (
+                  {reviewAuthorIcon.preview ? (
                     <div className="relative w-[50px] h-[50px]  group">
                       <img
-                        src={
-                          reviewContent?.reviewAuthorIcon
-                            ? reviewContent?.reviewAuthorIcon
-                            : reviewAuthorIcon.preview!
-                        }
+                        src={reviewAuthorIcon.preview}
                         alt="Uploaded"
                         className="w-[50px] h-[50px] object-fill rounded-full"
                       />
