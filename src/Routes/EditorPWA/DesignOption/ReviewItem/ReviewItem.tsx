@@ -271,7 +271,7 @@ const ReviewItem = ({
                 if (!reviewContent.isActive) return;
                 setIsPopoverOpen(open);
               }}
-              mouseLeaveDelay={1}
+              mouseLeaveDelay={0.4}
               trigger="hover"
             >
               <div className="flex items-center mr-[19px] cursor-pointer">
