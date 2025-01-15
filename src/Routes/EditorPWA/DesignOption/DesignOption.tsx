@@ -643,7 +643,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
         }}
         onValuesChange={handleValuesChange}
         onFinishFailed={onFinishFailed}
-        validateTrigger={["onSubmit"]}
+        validateTrigger={["onBlur", "onSubmit"]}
       >
         <div className="flex flex-col gap-[30px] mb-[134px]">
           <div className="bg-cardColor rounded-lg p-[50px] pb-[30px]">

@@ -1,0 +1,21 @@
+.monster-popover {
+  .ant-popover-inner {
+    background-color: #303352 !important;
+    border-radius: 8px;
+  }
+
+  .ant-popover-arrow {
+    &:before {
+      background-color: #303352 !important;
+    }
+  }
+
+  .ant-popover-title {
+    color: #ffffff !important;
+    font-weight: bold;
+  }
+
+  .ant-popover-content {
+    color: #ffffff !important;
+  }
+}

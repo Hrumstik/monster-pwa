@@ -2,9 +2,14 @@ import { FormInstance } from "antd";
 import { DesignOptionFormValues } from "./DesignOption";
 import { PreviewPwaContent } from "./Preview/models";
 
+interface AvatarUrls {
+  male: string[];
+  female: string[];
+}
+
 export const allowedExtensions = [".png", ".jpeg", ".jpg", ".svg", ".webp"];
 export const allowedExtensionsErrorMessage = `Допустимые форматы: ${allowedExtensions.join(
-  ", ",
+  ", "
 )}`;
 export const languages = [
   { label: "Все языки", value: "all" },
@@ -48,7 +53,7 @@ export const generateRandomValue = (
   field: string,
   values: string[],
   previewContent: PreviewPwaContent,
-  setPreviewContent: (values: PreviewPwaContent) => void,
+  setPreviewContent: (values: PreviewPwaContent) => void
 ) => {
   const randomValue = values[Math.floor(Math.random() * values.length)];
   form.setFieldsValue({ [field]: randomValue });
@@ -306,3 +311,32 @@ export const developerValue = [
   "BetBoomX",
   "FortuneFusionX",
 ];
+
+export const avatarUrls: AvatarUrls = {
+  male: [
+    "https://pwac-media.s3.eu-north-1.amazonaws.com/5ab91b21-8af4-47d4-8a6d-f670e513b756-678bbd909e3f150f6b7748498629709a.png",
+    "https://pwac-media.s3.eu-north-1.amazonaws.com/554812d7-93a0-4f53-afdc-435e9a0a72ba-0b05eab45da977b55fe5cd62e90c8638.png",
+    "https://pwac-media.s3.eu-north-1.amazonaws.com/8540098c-2fd5-467c-a5cc-10bead1bff7c-5a3805b37dc1c48cebb8f35eb3df1428.png",
+    "https://pwac-media.s3.eu-north-1.amazonaws.com/cd6314b4-eed9-4806-93c9-8c437061bb9a-7ec463330915395544dd672212e44271.png",
+    "https://pwac-media.s3.eu-north-1.amazonaws.com/37e66a97-2a23-43dd-89b9-3c85a95eb860-53cfbb02b425816e23d6fe391ffdae54.png",
+    "https://pwac-media.s3.eu-north-1.amazonaws.com/5eec3f0f-b01a-422a-9c3c-b6165068501d-73b48a4120e188b1457aa6e81f193689.png",
+    "https://pwac-media.s3.eu-north-1.amazonaws.com/18bbd4ba-a844-4931-aaea-df82b5113908-b1fc05412d81eb306b2cf687b7ff96d3.png",
+  ],
+  female: [
+    "https://pwac-media.s3.eu-north-1.amazonaws.com/8e4ec898-9b10-437e-a86b-3f352e88f433-2e3ef0e4a8e761005eed0f1a52f745e2.png",
+    "https://pwac-media.s3.eu-north-1.amazonaws.com/ffad094f-244d-4e60-9b1d-6e2542e9cc22-4deecf0dffede981088f59e6135a2648.png",
+    "https://pwac-media.s3.eu-north-1.amazonaws.com/ac9e60df-725b-4516-99c4-807f5c312374-7cbbfbb351278fe60b5ef71433df6ae6.png",
+    "https://pwac-media.s3.eu-north-1.amazonaws.com/c63aa469-38c3-4026-9f0d-bb3613831590-47aeec01894590c5ce94990078d778cf.png",
+    "https://pwac-media.s3.eu-north-1.amazonaws.com/c507830b-9796-4638-b87a-e7f3a3eb29ef-546fd771605a1787675d2b80cccae02b.png",
+    "https://pwac-media.s3.eu-north-1.amazonaws.com/d4ebc9eb-b602-4ecd-9b08-2ea981fff859-6609b68a77b5f1b573399758eed09949.png",
+    "https://pwac-media.s3.eu-north-1.amazonaws.com/3495f929-caa0-46b6-afff-b8068bd1c220-db7901ebc0e86bb2993f8cc96de24956.png",
+    "https://pwac-media.s3.eu-north-1.amazonaws.com/3c7a2cde-5b94-41f9-b4cf-4ae4b8318772-eb274d896c33b0b598e2ca871d6517ba.png",
+    "https://pwac-media.s3.eu-north-1.amazonaws.com/582ce633-c250-478b-8e9f-85d7377e5fd3-f1f19e56bbf38285d3af1123c6781995.png",
+    "https://pwac-media.s3.eu-north-1.amazonaws.com/3c40e6b5-21a9-44f0-8270-742f36df1947-f1041d25bacc3b8fd7d3195396af3aee.png",
+  ],
+};
+
+export const gerRandomImageUrl = (sex: keyof AvatarUrls): string => {
+  const urls = avatarUrls[sex];
+  return urls[Math.floor(Math.random() * urls.length)];
+};
