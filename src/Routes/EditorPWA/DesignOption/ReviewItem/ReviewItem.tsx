@@ -435,7 +435,9 @@ const ReviewItem = ({
                     onClick={removeReview}
                     className="w-[42px] bg-[#F56060] h-[42px] flex items-center justify-center rounded cursor-pointer hover:opacity-80 hover:shadow-sm"
                   >
-                    <DeleteOutlined style={{ fontSize: "20px" }} />
+                    <DeleteOutlined
+                      style={{ fontSize: "20px", color: "white" }}
+                    />
                   </button>
                 </div>
               )}

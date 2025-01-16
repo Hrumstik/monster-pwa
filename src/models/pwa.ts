@@ -47,17 +47,11 @@ export interface PwaContent {
   id?: string;
   _id?: string;
   wideScreens: boolean;
-  pixel?: Pixel;
+  pixel?: Pixel[];
   theme?: {
     auto?: boolean;
     dark?: boolean;
   };
-}
-
-export interface Pixel {
-  token: string;
-  pixelId: string;
-  events: string[];
 }
 
 export interface PreparedPWADataItem {
@@ -82,4 +76,37 @@ export enum DomainCheckStatus {
   Pending = "pending",
   Moved = "moved",
   Deactivated = "deactivated",
+}
+
+export enum PwaEvents {
+  OpenPage = "OpenPage",
+  Install = "Install",
+  Registration = "Registration",
+  Deposit = "Deposit",
+}
+
+export enum FacebookEvent {
+  AddPaymentInfo = "AddPaymentInfo",
+  AddToCart = "AddToCart",
+  AddToWishlist = "AddToWishlist",
+  CompleteRegistration = "CompleteRegistration",
+  Contact = "Contact",
+  CustomizeProduct = "CustomizeProduct",
+  Donate = "Donate",
+  FindLocation = "FindLocation",
+  InitiateCheckout = "InitiateCheckout",
+  Lead = "Lead",
+  Purchase = "Purchase",
+  Schedule = "Schedule",
+  Search = "Search",
+  StartTrial = "StartTrial",
+  SubmitApplication = "SubmitApplication",
+  Subscribe = "Subscribe",
+  ViewContent = "ViewContent",
+}
+
+export interface Pixel {
+  token: string;
+  pixelId: string;
+  events: { triggerEvent: PwaEvents; sentEvent: FacebookEvent }[];
 }
