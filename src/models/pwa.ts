@@ -53,6 +53,7 @@ export interface PwaContent {
     dark?: boolean;
   };
   videoUrl?: string;
+  keepActualDateOfReviews?: boolean;
 }
 
 export interface Pixel {

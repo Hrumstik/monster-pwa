@@ -85,6 +85,7 @@ export interface DesignOptionFormValues {
   darkTheme: boolean;
   autoTheme?: boolean;
   videoUrl: string;
+  keepActualDateOfReviews?: boolean;
 }
 
 export interface PwaContentOptionProps {
@@ -152,6 +153,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
       darkTheme: content.theme?.dark,
       autoTheme: content.theme?.auto,
       videoUrl: content.videoUrl,
+      keepActualDateOfReviews: content.keepActualDateOfReviews,
     });
 
     updatedReviews.forEach((review) => {
@@ -201,6 +203,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
       darkTheme: content.theme?.dark,
       autoTheme: content.theme?.auto,
       videoUrl: content.videoUrl,
+      keepActualDateOfReviews: content.keepActualDateOfReviews,
     });
   };
 
@@ -249,6 +252,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
     darkTheme: false,
     autoTheme: false,
     videoUrl: "",
+    keepActualDateOfReviews: false,
   });
 
   const handleValuesChange = () => {
@@ -272,6 +276,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
       darkTheme: form.getFieldValue("darkTheme"),
       autoTheme: form.getFieldValue("autoTheme"),
       videoUrl: form.getFieldValue("videoUrl"),
+      keepActualDateOfReviews: form.getFieldValue("keepActualDateOfReviews"),
     });
   };
 
@@ -320,6 +325,8 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
     setTags(tags.filter((t) => t !== tag));
     form.setFieldsValue({ tags: tags.filter((t) => t !== tag) });
   };
+
+  useWatch("keepActualDateOfReviews", form);
 
   const [screens, setScreens] = useState<Picture[]>(
     Array.from({ length: 4 }, () => ({ url: null, preview: null }))
@@ -646,6 +653,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
           hasMenu: true,
           wideScreens: false,
           hasLoadingScreen: true,
+          keepActualDateOfReviews: false,
         }}
         onValuesChange={handleValuesChange}
         onFinishFailed={onFinishFailed}
@@ -1243,6 +1251,14 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
                     Комментарии
                   </div>
                 </div>
+                <div className="flex gap-4 justify-start items-center">
+                  <Form.Item name="keepActualDateOfReviews" noStyle>
+                    <MonsterSwitch />
+                  </Form.Item>
+                  <div className="text-white text-base leading-5">
+                    Поддерживать актуальные даты комментариев
+                  </div>
+                </div>
 
                 <div className={`flex flex-col gap-5 `}>
                   <motion.div
@@ -1261,6 +1277,9 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
                         allReviews={reviews}
                         setAllReviews={setReviews}
                         form={form}
+                        actualDateOfReviewsIsActive={form.getFieldValue(
+                          "keepActualDateOfReviews"
+                        )}
                       />
                     ))}
                   </motion.div>

@@ -32,4 +32,5 @@ export interface PreviewPwaContent {
   darkTheme?: boolean;
   autoTheme?: boolean;
   videoUrl?: string;
+  keepActualDateOfReviews?: boolean;
 }
