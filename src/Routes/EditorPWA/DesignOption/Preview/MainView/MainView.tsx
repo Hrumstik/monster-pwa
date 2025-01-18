@@ -240,6 +240,7 @@ const MainView = ({
       <ScreensSlider
         screens={screens}
         wideScreens={previewPwaContent.wideScreens}
+        videoUrl={previewPwaContent.videoUrl}
       />
       <div className="flex flex-col gap-3 mb-4">
         <div

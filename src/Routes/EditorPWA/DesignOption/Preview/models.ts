@@ -31,4 +31,5 @@ export interface PreviewPwaContent {
   age: string;
   darkTheme?: boolean;
   autoTheme?: boolean;
+  videoUrl?: string;
 }

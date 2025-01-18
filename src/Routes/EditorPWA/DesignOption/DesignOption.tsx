@@ -200,6 +200,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
       age: content.age,
       darkTheme: content.theme?.dark,
       autoTheme: content.theme?.auto,
+      videoUrl: content.videoUrl,
     });
   };
 
@@ -247,6 +248,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
     age: "18+",
     darkTheme: false,
     autoTheme: false,
+    videoUrl: "",
   });
 
   const handleValuesChange = () => {
@@ -269,6 +271,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
       age: form.getFieldValue("age"),
       darkTheme: form.getFieldValue("darkTheme"),
       autoTheme: form.getFieldValue("autoTheme"),
+      videoUrl: form.getFieldValue("videoUrl"),
     });
   };
 
