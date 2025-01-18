@@ -84,6 +84,7 @@ export interface DesignOptionFormValues {
   wideScreens: boolean;
   darkTheme: boolean;
   autoTheme?: boolean;
+  videoUrl: string;
 }
 
 export interface PwaContentOptionProps {
@@ -150,6 +151,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
       wideScreens: content.wideScreens,
       darkTheme: content.theme?.dark,
       autoTheme: content.theme?.auto,
+      videoUrl: content.videoUrl,
     });
 
     updatedReviews.forEach((review) => {
@@ -516,6 +518,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
           auto: form.getFieldValue("autoTheme"),
           dark: form.getFieldValue("darkTheme"),
         },
+        videoUrl: form.getFieldValue("videoUrl"),
       };
       setPwaContent({
         ...pwaContent,
@@ -964,15 +967,14 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
               установки
             </div>
             <div className="flex flex-row gap-[60px]">
-              <div className="mb-[13px] w-[460px]">
+              <Form.Item name="videoUrl" className="w-[460px] mb-0">
                 <MonsterInput
                   placeholder="YouTube video URL"
                   className="!bg-[#161724] !h-[42px]"
                   autoComplete="off"
-                  disabled
                 />
-              </div>
-              <div className="flex gap-4 justify-start">
+              </Form.Item>
+              <div className="flex gap-4 justify-start items-center">
                 <div className="text-white text-base leading-5 truncate ...">
                   Широкоформатные
                 </div>
@@ -981,7 +983,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
                 </Form.Item>
               </div>
             </div>
-            <div className="text-[#8F919D] italic text-xs leading-[14px] mb-[18px]">
+            <div className="text-[#8F919D] italic text-xs leading-[14px] mt-[13px] mb-[18px]">
               *Видео всегда будет отображаться первым в скриншотах приложения
               <br />
               вы также можете добовлять широкоформатные скрины!

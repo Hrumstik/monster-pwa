@@ -52,6 +52,7 @@ export interface PwaContent {
     auto?: boolean;
     dark?: boolean;
   };
+  videoUrl?: string;
 }
 
 export interface Pixel {
