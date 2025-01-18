@@ -52,7 +52,7 @@ import GenerateIcon from "@icons/GenerateIcon";
 import ClassicButton from "@shared/elements/ClassicButton/ClassibButton.tsx";
 import { scrollToTop } from "@shared/helpers/common.ts";
 import PwaMenu from "../DesignOption/Preview/Menu/Menu.tsx";
-import StarIcon from "@icons/StarIcon.tsx";
+import { FaStar } from "react-icons/fa6";
 import ArrowDownIcon from "@icons/ArrowDownIcon.tsx";
 import { motion } from "framer-motion";
 import { useMount } from "react-use";
@@ -1132,7 +1132,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
                     <div className="font-bold text-white text-[32px]">
                       {form.getFieldValue("countOfStars")}
                     </div>
-                    <StarIcon />
+                    <FaStar color="#ED8A19" />
                   </div>
                   <div className="text-xs text-[#8F919D] mb-[9px]">
                     Количество тыс. отзывов
