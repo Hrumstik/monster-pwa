@@ -48,7 +48,7 @@ const LoginPage = () => {
         }}
       >
         {!loading ? (
-          <div className="w-[460px]">
+          <div className="lg:w-[460px] w-[300px]">
             <div className="flex justify-center font-normal font-reemkufi text-[22px] text-white leading-[56px] mb-[25px]">
               MONSTER PWA
             </div>
