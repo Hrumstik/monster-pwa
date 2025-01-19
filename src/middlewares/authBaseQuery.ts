@@ -37,6 +37,7 @@ const baseQuery: BaseQueryFn<
   if (result.error && result.error.status === 401) {
     console.log("Logging out");
     logout();
+    window.location.href = "/login";
   }
 
   return result;

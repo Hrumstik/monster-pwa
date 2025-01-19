@@ -88,6 +88,8 @@ const MainView = ({
     scrollRef.current.classList.remove("grabbing");
   };
 
+  console.log(previewPwaContent.keepActualDateOfReviews);
+
   const adjustRating = (rating: number) => {
     const numericRating = Number(rating);
     const decimalPart = numericRating % 1;
@@ -240,6 +242,7 @@ const MainView = ({
       <ScreensSlider
         screens={screens}
         wideScreens={previewPwaContent.wideScreens}
+        videoUrl={previewPwaContent.videoUrl}
       />
       <div className="flex flex-col gap-3 mb-4">
         <div
@@ -365,6 +368,9 @@ const MainView = ({
               iconColor={review.reviewIconColor}
               devResponse={review.devResponse}
               developerName={previewPwaContent.developerName}
+              keepActualDateOfReviews={
+                previewPwaContent.keepActualDateOfReviews
+              }
             />
           );
         })}

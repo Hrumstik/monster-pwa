@@ -52,6 +52,8 @@ export interface PwaContent {
     auto?: boolean;
     dark?: boolean;
   };
+  videoUrl?: string;
+  keepActualDateOfReviews?: boolean;
 }
 
 export interface PreparedPWADataItem {

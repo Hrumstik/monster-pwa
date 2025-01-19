@@ -52,7 +52,7 @@ import GenerateIcon from "@icons/GenerateIcon";
 import ClassicButton from "@shared/elements/ClassicButton/ClassibButton.tsx";
 import { scrollToTop } from "@shared/helpers/common.ts";
 import PwaMenu from "../DesignOption/Preview/Menu/Menu.tsx";
-import StarIcon from "@icons/StarIcon.tsx";
+import { FaStar } from "react-icons/fa6";
 import ArrowDownIcon from "@icons/ArrowDownIcon.tsx";
 import { motion } from "framer-motion";
 import { useMount } from "react-use";
@@ -84,6 +84,8 @@ export interface DesignOptionFormValues {
   wideScreens: boolean;
   darkTheme: boolean;
   autoTheme?: boolean;
+  videoUrl: string;
+  keepActualDateOfReviews?: boolean;
 }
 
 export interface PwaContentOptionProps {
@@ -150,6 +152,8 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
       wideScreens: content.wideScreens,
       darkTheme: content.theme?.dark,
       autoTheme: content.theme?.auto,
+      videoUrl: content.videoUrl,
+      keepActualDateOfReviews: content.keepActualDateOfReviews,
     });
 
     updatedReviews.forEach((review) => {
@@ -198,6 +202,8 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
       age: content.age,
       darkTheme: content.theme?.dark,
       autoTheme: content.theme?.auto,
+      videoUrl: content.videoUrl,
+      keepActualDateOfReviews: content.keepActualDateOfReviews,
     });
   };
 
@@ -245,6 +251,8 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
     age: "18+",
     darkTheme: false,
     autoTheme: false,
+    videoUrl: "",
+    keepActualDateOfReviews: false,
   });
 
   const handleValuesChange = () => {
@@ -267,6 +275,8 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
       age: form.getFieldValue("age"),
       darkTheme: form.getFieldValue("darkTheme"),
       autoTheme: form.getFieldValue("autoTheme"),
+      videoUrl: form.getFieldValue("videoUrl"),
+      keepActualDateOfReviews: form.getFieldValue("keepActualDateOfReviews"),
     });
   };
 
@@ -315,6 +325,8 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
     setTags(tags.filter((t) => t !== tag));
     form.setFieldsValue({ tags: tags.filter((t) => t !== tag) });
   };
+
+  useWatch("keepActualDateOfReviews", form);
 
   const [screens, setScreens] = useState<Picture[]>(
     Array.from({ length: 4 }, () => ({ url: null, preview: null }))
@@ -516,6 +528,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
           auto: form.getFieldValue("autoTheme"),
           dark: form.getFieldValue("darkTheme"),
         },
+        videoUrl: form.getFieldValue("videoUrl"),
       };
       setPwaContent({
         ...pwaContent,
@@ -640,6 +653,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
           hasMenu: true,
           wideScreens: false,
           hasLoadingScreen: true,
+          keepActualDateOfReviews: false,
         }}
         onValuesChange={handleValuesChange}
         onFinishFailed={onFinishFailed}
@@ -964,15 +978,14 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
               установки
             </div>
             <div className="flex flex-row gap-[60px]">
-              <div className="mb-[13px] w-[460px]">
+              <Form.Item name="videoUrl" className="w-[460px] mb-0">
                 <MonsterInput
                   placeholder="YouTube video URL"
                   className="!bg-[#161724] !h-[42px]"
                   autoComplete="off"
-                  disabled
                 />
-              </div>
-              <div className="flex gap-4 justify-start">
+              </Form.Item>
+              <div className="flex gap-4 justify-start items-center">
                 <div className="text-white text-base leading-5 truncate ...">
                   Широкоформатные
                 </div>
@@ -981,7 +994,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
                 </Form.Item>
               </div>
             </div>
-            <div className="text-[#8F919D] italic text-xs leading-[14px] mb-[18px]">
+            <div className="text-[#8F919D] italic text-xs leading-[14px] mt-[13px] mb-[18px]">
               *Видео всегда будет отображаться первым в скриншотах приложения
               <br />
               вы также можете добовлять широкоформатные скрины!
@@ -1119,7 +1132,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
                     <div className="font-bold text-white text-[32px]">
                       {form.getFieldValue("countOfStars")}
                     </div>
-                    <StarIcon />
+                    <FaStar color="#ED8A19" />
                   </div>
                   <div className="text-xs text-[#8F919D] mb-[9px]">
                     Количество тыс. отзывов
@@ -1238,6 +1251,14 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
                     Комментарии
                   </div>
                 </div>
+                <div className="flex gap-4 justify-start items-center">
+                  <Form.Item name="keepActualDateOfReviews" noStyle>
+                    <MonsterSwitch />
+                  </Form.Item>
+                  <div className="text-white text-base leading-5">
+                    Поддерживать актуальные даты комментариев
+                  </div>
+                </div>
 
                 <div className={`flex flex-col gap-5 `}>
                   <motion.div
@@ -1256,6 +1277,9 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
                         allReviews={reviews}
                         setAllReviews={setReviews}
                         form={form}
+                        actualDateOfReviewsIsActive={form.getFieldValue(
+                          "keepActualDateOfReviews"
+                        )}
                       />
                     ))}
                   </motion.div>

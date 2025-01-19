@@ -36,11 +36,13 @@ const ReviewItem = ({
   allReviews,
   setAllReviews,
   form,
+  actualDateOfReviewsIsActive,
 }: {
   reviewContent: Review;
   allReviews: Review[];
   setAllReviews: React.Dispatch<React.SetStateAction<Review[]>>;
   form: FormInstance;
+  actualDateOfReviewsIsActive: boolean;
 }) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [uploadIcon, { isLoading: isIconUploading }] =
@@ -332,16 +334,22 @@ const ReviewItem = ({
             </div>
             <div className="flex flex-col gap-[10px] mr-[30px]">
               <div className="text-sm leading-[14px] text-[#8F919D]">Дата</div>
-              <Form.Item name={`reviewDate${reviewContent.id}`}>
-                <MonsterDatePicker
-                  defaultValue={dayjs()}
-                  className="w-[130px] !h-[42px]"
-                  allowClear={false}
-                  readOnly={!reviewContent.isActive}
-                  disabled={!reviewContent.isActive}
-                  style={{ backgroundColor: "#161724", color: "white" }}
-                />
-              </Form.Item>
+              {actualDateOfReviewsIsActive ? (
+                <div className="bg-[#161724] flex items-center justify-center h-[42px] rounded-md text-[#00FF11]  w-[130px] text-sm">
+                  Актуальная дата
+                </div>
+              ) : (
+                <Form.Item name={`reviewDate${reviewContent.id}`}>
+                  <MonsterDatePicker
+                    defaultValue={dayjs()}
+                    className="w-[130px] !h-[42px]"
+                    allowClear={false}
+                    readOnly={!reviewContent.isActive}
+                    disabled={!reviewContent.isActive}
+                    style={{ backgroundColor: "#161724", color: "white" }}
+                  />
+                </Form.Item>
+              )}
             </div>
             <div className="flex flex-col gap-2.5">
               <div className="text-[#8F919D] text-sm leading-[14px]">

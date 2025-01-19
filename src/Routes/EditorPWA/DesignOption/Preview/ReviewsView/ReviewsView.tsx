@@ -53,6 +53,10 @@ const ReviewsView: React.FC<Props> = ({
                 text={review.reviewText}
                 date={review.reviewDate}
                 iconColor={review.reviewIconColor}
+                keepActualDateOfReviews={
+                  previewPwaContent.keepActualDateOfReviews
+                }
+                devResponse={review.devResponse}
               />
             );
           })}

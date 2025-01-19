@@ -42,7 +42,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
   const { getPwaInfo } = useGetPwaInfo();
   const [readyDomains, setReadyDomains] = useState<DefaultOptionType[]>([]);
   const [selectedReadyDomain, setSelectedReadyDomain] = useState<string | null>(
-    null,
+    null
   );
   let savedNsRecords:
     | {
@@ -97,7 +97,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
             };
           }
           return step;
-        }),
+        })
       );
       return;
     }
@@ -117,7 +117,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
               };
             }
             return step;
-          }),
+          })
         );
       })
       .catch(() => {
@@ -137,7 +137,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
           gApiKey: cfAccounts?.length
             ? cfAccounts[0].gApiKey
             : form.getFieldValue("gApiKey"),
-        },
+        }
       );
 
       if (domainValidation.data.canBeAdded) {
@@ -171,7 +171,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
             };
           }
           return step;
-        }),
+        })
       );
       return;
     }
@@ -203,7 +203,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
               };
             }
             return step;
-          }),
+          })
         );
         api.success({
           message: "Успешно",
@@ -378,7 +378,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
                     onClick={() =>
                       window.open(
                         "https://vibegamesteam.notion.site/86ca016f4984469db74d7c2eca83c16f",
-                        "_blank",
+                        "_blank"
                       )
                     }
                     className="underline cursor-pointer"
