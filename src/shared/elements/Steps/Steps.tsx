@@ -1,10 +1,9 @@
-import { EditorPWATabs } from "@Routes/EditorPWA/EditorPWAHelpers";
 import React from "react";
 
 export interface Step {
   label: string;
   isClickable: boolean;
-  id: EditorPWATabs;
+  id: string;
   icon?: React.ReactNode;
   isPassed?: boolean;
 }

@@ -122,7 +122,8 @@ const DomainOption: React.FC<DomainOptionProps> = ({
           return step;
         });
         setSteps(newSteps);
-        const nextStep = newSteps.find((step) => !step.isPassed)?.id;
+        const nextStep = newSteps.find((step) => !step.isPassed)
+          ?.id as EditorPWATabs;
         if (nextStep) {
           setCurrentTab(nextStep);
         }

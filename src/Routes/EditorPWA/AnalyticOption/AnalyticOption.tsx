@@ -100,7 +100,8 @@ const AnalyticOption: React.FC<PwaContentOptionProps> = ({
 
     setSteps(newSteps);
 
-    const nextStep = newSteps.find((step) => !step.isPassed)?.id;
+    const nextStep = newSteps.find((step) => !step.isPassed)
+      ?.id as EditorPWATabs;
     if (nextStep) {
       setCurrentTab(nextStep);
     }
