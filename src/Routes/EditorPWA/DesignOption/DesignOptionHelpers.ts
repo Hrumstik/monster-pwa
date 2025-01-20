@@ -39,13 +39,13 @@ export const languages = [
 ];
 
 export const categories = [
-  { value: "gambling", label: "Гемблинг" },
-  { value: "betting", label: "Ставки" },
-  { value: "casino", label: "Казино" },
-  { value: "nutra", label: "Нутра" },
-  { value: "crypto", label: "Крипто" },
-  { value: "finance", label: "Финансы" },
-  { value: "dating", label: "Знакомства" },
+  { value: "gambling", label: "Gambling" },
+  { value: "betting", label: "Betting" },
+  { value: "casino", label: "Casino" },
+  { value: "nutra", label: "Nutra" },
+  { value: "crypto", label: "Crypto" },
+  { value: "finance", label: "Finance" },
+  { value: "dating", label: "Dating" },
 ];
 
 export const generateRandomValue = (

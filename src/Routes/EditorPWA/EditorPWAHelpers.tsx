@@ -71,3 +71,20 @@ export const stepsInitialState: Step[] = [
   //   isPassed: false,
   // },
 ];
+
+export const editingStepsInitialState: Step[] = [
+  {
+    label: "ОФОРМЛЕНИЕ",
+    id: EditorPWATabs.Design,
+    isClickable: true,
+    icon: getTabIcon(EditorPWATabs.Design, false, true),
+    isPassed: false,
+  },
+  {
+    label: "Аналитика",
+    id: EditorPWATabs.Analytics,
+    isClickable: true,
+    icon: getTabIcon(EditorPWATabs.Analytics, false, false),
+    isPassed: false,
+  },
+];

@@ -88,8 +88,6 @@ const MainView = ({
     scrollRef.current.classList.remove("grabbing");
   };
 
-  console.log(previewPwaContent.keepActualDateOfReviews);
-
   const adjustRating = (rating: number) => {
     const numericRating = Number(rating);
     const decimalPart = numericRating % 1;

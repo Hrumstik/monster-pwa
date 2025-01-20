@@ -3,6 +3,7 @@ import DesignOption from "./DesignOption/DesignOption.tsx";
 import { FaSave } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import {
+  editingStepsInitialState,
   EditorPWATabs,
   getTabIcon,
   stepsInitialState,
@@ -35,7 +36,9 @@ const EditorPWA = () => {
 
   const { id } = useParams();
   const { data: userData, refetch } = useGetMyUserQuery();
-  const [steps, setSteps] = useState<Step[]>(stepsInitialState);
+  const [steps, setSteps] = useState<Step[]>(
+    id ? editingStepsInitialState : stepsInitialState
+  );
   const [pwaContent, setPwaContent] = useState<PwaContent>();
   const [domainsData, setDomainsData] = useState<CloudflareData>();
   const [availableToSave, setAvailableToSave] = useState(false);
@@ -211,6 +214,7 @@ const EditorPWA = () => {
             steps={steps}
             setSteps={setSteps}
             pwaContentId={pwaContentId}
+            setCurrentTab={setCurrentTab}
           />
         );
       case EditorPWATabs.Design:

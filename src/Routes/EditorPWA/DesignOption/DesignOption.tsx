@@ -1,12 +1,4 @@
-import {
-  Form,
-  Input,
-  message,
-  notification,
-  Spin,
-  Tooltip,
-  Upload,
-} from "antd";
+import { Form, Input, message, Spin, Tooltip, Upload } from "antd";
 import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
 import DropdownIcon from "@shared/icons/DropdownIcon";
 import MonsterSelect from "@shared/elements/Select/MonsterSelect";
@@ -50,12 +42,12 @@ import InfoIcon from "@icons/InfoIcon";
 import VerifiedIcon from "@icons/VerifiedIcon";
 import GenerateIcon from "@icons/GenerateIcon";
 import ClassicButton from "@shared/elements/ClassicButton/ClassibButton.tsx";
-import { scrollToTop } from "@shared/helpers/common.ts";
 import PwaMenu from "../DesignOption/Preview/Menu/Menu.tsx";
 import { FaStar } from "react-icons/fa6";
 import ArrowDownIcon from "@icons/ArrowDownIcon.tsx";
 import { motion } from "framer-motion";
 import { useMount } from "react-use";
+import useSteps from "@shared/hooks/useSteps.ts";
 
 export interface DesignOptionFormValues {
   languages: string[];
@@ -469,7 +461,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
     try {
       await form.validateFields();
 
-      const payload = {
+      const payload: PwaContent = {
         appName: form.getFieldValue("appName"),
         developerName: form.getFieldValue("developerName"),
         countOfDownloads: {
@@ -531,31 +523,26 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
         videoUrl: form.getFieldValue("videoUrl"),
       };
       setPwaContent({
-        ...pwaContent,
         ...payload,
+        ...pwaContent,
       });
       await form.validateFields();
 
-      setSteps(
-        steps.map((step) => {
-          if (step.id === EditorPWATabs.Design) {
-            return {
-              ...step,
-              isPassed: true,
-              icon: getTabIcon(EditorPWATabs.Design, true, false),
-            };
-          }
-          return step;
-        })
-      );
-      if (!id) {
-        setCurrentTab(EditorPWATabs.Analytics);
-      } else {
-        notification.success({
-          message: "Успешно",
-          description: "Вы можете сохранить PWA",
-        });
-        scrollToTop(".overflow-auto");
+      const newSteps = steps.map((step) => {
+        if (step.id === EditorPWATabs.Design) {
+          return {
+            ...step,
+            isPassed: true,
+            icon: getTabIcon(EditorPWATabs.Design, true, false),
+          };
+        }
+        return step;
+      });
+
+      setSteps(newSteps);
+      const nextStep = newSteps.find((step) => !step.isPassed)?.id;
+      if (nextStep) {
+        setCurrentTab(nextStep);
       }
     } catch (error) {
       if (error && typeof error === "object" && "errorFields" in error) {
@@ -636,6 +623,8 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
     });
   };
 
+  useSteps(steps);
+
   return (
     <>
       <Form
@@ -662,7 +651,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
         <div className="flex flex-col gap-[30px] mb-[134px]">
           <div className="bg-cardColor rounded-lg p-[50px] pb-[30px]">
             <div className="flex gap-[30px] sm:flex-col lg:flex-row sm:items-center">
-              <div className="flex-1 flex flex-col gap-[30px]">
+              <div className="flex-1 flex flex-col gap-[30px] w-full">
                 <div className="text-base-lg leading-[25px] text-white">
                   Настройки оформления
                 </div>
@@ -677,7 +666,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
                   Cкопировать из Google Play
                 </button>
               </div>
-              <div className="flex-1">
+              <div className="flex-1 w-full">
                 <div className="flex-1 flex flex-col">
                   <div className="text-base-lg leading-[25px] text-white mb-[22px]">
                     Ссылка на оффер

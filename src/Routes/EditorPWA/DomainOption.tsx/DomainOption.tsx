@@ -14,7 +14,7 @@ import { EditorPWATabs, getTabIcon } from "../EditorPWAHelpers";
 import { useGetReadyDomainsQuery } from "@store/apis/pwaApi";
 import { DefaultOptionType } from "antd/es/select";
 import ClassicButton from "@shared/elements/ClassicButton/ClassibButton";
-import { scrollToTop } from "@shared/helpers/common.ts";
+import useSteps from "@shared/hooks/useSteps";
 
 interface DomainOptionProps {
   setDomainsData: (domainData?: CloudflareData) => void;
@@ -23,6 +23,7 @@ interface DomainOptionProps {
   setSteps: (steps: Step[]) => void;
   pwaContentId: string | null;
   cfAccounts?: { email: string; gApiKey: string }[];
+  setCurrentTab: (tab: EditorPWATabs) => void;
 }
 
 const DomainOption: React.FC<DomainOptionProps> = ({
@@ -32,6 +33,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
   setSteps,
   domainsData,
   pwaContentId,
+  setCurrentTab,
 }) => {
   const [currentDomainTab, setCurrentDomainTab] =
     useState<DomainOptions | null>(null);
@@ -71,6 +73,8 @@ const DomainOption: React.FC<DomainOptionProps> = ({
     }
   }, [readyDomainsData]);
 
+  useSteps(steps);
+
   useMount(() => {
     if (domainsData?.gApiKey) {
       setCurrentDomainTab(DomainOptions.OwnDomain);
@@ -107,21 +111,24 @@ const DomainOption: React.FC<DomainOptionProps> = ({
         setDomainsData({
           domain: selectedReadyDomain!,
         });
-        setSteps(
-          steps.map((step) => {
-            if (step.id === EditorPWATabs.Domain) {
-              return {
-                ...step,
-                isPassed: true,
-                icon: getTabIcon(EditorPWATabs.Domain, true, false),
-              };
-            }
-            return step;
-          })
-        );
+        const newSteps = steps.map((step) => {
+          if (step.id === EditorPWATabs.Domain) {
+            return {
+              ...step,
+              isPassed: true,
+              icon: getTabIcon(EditorPWATabs.Domain, true, false),
+            };
+          }
+          return step;
+        });
+        setSteps(newSteps);
+        const nextStep = newSteps.find((step) => !step.isPassed)?.id;
+        if (nextStep) {
+          setCurrentTab(nextStep);
+        }
       })
-      .catch(() => {
-        console.log("error");
+      .catch((e) => {
+        console.log(e);
       });
   };
 
@@ -209,7 +216,6 @@ const DomainOption: React.FC<DomainOptionProps> = ({
           message: "Успешно",
           description: "Приложение PWA можно сохранить",
         });
-        scrollToTop(".overflow-auto");
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -409,7 +415,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
                       autoComplete="off"
                     />
                   </Form.Item>
-                  {!Boolean(cfAccounts?.length) && (
+                  {!cfAccounts?.length && (
                     <Form.Item
                       name="email"
                       className="mb-[25px]"
@@ -432,7 +438,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
                       />
                     </Form.Item>
                   )}
-                  {!Boolean(cfAccounts?.length) && (
+                  {!cfAccounts?.length && (
                     <Form.Item
                       name="gApiKey"
                       className="mb-[25px]"
