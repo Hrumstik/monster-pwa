@@ -14,6 +14,8 @@ import MonsterSelect from "@shared/elements/Select/MonsterSelect";
 import { generateLabelForFBEvents } from "./AnalyticOptionHelpers";
 import { useMount } from "react-use";
 import useSteps from "@shared/hooks/useSteps";
+import CopyIcon from "@icons/CopyIcon";
+import { message } from "antd";
 
 const AnalyticOption: React.FC<PwaContentOptionProps> = ({
   setCurrentTab,
@@ -161,177 +163,255 @@ const AnalyticOption: React.FC<PwaContentOptionProps> = ({
 
   useSteps(steps);
 
+  const copyPostback = (postback: string, notificationMessage: string) => {
+    navigator.clipboard.writeText(postback);
+    message.success(notificationMessage);
+  };
+
   return (
     <>
-      <div className="bg-cardColor rounded-lg px-[50px] py-[50px] flex-1 flex flex-col mb-10">
-        <div className="text-[22px] leading-[18px] text-white mb-3 ">
-          Facebook
-        </div>
-        <p className="text-[14px] text-[#8F919D] mb-5">
-          Подробнее о настройке интеграции с Facebook можно прочитать{" "}
-          <a href="#" className="hover:underline">
-            здесь
-          </a>
-          .
-        </p>
-        <div className="flex justify-between mb-5">
-          <p className="text-sm text-white font-medium">
-            {pixels.length > 0
-              ? "Использовать ВСЕ пиксели для интеграции с Facebook"
-              : "Использовать пиксель для интеграции с Facebook"}
-          </p>
-          <MonsterSwitch
-            value={showPixel}
-            onChange={() => setShowPixel(!showPixel)}
-          />
-        </div>
-        {pixels.length > 0 && (
-          <div className="flex flex-col gap-[20px] mb-5">
-            {pixels.map((pixel, index) => (
-              <div key={index} className="flex flex-col  lg:flex-row gap-5">
-                <div className="flex flex-1 flex-col xl:flex-row gap-5">
-                  <MonsterInput
-                    className="!bg-[#161724] !h-10"
-                    placeholder="Pixel ID"
-                    value={pixel.pixelId}
-                    onChange={(e) => handlePixelIdChange(index, e.target.value)}
-                  />
-                  <MonsterInput
-                    className="!bg-[#161724] !h-10"
-                    placeholder="Token"
-                    value={pixel.token}
-                    onChange={(e) =>
-                      handlePixelTokenChange(index, e.target.value)
-                    }
-                  />
-                </div>
-                <div className="flex flex-row gap-5">
-                  <MonsterPopover
-                    placement="top"
-                    title={
-                      <div className="text-white font-bold text-sm p-[30px]">
-                        Настройки событий в Facebook
-                      </div>
-                    }
-                    trigger={["click"]}
-                    content={
-                      <div className="flex flex-col gap-10 gap-y-5 pb-[30px] px-[30px]">
-                        <div className="flex justify-between items-center gap-10">
-                          <div className="uppercase text-xs text-white">
-                            Инсталл{" "}
-                          </div>
-                          <MonsterSelect
-                            className="h-10 w-[350px]"
-                            options={facebookEvents}
-                            placeholder="Выберите событие"
-                            value={getEventValue(
-                              pixels,
-                              index,
-                              PwaEvents.Install
-                            )}
-                            onChange={(value) => {
-                              handleEventChange(
-                                index,
-                                PwaEvents.Install,
-                                value
-                              );
-                            }}
-                          />
-                        </div>
-                        <div className="flex justify-between items-center gap-10">
-                          <div className="uppercase text-xs text-white">
-                            Открытие{" "}
-                          </div>
-                          <MonsterSelect
-                            className="h-10 w-[350px]"
-                            options={facebookEvents}
-                            placeholder="Выберите событие"
-                            value={getEventValue(
-                              pixels,
-                              index,
-                              PwaEvents.OpenPage
-                            )}
-                            onChange={(value) =>
-                              handleEventChange(
-                                index,
-                                PwaEvents.OpenPage,
-                                value
-                              )
-                            }
-                          />
-                        </div>
-                        <div className="flex justify-between items-center gap-10">
-                          <div className="uppercase text-xs text-white">
-                            Регистрация{" "}
-                          </div>
-                          <MonsterSelect
-                            className="h-10 w-[350px]"
-                            options={facebookEvents}
-                            placeholder="Выберите событие"
-                            value={getEventValue(
-                              pixels,
-                              index,
-                              PwaEvents.Registration
-                            )}
-                            onChange={(value) =>
-                              handleEventChange(
-                                index,
-                                PwaEvents.Registration,
-                                value
-                              )
-                            }
-                          />
-                        </div>
-                        <div className="flex justify-between items-center gap-10">
-                          <div className="uppercase text-xs text-white">
-                            Депозит{" "}
-                          </div>
-                          <MonsterSelect
-                            className="h-10 w-[350px]"
-                            options={facebookEvents}
-                            placeholder="Выберите событие"
-                            value={getEventValue(
-                              pixels,
-                              index,
-                              PwaEvents.Deposit
-                            )}
-                            onChange={(value) =>
-                              handleEventChange(index, PwaEvents.Deposit, value)
-                            }
-                          />
-                        </div>
-                      </div>
-                    }
-                  >
-                    <button className="w-10 h-10 flex items-center justify-center bg-[#161724] rounded-lg hover:bg-[#383B66]">
-                      <SettingsIcon />
-                    </button>
-                  </MonsterPopover>
-                  <button
-                    onClick={() => handleDeletePixel(index)}
-                    className="w-10 bg-[#F56060] h-10 flex items-center justify-center rounded cursor-pointer hover:opacity-80 hover:shadow-sm"
-                  >
-                    <DeleteOutlined
-                      style={{ fontSize: "18px", color: "white" }}
-                    />
-                  </button>
-                </div>
-              </div>
-            ))}
+      <div className="flex flex-col gap-[30px]">
+        <div className="bg-cardColor rounded-lg px-[50px] py-[50px] flex-1 flex flex-col">
+          <div className="text-[22px] leading-[18px] text-white mb-3 ">
+            Входящие постбеки
           </div>
-        )}
-        {showPixel && (
-          <button
-            onClick={addPixel}
-            className={`w-[250px] h-[43px] font-bold  rounded-lg ${
-              pixels.length > 0
-                ? "bg-[#383B66] text-white hover:bg-[#515ACA]"
-                : "text-black bg-white hover:bg-slate-300"
-            }`}
-          >
-            {pixels.length > 0 ? "+ добавить еще Pixel" : "+ add Pixel"}
-          </button>
-        )}
+          <p className="text-[14px] text-[#8F919D] mb-5">
+            Чтобы в статистике отображались регистрации и депозиты, добавьте
+            постбеки в свою партнерку или трекер. Как настроить смотрите{" "}
+            <a href="#" className="text-[#02E314] hover:underline">
+              здесь
+            </a>
+            .
+          </p>
+          <div className="flex flex-1 flex-col xl:flex-row gap-5">
+            <div className="flex flex-1 flex-col gap-2">
+              <div className="text-white text-sm pl-[13px]">
+                Постбек для регистарций
+              </div>
+              <MonsterInput
+                className="!bg-[#161724] !h-10"
+                readOnly
+                value={
+                  "https://pwac.world/postback?external_id={external_id}&event=reg"
+                }
+                suffix={
+                  <div
+                    className="cursor-pointer"
+                    onClick={() =>
+                      copyPostback(
+                        "https://pwac.world/postback?external_id={external_id}&event=reg",
+                        "Постбек для регистраций скопирован!"
+                      )
+                    }
+                  >
+                    <CopyIcon />
+                  </div>
+                }
+              />
+            </div>
+            <div className="flex flex-1 flex-col gap-2">
+              <div className="text-white text-sm pl-[13px]">
+                Постбек для депозитов
+              </div>
+              <MonsterInput
+                className="!bg-[#161724] !h-10"
+                readOnly
+                value={
+                  "https://pwac.world/postback?external_id={external_id}&event=dep&value={value}&currency={currency}"
+                }
+                suffix={
+                  <div
+                    className="cursor-pointer"
+                    onClick={() =>
+                      copyPostback(
+                        "https://pwac.world/postback?external_id={external_id}&event=dep&value={value}&currency={currency}",
+                        "Постбек для депозитов скопирован!"
+                      )
+                    }
+                  >
+                    <CopyIcon />
+                  </div>
+                }
+              />
+            </div>
+          </div>
+        </div>
+        <div className="bg-cardColor rounded-lg px-[50px] py-[50px] flex-1 flex flex-col mb-10">
+          <div className="text-[22px] leading-[18px] text-white mb-3 ">
+            Facebook
+          </div>
+          <p className="text-[14px] text-[#8F919D] mb-5">
+            Подробнее о настройке интеграции с Facebook можно прочитать{" "}
+            <a href="#" className="text-[#02E314] hover:underline">
+              здесь
+            </a>
+            .
+          </p>
+          <div className="flex justify-between mb-5">
+            <p className="text-sm text-white font-medium">
+              {pixels.length > 0
+                ? "Использовать ВСЕ пиксели для интеграции с Facebook"
+                : "Использовать пиксель для интеграции с Facebook"}
+            </p>
+            <MonsterSwitch
+              value={showPixel}
+              onChange={() => setShowPixel(!showPixel)}
+            />
+          </div>
+          {pixels.length > 0 && (
+            <div className="flex flex-col gap-[20px] mb-5">
+              {pixels.map((pixel, index) => (
+                <div key={index} className="flex flex-col  lg:flex-row gap-5">
+                  <div className="flex flex-1 flex-col xl:flex-row gap-5">
+                    <MonsterInput
+                      className="!bg-[#161724] !h-10"
+                      placeholder="Pixel ID"
+                      value={pixel.pixelId}
+                      onChange={(e) =>
+                        handlePixelIdChange(index, e.target.value)
+                      }
+                    />
+                    <MonsterInput
+                      className="!bg-[#161724] !h-10"
+                      placeholder="Token"
+                      value={pixel.token}
+                      onChange={(e) =>
+                        handlePixelTokenChange(index, e.target.value)
+                      }
+                    />
+                  </div>
+                  <div className="flex flex-row gap-5">
+                    <MonsterPopover
+                      placement="top"
+                      title={
+                        <div className="text-white font-bold text-sm p-[30px]">
+                          Настройки событий в Facebook
+                        </div>
+                      }
+                      trigger={["click"]}
+                      content={
+                        <div className="flex flex-col gap-10 gap-y-5 pb-[30px] px-[30px]">
+                          <div className="flex justify-between items-center gap-10">
+                            <div className="uppercase text-xs text-white">
+                              Инсталл{" "}
+                            </div>
+                            <MonsterSelect
+                              className="h-10 w-[350px]"
+                              options={facebookEvents}
+                              placeholder="Выберите событие"
+                              value={getEventValue(
+                                pixels,
+                                index,
+                                PwaEvents.Install
+                              )}
+                              onChange={(value) => {
+                                handleEventChange(
+                                  index,
+                                  PwaEvents.Install,
+                                  value
+                                );
+                              }}
+                            />
+                          </div>
+                          <div className="flex justify-between items-center gap-10">
+                            <div className="uppercase text-xs text-white">
+                              Открытие{" "}
+                            </div>
+                            <MonsterSelect
+                              className="h-10 w-[350px]"
+                              options={facebookEvents}
+                              placeholder="Выберите событие"
+                              value={getEventValue(
+                                pixels,
+                                index,
+                                PwaEvents.OpenPage
+                              )}
+                              onChange={(value) =>
+                                handleEventChange(
+                                  index,
+                                  PwaEvents.OpenPage,
+                                  value
+                                )
+                              }
+                            />
+                          </div>
+                          <div className="flex justify-between items-center gap-10">
+                            <div className="uppercase text-xs text-white">
+                              Регистрация{" "}
+                            </div>
+                            <MonsterSelect
+                              className="h-10 w-[350px]"
+                              options={facebookEvents}
+                              placeholder="Выберите событие"
+                              value={getEventValue(
+                                pixels,
+                                index,
+                                PwaEvents.Registration
+                              )}
+                              onChange={(value) =>
+                                handleEventChange(
+                                  index,
+                                  PwaEvents.Registration,
+                                  value
+                                )
+                              }
+                            />
+                          </div>
+                          <div className="flex justify-between items-center gap-10">
+                            <div className="uppercase text-xs text-white">
+                              Депозит{" "}
+                            </div>
+                            <MonsterSelect
+                              className="h-10 w-[350px]"
+                              options={facebookEvents}
+                              placeholder="Выберите событие"
+                              value={getEventValue(
+                                pixels,
+                                index,
+                                PwaEvents.Deposit
+                              )}
+                              onChange={(value) =>
+                                handleEventChange(
+                                  index,
+                                  PwaEvents.Deposit,
+                                  value
+                                )
+                              }
+                            />
+                          </div>
+                        </div>
+                      }
+                    >
+                      <button className="w-10 h-10 flex items-center justify-center bg-[#161724] rounded-lg hover:bg-[#383B66]">
+                        <SettingsIcon />
+                      </button>
+                    </MonsterPopover>
+                    <button
+                      onClick={() => handleDeletePixel(index)}
+                      className="w-10 bg-[#F56060] h-10 flex items-center justify-center rounded cursor-pointer hover:opacity-80 hover:shadow-sm"
+                    >
+                      <DeleteOutlined
+                        style={{ fontSize: "18px", color: "white" }}
+                      />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {showPixel && (
+            <button
+              onClick={addPixel}
+              className={`w-[250px] h-[43px] font-bold  rounded-lg ${
+                pixels.length > 0
+                  ? "bg-[#383B66] text-white hover:bg-[#515ACA]"
+                  : "text-black bg-white hover:bg-slate-300"
+              }`}
+            >
+              {pixels.length > 0 ? "+ добавить еще Pixel" : "+ add Pixel"}
+            </button>
+          )}
+        </div>
       </div>
       <div className="pb-[50px]">
         <ClassicButton onClick={handleContinue} text="Продолжить" />
