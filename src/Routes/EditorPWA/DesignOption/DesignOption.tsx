@@ -650,28 +650,22 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
         validateTrigger={["onBlur", "onSubmit"]}
       >
         <div className="flex flex-col gap-[30px] mb-[134px]">
-          <div className="bg-cardColor rounded-lg p-[50px] pb-[30px]">
-            <div className="flex gap-[30px] sm:flex-col lg:flex-row sm:items-center">
-              <div className="flex-1 flex flex-col gap-[30px] w-full">
-                <div className="text-base-lg leading-[25px] text-white">
-                  Настройки оформления
-                </div>
-                <p className="text-white text-sm leading-4 truncate ...">
-                  Вы можете сделать все самостоятельно или же <br /> скопировать
-                  дизайн существующего приложения.
-                </p>
-                <button
-                  className="rounded-lg border border-solid border-cardBorder text-white text-base p-5 flex items-center h-15  leading-5 cursor-not-allowed"
-                  onClick={(e) => e.preventDefault()}
-                >
-                  Cкопировать из Google Play
-                </button>
-              </div>
-              <div className="flex-1 w-full">
-                <div className="flex-1 flex flex-col">
-                  <div className="text-base-lg leading-[25px] text-white mb-[22px]">
+          <div className="flex lg:flex-row sm:flex-col gap-7">
+            <div className="bg-cardColor flex-1 rounded-lg px-[50px] py-[30px]">
+              <div className="flex gap-[30px] sm:flex-col lg:flex-row sm:items-center">
+                <div className="flex-1 flex flex-col gap-3">
+                  <div className="text-base  font-bold leading-[25px] text-[#E3CC02] ">
                     Ссылка на оффер
                   </div>
+                  <p className="text-[14px] text-[#8F919D]">
+                    Все переданные параметры в ссылку на пва будут прокинуты в
+                    оффер. Как настроить параметры в ссылке оффера смотрите{" "}
+                    <a href="#" className="text-[#02E314] hover:underline">
+                      здесь
+                    </a>
+                    .
+                  </p>
+
                   <Form.Item
                     name="pwaLink"
                     className="mb-7"
@@ -683,28 +677,11 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
                       autoComplete="off"
                     />
                   </Form.Item>
-                  <button
-                    className="btn bg-[#515ACA] text-white rounded-lg text-base p-5 flex items-center h-15 leading-5 transition duration-300 transform active:scale-95"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    Сделать вручную
-                  </button>
                 </div>
               </div>
             </div>
-          </div>
-          <div className="flex lg:flex-row sm:flex-col gap-7">
-            <div className="flex-1 bg-cardColor rounded-lg p-[50px] min-h-[203px]">
-              <div className="text-base text-white font-bold leading-5 mb-5 ">
-                Шаблон PWA
-              </div>
-              <div className="rounded-lg bg-[#515ACA] pl-3 pr-[14px] py-[14px] flex justify-between text-xs cursor-not-allowed h-[42px] text-white items-center">
-                PlayMarket
-                <DropdownIcon />
-              </div>
-            </div>
             <div className="flex-1 bg-cardColor rounded-lg px-[50px] py-[30px] min-h-[203px] flex flex-col">
-              <div className="flex  gap-2 mb-5">
+              <div className="flex gap-2 mb-5">
                 <div className="text-[#E3CC02] text-base font-bold leading-[19px]">
                   Язык и категория PWA
                 </div>
