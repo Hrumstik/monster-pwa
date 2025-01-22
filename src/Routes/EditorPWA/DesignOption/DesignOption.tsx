@@ -1,6 +1,5 @@
 import { Form, Input, message, Spin, Tooltip, Upload } from "antd";
 import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
-import DropdownIcon from "@shared/icons/DropdownIcon";
 import MonsterSelect from "@shared/elements/Select/MonsterSelect";
 import {
   ageValues,
