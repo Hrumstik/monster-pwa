@@ -178,9 +178,17 @@ const AnalyticOption: React.FC<PwaContentOptionProps> = ({
           <p className="text-[14px] text-[#8F919D] mb-5">
             Чтобы в статистике отображались регистрации и депозиты, добавьте
             постбеки в свою партнерку или трекер. Как настроить смотрите{" "}
-            <a href="#" className="text-[#02E314] hover:underline">
+            <span
+              onClick={() =>
+                window.open(
+                  "https://vibegamesteam.notion.site/1830bbd56f1280648b9ec5098faf05d6",
+                  "_blank"
+                )
+              }
+              className="text-[#02E314] hover:underline hover:text-[#02E314] cursor-pointer"
+            >
               здесь
-            </a>
+            </span>
             .
           </p>
           <div className="flex flex-1 flex-col xl:flex-row gap-5">
@@ -242,9 +250,17 @@ const AnalyticOption: React.FC<PwaContentOptionProps> = ({
           </div>
           <p className="text-[14px] text-[#8F919D] mb-5">
             Подробнее о настройке интеграции с Facebook можно прочитать{" "}
-            <a href="#" className="text-[#02E314] hover:underline">
+            <span
+              onClick={() =>
+                window.open(
+                  "https://vibegamesteam.notion.site/FB-Pixel-ID-1820bbd56f1280208365f66f42fc164b",
+                  "_blank"
+                )
+              }
+              className="text-[#02E314] hover:underline hover:text-[#02E314] cursor-pointer"
+            >
               здесь
-            </a>
+            </span>
             .
           </p>
           <div className="flex justify-between mb-5">

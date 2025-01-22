@@ -388,7 +388,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
                         "_blank"
                       )
                     }
-                    className="underline cursor-pointer"
+                    className="text-[#02E314] hover:underline hover:text-[#02E314] cursor-pointer"
                   >
                     здесь
                   </span>

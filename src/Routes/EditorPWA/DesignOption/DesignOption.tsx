@@ -659,9 +659,17 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
                   <p className="text-[14px] text-[#8F919D]">
                     Все переданные параметры в ссылку на пва будут прокинуты в
                     оффер. Как настроить параметры в ссылке оффера смотрите{" "}
-                    <a href="#" className="text-[#02E314] hover:underline">
+                    <span
+                      onClick={() =>
+                        window.open(
+                          "https://vibegamesteam.notion.site/1830bbd56f12809cad86cb7d1a11c871?pvs=74",
+                          "_blank"
+                        )
+                      }
+                      className="text-[#02E314] hover:underline hover:text-[#02E314] cursor-pointer"
+                    >
                       здесь
-                    </a>
+                    </span>
                     .
                   </p>
 
