@@ -33,4 +33,9 @@ export interface PreviewPwaContent {
   autoTheme?: boolean;
   videoUrl?: string;
   keepActualDateOfReviews?: boolean;
+  showModal: boolean;
+  showAppHeader?: boolean;
+  title?: string;
+  content?: string;
+  buttonText?: string;
 }

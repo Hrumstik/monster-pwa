@@ -190,6 +190,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
     );
 
     setPreviewContent({
+      ...previewContent,
       appName: content.appName,
       developerName: content.developerName,
       countOfDownloads: content.countOfDownloads.originalLanguage,
@@ -210,6 +211,10 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
       autoTheme: content.theme?.auto,
       videoUrl: content.videoUrl,
       keepActualDateOfReviews: content.keepActualDateOfReviews,
+      title: content.customModal?.title?.originalLanguage,
+      content: content.customModal?.content?.originalLanguage,
+      showAppHeader: content.customModal?.showAppHeader,
+      buttonText: content.customModal?.buttonText?.originalLanguage,
     });
   };
 
@@ -260,10 +265,16 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
     autoTheme: false,
     videoUrl: "",
     keepActualDateOfReviews: false,
+    showModal: false,
+    showAppHeader: true,
+    title: "Вы можете скачать приложение и получить что нибудь",
+    content:
+      "И получить шанс выиграть подарочную карту Google Play на сумму 50$ Вы можете скачать приложение и получить шанс выиграть подарочную карту Google Play Вы можете скачать приложение и получить шанс выиграть подарочную карту Google Play на сумму 50$",
   });
 
   const handleValuesChange = () => {
     setPreviewContent({
+      ...previewContent,
       appName: form.getFieldValue("appName"),
       developerName: form.getFieldValue("developerName"),
       countOfDownloads: form.getFieldValue("countOfDownloads"),
@@ -284,6 +295,12 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
       autoTheme: form.getFieldValue("autoTheme"),
       videoUrl: form.getFieldValue("videoUrl"),
       keepActualDateOfReviews: form.getFieldValue("keepActualDateOfReviews"),
+      title: form.getFieldValue("modalTitle") ?? previewContent.title,
+      content: form.getFieldValue("modalContent") ?? previewContent.content,
+      showAppHeader:
+        form.getFieldValue("showAppHeader") ?? previewContent.showAppHeader,
+      buttonText:
+        form.getFieldValue("modalTextButton") ?? previewContent.buttonText,
     });
   };
 
@@ -1252,54 +1269,74 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
                   </div>
                 </div>
                 {showModalSettings && (
-                  <div>
-                    <Form.Item
-                      name="showAppHeader"
-                      valuePropName="checked"
-                      className="mb-4"
-                    >
-                      <MonsterCheckbox>
-                        <div className="text-sm text-white">
-                          Превью приложения{" "}
-                        </div>
-                      </MonsterCheckbox>
-                    </Form.Item>
-                    <div className="flex gap-4 justify-start flex-col">
-                      <div className="flex flex-col gap-3">
-                        <div className="text-white text-xs">Заголовок</div>
-                        <Form.Item
-                          name={"modalTitle"}
-                          className="mb-0"
-                          rules={[requiredValidator("Укажите заголовок")]}
-                        >
-                          <MonsterInput className="!bg-[#161724] !h-[42px]" />
-                        </Form.Item>
-                      </div>
-                      <div className="flex flex-col gap-3">
-                        <div className="text-white text-xs">Текст описания</div>
-                        <Form.Item
-                          name={"modalContent"}
-                          className="mb-0"
-                          rules={[requiredValidator("Укажите текст описания")]}
-                        >
-                          <TextArea
-                            rows={3}
-                            className="resize-none scrollbar-hidden"
-                          />
-                        </Form.Item>
-                      </div>
-                      <div className="flex flex-col gap-3">
-                        <div className="text-white text-xs">Текст кнопки</div>
-                        <Form.Item
-                          name={"modalTextButton"}
-                          rules={[requiredValidator("Укажите текст кнопки")]}
-                          className="mb-0"
-                        >
-                          <MonsterInput className="!bg-[#161724] !h-[42px]" />
-                        </Form.Item>
+                  <>
+                    <div className="flex gap-4 justify-start items-center">
+                      <MonsterSwitch
+                        value={previewContent.showModal}
+                        onChange={() =>
+                          setPreviewContent({
+                            ...previewContent,
+                            showModal: !previewContent.showModal,
+                          })
+                        }
+                      />
+                      <div className="text-white text-base leading-5">
+                        Отобразить Popup в превью конструктора
                       </div>
                     </div>
-                  </div>
+                    <div>
+                      <Form.Item
+                        name="showAppHeader"
+                        valuePropName="checked"
+                        className="mb-4"
+                      >
+                        <MonsterCheckbox>
+                          <div className="text-sm text-white">
+                            Превью приложения{" "}
+                          </div>
+                        </MonsterCheckbox>
+                      </Form.Item>
+                      <div className="flex gap-4 justify-start flex-col">
+                        <div className="flex flex-col gap-3">
+                          <div className="text-white text-xs">Заголовок</div>
+                          <Form.Item
+                            name={"modalTitle"}
+                            className="mb-0"
+                            rules={[requiredValidator("Укажите заголовок")]}
+                          >
+                            <MonsterInput className="!bg-[#161724] !h-[42px]" />
+                          </Form.Item>
+                        </div>
+                        <div className="flex flex-col gap-3">
+                          <div className="text-white text-xs">
+                            Текст описания
+                          </div>
+                          <Form.Item
+                            name={"modalContent"}
+                            className="mb-0"
+                            rules={[
+                              requiredValidator("Укажите текст описания"),
+                            ]}
+                          >
+                            <TextArea
+                              rows={3}
+                              className="resize-none scrollbar-hidden"
+                            />
+                          </Form.Item>
+                        </div>
+                        <div className="flex flex-col gap-3">
+                          <div className="text-white text-xs">Текст кнопки</div>
+                          <Form.Item
+                            name={"modalTextButton"}
+                            rules={[requiredValidator("Укажите текст кнопки")]}
+                            className="mb-0"
+                          >
+                            <MonsterInput className="!bg-[#161724] !h-[42px]" />
+                          </Form.Item>
+                        </div>
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
             </div>
@@ -1392,6 +1429,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
                 screens={screens}
                 tags={tags}
                 reviews={reviews}
+                setPreviewContent={setPreviewContent}
               />
               {previewContent.hasMenu && (
                 <PwaMenu dark={form.getFieldValue("darkTheme")} />

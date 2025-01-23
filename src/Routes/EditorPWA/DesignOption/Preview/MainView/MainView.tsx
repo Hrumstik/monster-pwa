@@ -102,7 +102,7 @@ const MainView = ({
   };
 
   return (
-    <div className="p-[20px] pt-[20px] pb-[20px] pl-[14px] pr-[14px] select-none">
+    <div className="p-[20px] pt-[20px] mb-[20px] pl-[14px] pr-[14px] select-none">
       <div className="flex mb-4">
         <div className="relative block overflow-hidden w-[70px] h-[70px] rounded-lg mr-5">
           {appIcon.url ? (

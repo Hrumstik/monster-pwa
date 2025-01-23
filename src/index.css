@@ -61,10 +61,6 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
-.anticon.anticon-close.ant-modal-close-icon svg {
-  fill: #ffffff !important;
-}
-
 :where(.css-dev-only-do-not-override-11lehqq).ant-modal .ant-modal-title {
   color: #ffffff;
 }
@@ -91,4 +87,27 @@ body,
 #root {
   font-family: "Roboto", sans-serif;
   height: 100%;
+}
+
+.ant-modal.preview-modal .ant-modal-content {
+  padding: 28px 16px 16px 16px;
+}
+
+.ant-modal.dark-theme .ant-modal-content {
+  background-color: #303030 !important;
+  color: #ffffff !important;
+  border-color: #303030 !important;
+}
+
+.ant-modal.dark-theme .ant-modal-close {
+  color: #aaaaaa !important;
+}
+
+.ant-modal.white-theme .ant-modal-close {
+  color: black !important;
+}
+
+#custom-modal-menu .ant-modal-wrap,
+#custom-modal-menu .ant-modal-mask {
+  position: absolute !important;
 }

@@ -5,6 +5,7 @@ import AboutView from "./AboutView/AboutView";
 import ReviewsView from "./ReviewsView/ReviewsView";
 import { Picture } from "@models/pwa";
 import { Review } from "@models/review";
+import ModalMenu from "./CustomModal/CustomModal";
 
 const Preview = ({
   previewPwaContent,
@@ -15,6 +16,7 @@ const Preview = ({
   reviews,
   myPWAsPage,
   dark,
+  setPreviewContent,
 }: {
   previewPwaContent: PreviewPwaContent;
   appIcon: Picture;
@@ -24,6 +26,7 @@ const Preview = ({
   reviews: Review[];
   myPWAsPage?: boolean;
   dark: boolean;
+  setPreviewContent: (content: PreviewPwaContent) => void;
 }) => {
   const [view, setView] = useState<PwaViews>(PwaViews.Main);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -72,9 +75,9 @@ const Preview = ({
   return (
     <div
       ref={containerRef}
-      className={`relative h-full ${
-        dark && "bg-[#131313]"
-      } w-full overflow-y-auto pb-[30px]`}
+      className={`relative h-full ${dark && "bg-[#131313]"} w-full ${
+        previewPwaContent.showModal ? "overflow-hidden" : "overflow-y-auto "
+      } pb-[30px]`}
     >
       <div
         className={`w-full h-full ${
@@ -82,6 +85,14 @@ const Preview = ({
         } rounded-3xl`}
       >
         {currentView}
+        <div id="custom-modal-menu">
+          <ModalMenu
+            previewPwaContent={previewPwaContent}
+            dark={dark}
+            appIcon={appIcon}
+            setPreviewContent={setPreviewContent}
+          />
+        </div>
       </div>
     </div>
   );
