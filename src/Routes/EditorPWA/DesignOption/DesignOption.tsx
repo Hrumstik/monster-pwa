@@ -47,6 +47,7 @@ import ArrowDownIcon from "@icons/ArrowDownIcon.tsx";
 import { motion } from "framer-motion";
 import { useMount } from "react-use";
 import useSteps from "@shared/hooks/useSteps.ts";
+import MonsterCheckbox from "@shared/elements/MonsterCheckbox/MonsterCheckbox.tsx";
 
 export interface DesignOptionFormValues {
   languages: string[];
@@ -77,6 +78,10 @@ export interface DesignOptionFormValues {
   autoTheme?: boolean;
   videoUrl: string;
   keepActualDateOfReviews?: boolean;
+  showAppHeader?: boolean;
+  modalTextButton?: string;
+  modalTitle?: string;
+  modalContent?: string;
 }
 
 export interface PwaContentOptionProps {
@@ -117,6 +122,16 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
       devResponse: review.devResponse?.originalLanguage,
       id: uuidv4(),
     }));
+
+    if (content.customModal?.title && content.customModal?.content) {
+      setShowModalSettings(true);
+      form.setFieldsValue({
+        modalTitle: content.customModal.title.originalLanguage,
+        modalContent: content.customModal.content.originalLanguage,
+        modalTextButton: content.customModal?.buttonText?.originalLanguage,
+        showAppHeader: content.customModal.showAppHeader,
+      });
+    }
 
     form.setFieldsValue({
       languages: content.languages,
@@ -221,6 +236,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
   const [tags, setTags] = useState<string[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [sliders, setSliders] = useState<number[]>([3.4, 0.8, 0.3, 0.3, 0.2]);
+  const [showModalSettings, setShowModalSettings] = useState(false);
   const [previewContent, setPreviewContent] = useState<PreviewPwaContent>({
     appName: "Plinko ASMR",
     developerName: "Supercent, Inc.",
@@ -520,6 +536,16 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
           dark: form.getFieldValue("darkTheme"),
         },
         videoUrl: form.getFieldValue("videoUrl"),
+        ...(showModalSettings && {
+          customModal: {
+            showAppHeader: form.getFieldValue("showAppHeader"),
+            title: { originalLanguage: form.getFieldValue("modalTitle") },
+            content: { originalLanguage: form.getFieldValue("modalContent") },
+            buttonText: {
+              originalLanguage: form.getFieldValue("modalTextButton"),
+            },
+          },
+        }),
       };
       setPwaContent({
         ...payload,
@@ -643,6 +669,8 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
           wideScreens: false,
           hasLoadingScreen: true,
           keepActualDateOfReviews: false,
+          modalTextButton: "Загрузить",
+          showAppHeader: true,
         }}
         onValuesChange={handleValuesChange}
         onFinishFailed={onFinishFailed}
@@ -1214,6 +1242,65 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
                     Автопереключение темы под тему устройства
                   </div>
                 </div>
+                <div className="flex gap-4 justify-start items-center">
+                  <MonsterSwitch
+                    value={showModalSettings}
+                    onChange={() => setShowModalSettings(!showModalSettings)}
+                  />
+                  <div className="text-white text-base leading-5">
+                    Кастомный Popup
+                  </div>
+                </div>
+                {showModalSettings && (
+                  <div>
+                    <Form.Item
+                      name="showAppHeader"
+                      valuePropName="checked"
+                      className="mb-4"
+                    >
+                      <MonsterCheckbox>
+                        <div className="text-sm text-white">
+                          Превью приложения{" "}
+                        </div>
+                      </MonsterCheckbox>
+                    </Form.Item>
+                    <div className="flex gap-4 justify-start flex-col">
+                      <div className="flex flex-col gap-3">
+                        <div className="text-white text-xs">Заголовок</div>
+                        <Form.Item
+                          name={"modalTitle"}
+                          className="mb-0"
+                          rules={[requiredValidator("Укажите заголовок")]}
+                        >
+                          <MonsterInput className="!bg-[#161724] !h-[42px]" />
+                        </Form.Item>
+                      </div>
+                      <div className="flex flex-col gap-3">
+                        <div className="text-white text-xs">Текст описания</div>
+                        <Form.Item
+                          name={"modalContent"}
+                          className="mb-0"
+                          rules={[requiredValidator("Укажите текст описания")]}
+                        >
+                          <TextArea
+                            rows={3}
+                            className="resize-none scrollbar-hidden"
+                          />
+                        </Form.Item>
+                      </div>
+                      <div className="flex flex-col gap-3">
+                        <div className="text-white text-xs">Текст кнопки</div>
+                        <Form.Item
+                          name={"modalTextButton"}
+                          rules={[requiredValidator("Укажите текст кнопки")]}
+                          className="mb-0"
+                        >
+                          <MonsterInput className="!bg-[#161724] !h-[42px]" />
+                        </Form.Item>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

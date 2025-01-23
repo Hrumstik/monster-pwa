@@ -54,6 +54,12 @@ export interface PwaContent {
   };
   videoUrl?: string;
   keepActualDateOfReviews?: boolean;
+  customModal?: {
+    showAppHeader?: boolean;
+    title?: Record<string, string>;
+    content?: Record<string, string>;
+    buttonText?: Record<string, string>;
+  };
 }
 
 export interface PreparedPWADataItem {
