@@ -299,9 +299,8 @@ const DomainOption: React.FC<DomainOptionProps> = ({
               `}
             >
               <div className="text-white text-[16px] leading-[18px] mb-2">
-                Купить готовый домен
+                Использовать готовый домен
               </div>
-              <div className="font-bold text-white text-[22px]">$5</div>
             </div>
             <div
               onClick={() =>
