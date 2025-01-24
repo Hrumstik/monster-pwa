@@ -425,7 +425,7 @@ const AnalyticOption: React.FC<PwaContentOptionProps> = ({
                   : "text-black bg-white hover:bg-slate-300"
               }`}
             >
-              {pixels.length > 0 ? "+ Добавить еще" : "+ Добавить"}
+              {pixels.length > 0 ? "Добавить еще" : "Добавить"}
             </button>
           )}
         </div>
