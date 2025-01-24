@@ -81,9 +81,15 @@ const AnalyticOption: React.FC<PwaContentOptionProps> = ({
   };
 
   const handleContinue = () => {
-    const filteredPixels = pixels.filter(
-      (pixel) => pixel.pixelId && pixel.token
-    );
+    const filteredPixels = pixels
+      .filter((pixel) => pixel.pixelId && pixel.token)
+      .map((pixel) => {
+        return {
+          pixelId: pixel.pixelId.trim(),
+          token: pixel.token.trim(),
+          events: pixel.events,
+        };
+      });
 
     setPwaContent({
       ...pwaContent!,
