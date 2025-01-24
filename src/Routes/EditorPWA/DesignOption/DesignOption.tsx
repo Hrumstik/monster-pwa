@@ -1272,20 +1272,20 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
                 </div>
                 {showModalSettings && (
                   <>
-                    <div className="flex gap-4 justify-start items-center">
-                      <MonsterSwitch
-                        value={previewContent.showModal}
-                        onChange={() =>
-                          setPreviewContent({
-                            ...previewContent,
-                            showModal: !previewContent.showModal,
-                          })
-                        }
-                      />
-                      <div className="text-white text-base leading-5">
+                    <MonsterCheckbox
+                      value={previewContent.showModal}
+                      onChange={() =>
+                        setPreviewContent({
+                          ...previewContent,
+                          showModal: !previewContent.showModal,
+                        })
+                      }
+                    >
+                      <div className="text-sm text-white">
                         Отобразить Popup в превью конструктора
                       </div>
-                    </div>
+                    </MonsterCheckbox>
+
                     <div>
                       <Form.Item
                         name="showAppHeader"

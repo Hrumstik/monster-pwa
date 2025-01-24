@@ -376,6 +376,9 @@ const MainView = ({
       <div
         style={dark ? { color: "#A8C8FB" } : {}}
         className="text-[#1357CD] leading-5 text-[14px] font-medium hover:underline cursor-pointer pb-[30px]"
+        onClick={() => {
+          setView(PwaViews.Reviews);
+        }}
       >
         Все отзывы
       </div>
