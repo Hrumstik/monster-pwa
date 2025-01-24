@@ -23,6 +23,7 @@ const AnalyticOption: React.FC<PwaContentOptionProps> = ({
   setSteps,
   setPwaContent,
   pwaContent,
+  isFinished,
 }) => {
   const [showPixel, setShowPixel] = useState(false);
   const { id } = useParams();
@@ -161,7 +162,7 @@ const AnalyticOption: React.FC<PwaContentOptionProps> = ({
     setPixels(newPixels);
   };
 
-  useSteps(steps);
+  useSteps(steps, isFinished);
 
   const copyPostback = (postback: string, notificationMessage: string) => {
     navigator.clipboard.writeText(postback);

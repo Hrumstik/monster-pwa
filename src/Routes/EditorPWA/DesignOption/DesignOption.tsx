@@ -90,6 +90,7 @@ export interface PwaContentOptionProps {
   steps: Step[];
   setSteps: (steps: Step[]) => void;
   pwaContent?: PwaContent;
+  isFinished: boolean;
 }
 
 const { TextArea } = Input;
@@ -100,6 +101,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
   setSteps,
   steps,
   pwaContent,
+  isFinished,
 }) => {
   const { id } = useParams();
   const { data: fetchedPwaContent, isLoading: pwaContentIsLoading } =
@@ -666,7 +668,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
     });
   };
 
-  useSteps(steps);
+  useSteps(steps, isFinished);
 
   return (
     <>

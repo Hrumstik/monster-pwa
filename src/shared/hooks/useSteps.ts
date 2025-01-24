@@ -3,17 +3,17 @@ import { scrollToTop } from "@shared/helpers/common";
 import { notification } from "antd";
 import { useEffect } from "react";
 
-const useSteps = (steps: Step[]) => {
+const useSteps = (steps: Step[], isFinished: boolean) => {
   useEffect(() => {
     const allStepsPassed = steps.every((step) => step.isPassed);
-    if (allStepsPassed) {
+    if (allStepsPassed && !isFinished) {
       scrollToTop(".overflow-auto");
       notification.success({
         message: "Успешно",
         description: "Вы можете сохранить PWA",
       });
     }
-  }, [steps]);
+  }, [steps, isFinished]);
 };
 
 export default useSteps;

@@ -24,6 +24,7 @@ interface DomainOptionProps {
   pwaContentId: string | null;
   cfAccounts?: { email: string; gApiKey: string }[];
   setCurrentTab: (tab: EditorPWATabs) => void;
+  isFinished: boolean;
 }
 
 const DomainOption: React.FC<DomainOptionProps> = ({
@@ -34,6 +35,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
   domainsData,
   pwaContentId,
   setCurrentTab,
+  isFinished,
 }) => {
   const [currentDomainTab, setCurrentDomainTab] =
     useState<DomainOptions | null>(null);
@@ -73,7 +75,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
     }
   }, [readyDomainsData]);
 
-  useSteps(steps);
+  useSteps(steps, isFinished);
 
   useMount(() => {
     if (domainsData?.gApiKey) {
