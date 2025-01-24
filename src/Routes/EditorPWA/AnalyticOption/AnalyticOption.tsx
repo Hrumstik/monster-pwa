@@ -151,23 +151,27 @@ const AnalyticOption: React.FC<PwaContentOptionProps> = ({
     triggerEvent: PwaEvents,
     sentEvent: FacebookEvent
   ) => {
-    const newPixels = [...pixels];
-    const eventIndex = newPixels[index].events.findIndex(
-      (event) => event.triggerEvent === triggerEvent
-    );
+    setPixels((prevPixels) => {
+      const newPixels = [...prevPixels];
+      const pixel = { ...newPixels[index] };
+      const events = [...pixel.events];
 
-    if (eventIndex !== -1) {
-      newPixels[index].events[eventIndex].sentEvent = sentEvent;
-    } else {
-      newPixels[index].events.push({
-        triggerEvent,
-        sentEvent,
-      });
-    }
+      const eventIndex = events.findIndex(
+        (event) => event.triggerEvent === triggerEvent
+      );
 
-    setPixels(newPixels);
+      if (eventIndex !== -1) {
+        events[eventIndex] = { ...events[eventIndex], sentEvent };
+      } else {
+        events.push({ triggerEvent, sentEvent });
+      }
+
+      pixel.events = events;
+      newPixels[index] = pixel;
+
+      return newPixels;
+    });
   };
-
   useSteps(steps, isFinished);
 
   const copyPostback = (postback: string, notificationMessage: string) => {
