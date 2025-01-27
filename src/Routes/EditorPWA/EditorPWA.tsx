@@ -146,7 +146,7 @@ const EditorPWA = () => {
     if (!pwaContent) return;
     try {
       setIsLoading(true);
-      let domain;
+      let domain = undefined;
       if (id) {
         domain = getPwaInfo(id).domain;
       }
@@ -155,25 +155,30 @@ const EditorPWA = () => {
       if (id) deletePwaContent(id);
 
       setPwaContentId(pwaContentResponse._id!);
-      const buildPayload = !id
-        ? { id: pwaContentResponse._id! }
-        : {
-            id: pwaContentResponse._id!,
-            body: {
-              domain,
-            },
-          };
+
+      const buildPayload =
+        id && domain
+          ? {
+              id: pwaContentResponse._id!,
+              body: {
+                domain,
+              },
+            }
+          : { id: pwaContentResponse._id! };
+
       const buildResponse = await buildPwaContent(buildPayload).unwrap();
       setTimeout(
         () =>
           startPolling({
             jobId: buildResponse.jobId,
-            completedStatusCallback: id
-              ? () => finishEditingPwa()
-              : () => addDomainData(pwaContentResponse),
-            catchCallback: id
-              ? () => setIsLoading(false)
-              : () => addDomainData(pwaContentResponse),
+            completedStatusCallback:
+              id && domain
+                ? () => finishEditingPwa()
+                : () => addDomainData(pwaContentResponse),
+            catchCallback:
+              id && domain
+                ? () => setIsLoading(false)
+                : () => addDomainData(pwaContentResponse),
           }),
         10000
       );
