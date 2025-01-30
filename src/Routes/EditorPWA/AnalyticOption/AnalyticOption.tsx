@@ -91,6 +91,7 @@ const AnalyticOption: React.FC<AnalyticOptionProps> = ({
   };
 
   const handleContinue = async () => {
+    submitAnalyticData();
     const newSteps = steps.map((step) => {
       if (step.id === EditorPWATabs.Analytics) {
         return {
@@ -183,16 +184,18 @@ const AnalyticOption: React.FC<AnalyticOptionProps> = ({
     message.success(notificationMessage);
   };
 
-  const savePixel = (index: number) => {
-    const pixel = pixels[index];
+  const submitAnalyticData = () => {
+    const filteredPixels = pixels.filter(
+      (pixel) => pixel.token && pixel.pixelId
+    );
     setPwaContent({
       ...pwaContent!,
-      pixel: pwaContent?.pixel ? [...pwaContent.pixel, pixel] : [pixel],
+      pixel: filteredPixels,
     });
   };
 
   return (
-    <Form form={form}>
+    <Form form={form} onFinish={submitAnalyticData}>
       <div className="flex flex-col gap-[30px]">
         <div className="bg-cardColor rounded-lg px-[50px] py-[50px] flex-1 flex flex-col">
           <div className="text-[22px] leading-[18px] text-white mb-3 ">
@@ -426,16 +429,7 @@ const AnalyticOption: React.FC<AnalyticOptionProps> = ({
                         <SettingsIcon />
                       </button>
                     </MonsterPopover>
-                    {!pwaContent?.pixel?.find(
-                      (p) => p.token === pixel.token
-                    ) && (
-                      <button
-                        className="bg-[#02E314] h-10 hover:bg-lime-300 text-base text-[#161724] cursor-pointer rounded-lg px-3"
-                        onClick={() => savePixel(index)}
-                      >
-                        Сохранить
-                      </button>
-                    )}
+
                     <button
                       onClick={() => handleDeletePixel(index)}
                       className="w-10 bg-[#F56060] h-10 flex items-center justify-center rounded cursor-pointer hover:opacity-80 hover:shadow-sm"

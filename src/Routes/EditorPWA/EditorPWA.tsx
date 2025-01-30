@@ -228,6 +228,7 @@ const EditorPWA = () => {
           break;
         case EditorPWATabs.Analytics:
           await analyticOptionForm.validateFields();
+          analyticOptionForm.submit();
           markStepAsPassed(EditorPWATabs.Analytics);
           setCurrentTab(selectedStep);
           break;
@@ -304,7 +305,7 @@ const EditorPWA = () => {
                 text="Сохранить"
                 customClass={
                   availableToSave
-                    ? "animate-pulse group hover:animate-none bg-[#00FF22] "
+                    ? "animate-pulse group hover:animate-none bg-[#00FF22] hover:bg-lime-300"
                     : "animate-none"
                 }
                 textCustomClass={
