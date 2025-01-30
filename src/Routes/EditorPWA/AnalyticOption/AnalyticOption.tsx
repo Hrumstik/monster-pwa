@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { PwaContentOptionProps } from "../DesignOption/DesignOption";
 import MonsterSwitch from "@shared/elements/Switch/MonsterSwitch";
 import ClassicButton from "@shared/elements/ClassicButton/ClassibButton";
 import { EditorPWATabs, getTabIcon } from "../EditorPWAHelpers";
 import { useGetPwaContentByIdQuery } from "@store/apis/pwaApi";
 import { useParams } from "react-router-dom";
-import { FacebookEvent, Pixel, PwaEvents } from "@models/pwa";
+import { FacebookEvent, Pixel, PwaContent, PwaEvents } from "@models/pwa";
 import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
 import SettingsIcon from "@icons/SettingsIcon";
 import { DeleteOutlined } from "@ant-design/icons";
@@ -13,17 +12,27 @@ import MonsterPopover from "@shared/elements/Popover/MonsterPopover";
 import MonsterSelect from "@shared/elements/Select/MonsterSelect";
 import { generateLabelForFBEvents } from "./AnalyticOptionHelpers";
 import { useMount } from "react-use";
-import useSteps from "@shared/hooks/useSteps";
 import CopyIcon from "@icons/CopyIcon";
-import { message } from "antd";
+import { Form, FormInstance, message } from "antd";
+import { Step } from "@shared/elements/Steps/Steps";
 
-const AnalyticOption: React.FC<PwaContentOptionProps> = ({
+export interface AnalyticOptionProps {
+  setPwaContent: (pwaContent: PwaContent) => void;
+  setCurrentTab: (tab: EditorPWATabs) => void;
+  steps: Step[];
+  setSteps: (steps: Step[]) => void;
+  pwaContent?: PwaContent;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  form: FormInstance<any>;
+}
+
+const AnalyticOption: React.FC<AnalyticOptionProps> = ({
   setCurrentTab,
   steps,
   setSteps,
   setPwaContent,
   pwaContent,
-  isFinished,
+  form,
 }) => {
   const [showPixel, setShowPixel] = useState(false);
   const { id } = useParams();
@@ -52,7 +61,8 @@ const AnalyticOption: React.FC<PwaContentOptionProps> = ({
     }
   });
 
-  const addPixel = () => {
+  const addPixel = (e: React.MouseEvent) => {
+    e.preventDefault();
     setPixels([
       ...pixels,
       {
@@ -80,22 +90,7 @@ const AnalyticOption: React.FC<PwaContentOptionProps> = ({
     ]);
   };
 
-  const handleContinue = () => {
-    const filteredPixels = pixels
-      .filter((pixel) => pixel.pixelId && pixel.token)
-      .map((pixel) => {
-        return {
-          pixelId: pixel.pixelId.trim(),
-          token: pixel.token.trim(),
-          events: pixel.events,
-        };
-      });
-
-    setPwaContent({
-      ...pwaContent!,
-      pixel: showPixel ? filteredPixels : undefined,
-    });
-
+  const handleContinue = async () => {
     const newSteps = steps.map((step) => {
       if (step.id === EditorPWATabs.Analytics) {
         return {
@@ -113,6 +108,8 @@ const AnalyticOption: React.FC<PwaContentOptionProps> = ({
       ?.id as EditorPWATabs;
     if (nextStep) {
       setCurrentTab(nextStep);
+    } else {
+      setCurrentTab(EditorPWATabs.Domain);
     }
   };
 
@@ -134,6 +131,14 @@ const AnalyticOption: React.FC<PwaContentOptionProps> = ({
     const newPixels = [...pixels];
     newPixels.splice(index, 1);
     setPixels(newPixels);
+    const pixelToken = pixels[index].token;
+    const filteredPwaPixels = pwaContent?.pixel?.filter(
+      (pixel) => pixel.token !== pixelToken
+    );
+    setPwaContent({
+      ...pwaContent!,
+      pixel: filteredPwaPixels,
+    });
   };
 
   const getEventValue = (
@@ -172,15 +177,22 @@ const AnalyticOption: React.FC<PwaContentOptionProps> = ({
       return newPixels;
     });
   };
-  useSteps(steps, isFinished);
 
   const copyPostback = (postback: string, notificationMessage: string) => {
     navigator.clipboard.writeText(postback);
     message.success(notificationMessage);
   };
 
+  const savePixel = (index: number) => {
+    const pixel = pixels[index];
+    setPwaContent({
+      ...pwaContent!,
+      pixel: pwaContent?.pixel ? [...pwaContent.pixel, pixel] : [pixel],
+    });
+  };
+
   return (
-    <>
+    <Form form={form}>
       <div className="flex flex-col gap-[30px]">
         <div className="bg-cardColor rounded-lg px-[50px] py-[50px] flex-1 flex flex-col">
           <div className="text-[22px] leading-[18px] text-white mb-3 ">
@@ -308,6 +320,7 @@ const AnalyticOption: React.FC<PwaContentOptionProps> = ({
                     />
                   </div>
                   <div className="flex flex-row gap-5">
+                    <button></button>
                     <MonsterPopover
                       placement="top"
                       title={
@@ -413,6 +426,16 @@ const AnalyticOption: React.FC<PwaContentOptionProps> = ({
                         <SettingsIcon />
                       </button>
                     </MonsterPopover>
+                    {!pwaContent?.pixel?.find(
+                      (p) => p.token === pixel.token
+                    ) && (
+                      <button
+                        className="bg-[#02E314] h-10 hover:bg-lime-300 text-base text-[#161724] cursor-pointer rounded-lg px-3"
+                        onClick={() => savePixel(index)}
+                      >
+                        Сохранить
+                      </button>
+                    )}
                     <button
                       onClick={() => handleDeletePixel(index)}
                       className="w-10 bg-[#F56060] h-10 flex items-center justify-center rounded cursor-pointer hover:opacity-80 hover:shadow-sm"
@@ -441,9 +464,9 @@ const AnalyticOption: React.FC<PwaContentOptionProps> = ({
         </div>
       </div>
       <div className="pb-[50px]">
-        <ClassicButton onClick={handleContinue} text="Продолжить" />
+        <ClassicButton onClick={handleContinue} text="Сохранить и продолжить" />
       </div>
-    </>
+    </Form>
   );
 };
 

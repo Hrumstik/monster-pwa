@@ -86,7 +86,7 @@
   color: #5f6280;
 }
 
-.ant-input-affix-wrapper {
+.ant-input-affix-wrapper:not(.ant-input-status-error) {
   background-color: #161724 !important;
   border: 1px solid #161724 !important;
   box-sizing: border-box;

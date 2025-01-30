@@ -4,12 +4,14 @@ const IconButton = ({
   onclick,
   disabled,
   customClass,
+  textCustomClass,
 }: {
   icon: React.ReactNode;
   text: string;
   onclick?: React.MouseEventHandler<HTMLButtonElement>;
   disabled?: boolean;
   customClass?: string;
+  textCustomClass?: string;
 }) => {
   return (
     <button
@@ -20,7 +22,9 @@ const IconButton = ({
       } ${customClass}`}
     >
       {icon}
-      <span className="text-base text-white leading-5">{text}</span>
+      <span className={`text-base text-white leading-5 ${textCustomClass}`}>
+        {text}
+      </span>
     </button>
   );
 };

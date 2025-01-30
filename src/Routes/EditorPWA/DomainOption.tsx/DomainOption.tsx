@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import MonsterSelect from "../../../shared/elements/Select/MonsterSelect";
-import { Form, notification, Result, Spin } from "antd";
+import { Form, FormInstance, notification, Result, Spin } from "antd";
 import MonsterInput from "../../../shared/elements/MonsterInput/MonsterInput";
 import { Step } from "@shared/elements/Steps/Steps";
 import { CloudflareData } from "@models/user";
@@ -8,13 +8,12 @@ import axios from "axios";
 import { DomainOptions } from "@models/domain";
 import { useMount } from "react-use";
 import { extractDomain } from "@shared/helpers/formate-data";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useGetPwaInfo from "@shared/hooks/useGetPwaInfo";
 import { EditorPWATabs, getTabIcon } from "../EditorPWAHelpers";
 import { useGetReadyDomainsQuery } from "@store/apis/pwaApi";
 import { DefaultOptionType } from "antd/es/select";
 import ClassicButton from "@shared/elements/ClassicButton/ClassibButton";
-import useSteps from "@shared/hooks/useSteps";
 
 interface DomainOptionProps {
   setDomainsData: (domainData?: CloudflareData) => void;
@@ -24,7 +23,12 @@ interface DomainOptionProps {
   pwaContentId: string | null;
   cfAccounts?: { email: string; gApiKey: string }[];
   setCurrentTab: (tab: EditorPWATabs) => void;
-  isFinished: boolean;
+  formForOwnDomain: FormInstance<CloudflareData>;
+  formForReadyDomain: FormInstance<{
+    readyDomain: string;
+  }>;
+  currentDomainTab: DomainOptions | null;
+  setCurrentDomainTab: (tab: DomainOptions) => void;
 }
 
 const DomainOption: React.FC<DomainOptionProps> = ({
@@ -35,19 +39,19 @@ const DomainOption: React.FC<DomainOptionProps> = ({
   domainsData,
   pwaContentId,
   setCurrentTab,
-  isFinished,
+  formForOwnDomain,
+  formForReadyDomain,
+  currentDomainTab,
+  setCurrentDomainTab,
 }) => {
-  const [currentDomainTab, setCurrentDomainTab] =
-    useState<DomainOptions | null>(null);
   const [api, contextHolder] = notification.useNotification();
   const { data: readyDomainsData } = useGetReadyDomainsQuery();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { getPwaInfo } = useGetPwaInfo();
   const [readyDomains, setReadyDomains] = useState<DefaultOptionType[]>([]);
-  const [selectedReadyDomain, setSelectedReadyDomain] = useState<string | null>(
-    null
-  );
+  const { id } = useParams();
+
   let savedNsRecords:
     | {
         name: string;
@@ -75,64 +79,49 @@ const DomainOption: React.FC<DomainOptionProps> = ({
     }
   }, [readyDomainsData]);
 
-  useSteps(steps, isFinished);
-
   useMount(() => {
     if (domainsData?.gApiKey) {
       setCurrentDomainTab(DomainOptions.OwnDomain);
-      form.setFieldsValue(domainsData);
+      formForOwnDomain.setFieldsValue(domainsData);
     } else {
       setCurrentDomainTab(DomainOptions.BuyDomain);
-      selectedDomainForm.setFieldsValue({
-        domain: domainsData?.domain,
+      formForReadyDomain.setFieldsValue({
+        readyDomain: domainsData?.domain,
       });
     }
   });
 
-  const handleSelectReadyDomain = () => {
-    if (domainsData) {
-      setDomainsData(undefined);
-      selectedDomainForm.resetFields();
-      setSteps(
-        steps.map((step) => {
-          if (step.id === EditorPWATabs.Domain) {
-            return {
-              ...step,
-              isPassed: false,
-              icon: getTabIcon(EditorPWATabs.Domain, false, false),
-            };
-          }
-          return step;
-        })
-      );
-      return;
-    }
-    selectedDomainForm
+  const submitReadyDomain = () => {
+    return formForReadyDomain
       .validateFields()
       .then(() => {
         setDomainsData({
-          domain: selectedReadyDomain!,
+          domain: formForReadyDomain.getFieldValue("readyDomain"),
         });
-        const newSteps = steps.map((step) => {
-          if (step.id === EditorPWATabs.Domain) {
-            return {
-              ...step,
-              isPassed: true,
-              icon: getTabIcon(EditorPWATabs.Domain, true, false),
-            };
-          }
-          return step;
-        });
-        setSteps(newSteps);
-        const nextStep = newSteps.find((step) => !step.isPassed)
-          ?.id as EditorPWATabs;
-        if (nextStep) {
-          setCurrentTab(nextStep);
-        }
       })
       .catch((e) => {
         console.log(e);
       });
+  };
+
+  const handleSelectReadyDomain = async () => {
+    await submitReadyDomain();
+    const newSteps = steps.map((step) => {
+      if (step.id === EditorPWATabs.Domain) {
+        return {
+          ...step,
+          isPassed: true,
+          icon: getTabIcon(EditorPWATabs.Domain, true, false),
+        };
+      }
+      return step;
+    });
+    setSteps(newSteps);
+    const nextStep = newSteps.find((step) => !step.isPassed)
+      ?.id as EditorPWATabs;
+    if (nextStep) {
+      setCurrentTab(nextStep);
+    }
   };
 
   const validateDomainData = async () => {
@@ -140,13 +129,13 @@ const DomainOption: React.FC<DomainOptionProps> = ({
       const domainValidation = await axios.post(
         "https://pwac.world/domains/check-addition",
         {
-          domain: extractDomain(form.getFieldValue("domain")),
+          domain: extractDomain(formForOwnDomain.getFieldValue("domain")),
           email: cfAccounts?.length
             ? cfAccounts[0].email
-            : form.getFieldValue("email"),
+            : formForOwnDomain.getFieldValue("email"),
           gApiKey: cfAccounts?.length
             ? cfAccounts[0].gApiKey
-            : form.getFieldValue("gApiKey"),
+            : formForOwnDomain.getFieldValue("gApiKey"),
         }
       );
 
@@ -164,62 +153,56 @@ const DomainOption: React.FC<DomainOptionProps> = ({
     }
   };
 
-  const [form] = Form.useForm<CloudflareData>();
-  const [selectedDomainForm] = Form.useForm<{ domain: string }>();
+  const submitOwnDomain = () => {
+    return formForOwnDomain
+      .validateFields()
+      .then(async () => {
+        setIsLoading(true);
+        const domainIsValid = await validateDomainData();
+        if (domainIsValid) {
+          const values = formForOwnDomain.getFieldsValue();
+          const domain = extractDomain(values.domain);
+          if (!domain) {
+            throw new Error("Invalid domain");
+          }
+          setDomainsData({
+            ...values,
+            ...(cfAccounts?.length
+              ? { gApiKey: cfAccounts[0].gApiKey, email: cfAccounts[0].email }
+              : {}),
+            domain: extractDomain(values.domain)!,
+          });
+          return Promise.resolve(true);
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+        return Promise.reject(e);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
 
-  const onFinish = async () => {
-    if (domainsData) {
-      setDomainsData(undefined);
-      form.resetFields();
+  const handleSaveOwnDomain = async () => {
+    try {
+      await submitOwnDomain();
       setSteps(
         steps.map((step) => {
           if (step.id === EditorPWATabs.Domain) {
             return {
               ...step,
-              isPassed: false,
-              icon: getTabIcon(EditorPWATabs.Domain, false, false),
+              isPassed: true,
+              icon: getTabIcon(EditorPWATabs.Domain, true, false),
             };
           }
           return step;
         })
       );
-      return;
-    }
-    try {
-      await form.validateFields();
-      setIsLoading(true);
-      const domainIsValid = await validateDomainData();
-      if (domainIsValid) {
-        const values = form.getFieldsValue();
-        const domain = extractDomain(values.domain);
-        if (!domain) {
-          throw new Error("Invalid domain");
-        }
-        setDomainsData({
-          ...values,
-          ...(cfAccounts?.length
-            ? { gApiKey: cfAccounts[0].gApiKey, email: cfAccounts[0].email }
-            : {}),
-          domain: extractDomain(values.domain)!,
-        });
-
-        setSteps(
-          steps.map((step) => {
-            if (step.id === EditorPWATabs.Domain) {
-              return {
-                ...step,
-                isPassed: true,
-                icon: getTabIcon(EditorPWATabs.Domain, true, false),
-              };
-            }
-            return step;
-          })
-        );
-        api.success({
-          message: "Успешно",
-          description: "Приложение PWA можно сохранить",
-        });
-      }
+      api.success({
+        message: "Успешно",
+        description: "Приложение PWA можно сохранить",
+      });
     } catch (error) {
       if (error instanceof Error) {
         api.error({
@@ -227,7 +210,6 @@ const DomainOption: React.FC<DomainOptionProps> = ({
           description: "Пожалуйста проверьте введенные данные",
         });
       }
-      setDomainsData(undefined);
     } finally {
       setIsLoading(false);
     }
@@ -237,7 +219,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
     <>
       {contextHolder}
       <Spin spinning={isLoading} fullscreen />
-      {savedNsRecords && savedNsRecords.length > 0 ? (
+      {domain ? (
         <Result
           status="success"
           title={
@@ -247,34 +229,38 @@ const DomainOption: React.FC<DomainOptionProps> = ({
             </h1>
           }
           subTitle={
-            <>
-              <p className="text-xs leading-4 text-[#8F919D] mb-2 cursor-default">
-                Пожалуйста, обновите записи NS у вашего <br /> провайдера,
-                указав следующие серверы:
-              </p>
-              <ul className="text-white text-xs">
-                {savedNsRecords?.map((record, i) => (
-                  <li className="cursor-default" key={record.name}>
-                    {`NS-сервер ${i + 1}:`}{" "}
-                    <span className="cursor-auto">{record.name}</span>
-                  </li>
-                ))}
-              </ul>
-            </>
+            savedNsRecords && savedNsRecords?.length > 0 ? (
+              <>
+                <p className="text-xs leading-4 text-[#8F919D] mb-2 cursor-default">
+                  Пожалуйста, обновите записи NS у вашего <br /> провайдера,
+                  указав следующие серверы:
+                </p>
+                <ul className="text-white text-xs">
+                  {savedNsRecords?.map((record, i) => (
+                    <li className="cursor-default" key={record.name}>
+                      {`NS-сервер ${i + 1}:`}{" "}
+                      <span className="cursor-auto">{record.name}</span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : undefined
           }
           extra={
-            <div className="flex justify-center">
-              <button
-                onClick={() => navigate("/")}
-                className="bg-white hover:bg-[#00FF11] text-[#121320] rounded-lg text-base py-3 px-[38px] whitespace-nowrap flex item"
-              >
-                Вернуться на страницу с моими PWA
-              </button>
-            </div>
+            id ? undefined : (
+              <div className="flex justify-center">
+                <button
+                  onClick={() => navigate("/")}
+                  className="bg-white hover:bg-[#00FF11] text-[#121320] rounded-lg text-base py-3 px-[38px] whitespace-nowrap flex item"
+                >
+                  Вернуться на страницу с моими PWA
+                </button>
+              </div>
+            )
           }
         />
       ) : (
-        <div className="bg-[#20223B] min-h-[587px] rounded-lg px-[50px] pt-[62px] mb-4">
+        <div className="bg-[#20223B] min-h-[587px] rounded-lg px-[50px] pt-[62px] pb-[40px] mb-4">
           <h2 className="text-[22px] leading-[26px] text-white mb-[30px]">
             Домен
           </h2>
@@ -284,9 +270,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
           </div>
           <div className="flex gap-[30px] mb-[50px]">
             <div
-              onClick={() => {
-                if (!domainsData) setCurrentDomainTab(DomainOptions.BuyDomain);
-              }}
+              onClick={() => setCurrentDomainTab(DomainOptions.BuyDomain)}
               className={`flex-1 h-[178px] ${
                 currentDomainTab === DomainOptions.BuyDomain
                   ? "bg-[#515ACA]"
@@ -303,9 +287,7 @@ const DomainOption: React.FC<DomainOptionProps> = ({
               </div>
             </div>
             <div
-              onClick={() =>
-                !domainsData && setCurrentDomainTab(DomainOptions.OwnDomain)
-              }
+              onClick={() => setCurrentDomainTab(DomainOptions.OwnDomain)}
               className={`flex-1 h-[178px] ${
                 currentDomainTab === DomainOptions.OwnDomain
                   ? "bg-[#515ACA]"
@@ -333,9 +315,35 @@ const DomainOption: React.FC<DomainOptionProps> = ({
               </div>
               <div className="flex gap-[30px]">
                 <div className="flex-1">
-                  <Form form={selectedDomainForm}>
+                  <Form
+                    form={formForReadyDomain}
+                    onFinish={submitReadyDomain}
+                    onFieldsChange={() => {
+                      if (
+                        steps.find((step) => step.id === EditorPWATabs.Domain)
+                          ?.isPassed
+                      ) {
+                        setSteps(
+                          steps.map((step) => {
+                            if (step.id === EditorPWATabs.Domain) {
+                              return {
+                                ...step,
+                                isPassed: false,
+                                icon: getTabIcon(
+                                  EditorPWATabs.Domain,
+                                  false,
+                                  false
+                                ),
+                              };
+                            }
+                            return step;
+                          })
+                        );
+                      }
+                    }}
+                  >
                     <Form.Item
-                      name="domain"
+                      name="readyDomain"
                       rules={[
                         {
                           required: true,
@@ -356,20 +364,19 @@ const DomainOption: React.FC<DomainOptionProps> = ({
                         options={readyDomains}
                         className="w-full"
                         placeholder="Домен"
-                        onChange={setSelectedReadyDomain}
                       />
                     </Form.Item>
                   </Form>
                 </div>
-                {!domain && (
-                  <div className="flex-1">
-                    <ClassicButton
-                      htmlType="submit"
-                      text={domainsData ? "Очистить" : "Продолжить"}
-                      onClick={handleSelectReadyDomain}
-                    />
-                  </div>
-                )}
+                <div className="flex-1">
+                  (
+                  <ClassicButton
+                    htmlType="submit"
+                    text={"Выбрать"}
+                    onClick={handleSelectReadyDomain}
+                  />
+                  )
+                </div>
               </div>
             </div>
           )}
@@ -396,9 +403,33 @@ const DomainOption: React.FC<DomainOptionProps> = ({
                   .
                 </div>
                 <Form
-                  form={form}
-                  className="mb-[57px]"
+                  form={formForOwnDomain}
                   validateTrigger={["onBlur", "onSubmit"]}
+                  onFinish={handleSaveOwnDomain}
+                  className="mb-[30px]"
+                  onFieldsChange={() => {
+                    if (
+                      steps.find((step) => step.id === EditorPWATabs.Domain)
+                        ?.isPassed
+                    ) {
+                      setSteps(
+                        steps.map((step) => {
+                          if (step.id === EditorPWATabs.Domain) {
+                            return {
+                              ...step,
+                              isPassed: false,
+                              icon: getTabIcon(
+                                EditorPWATabs.Domain,
+                                false,
+                                false
+                              ),
+                            };
+                          }
+                          return step;
+                        })
+                      );
+                    }
+                  }}
                 >
                   <Form.Item
                     name="domain"
@@ -460,6 +491,10 @@ const DomainOption: React.FC<DomainOptionProps> = ({
                     </Form.Item>
                   )}
                 </Form>
+                <ClassicButton
+                  onClick={handleSaveOwnDomain}
+                  text={"Сохранить и продолжить"}
+                />
               </div>
               <div className="flex-1">
                 <div className="font-bold text-white text-base mb-[15px]">
@@ -479,12 +514,6 @@ const DomainOption: React.FC<DomainOptionProps> = ({
                   </a>
                   . Вам будет нужен Global API key.
                 </div>
-                {!domain && (
-                  <ClassicButton
-                    onClick={onFinish}
-                    text={domainsData ? "Очистить" : "Продолжить"}
-                  />
-                )}
               </div>
             </div>
           )}

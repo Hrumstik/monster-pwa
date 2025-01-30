@@ -1,4 +1,12 @@
-import { Form, Input, message, Spin, Tooltip, Upload } from "antd";
+import {
+  Form,
+  Input,
+  message,
+  notification,
+  Spin,
+  Tooltip,
+  Upload,
+} from "antd";
 import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
 import MonsterSelect from "@shared/elements/Select/MonsterSelect";
 import {
@@ -23,7 +31,7 @@ import MonsterSlider from "@shared/elements/Slider/MonsterSlider";
 import { Review } from "@models/review";
 import { Picture, PwaContent } from "@models/pwa";
 import ReviewItem from "./ReviewItem/ReviewItem";
-import { useWatch } from "antd/es/form/Form";
+import { FormInstance, useWatch } from "antd/es/form/Form";
 import { v4 as uuidv4 } from "uuid";
 import { requiredValidator } from "@shared/form/validators/validators";
 import { useUploadImagesMutation } from "@store/apis/filesApi.ts";
@@ -46,7 +54,6 @@ import { FaStar } from "react-icons/fa6";
 import ArrowDownIcon from "@icons/ArrowDownIcon.tsx";
 import { motion } from "framer-motion";
 import { useMount } from "react-use";
-import useSteps from "@shared/hooks/useSteps.ts";
 import MonsterCheckbox from "@shared/elements/MonsterCheckbox/MonsterCheckbox.tsx";
 
 export interface DesignOptionFormValues {
@@ -84,24 +91,24 @@ export interface DesignOptionFormValues {
   modalContent?: string;
 }
 
-export interface PwaContentOptionProps {
+export interface DesignOptionProps {
   setPwaContent: (pwaContent: PwaContent) => void;
   setCurrentTab: (tab: EditorPWATabs) => void;
   steps: Step[];
   setSteps: (steps: Step[]) => void;
   pwaContent?: PwaContent;
-  isFinished: boolean;
+  form: FormInstance<DesignOptionFormValues>;
 }
 
 const { TextArea } = Input;
 
-const DesignOption: React.FC<PwaContentOptionProps> = ({
+const DesignOption: React.FC<DesignOptionProps> = ({
   setPwaContent,
   setCurrentTab,
   setSteps,
   steps,
   pwaContent,
-  isFinished,
+  form,
 }) => {
   const { id } = useParams();
   const { data: fetchedPwaContent, isLoading: pwaContentIsLoading } =
@@ -230,7 +237,6 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
     }
   });
 
-  const [form] = Form.useForm<DesignOptionFormValues>();
   const [uploadImages, { isLoading: areImagesLoading }] =
     useUploadImagesMutation();
   useWatch("countOfStars", form);
@@ -275,6 +281,20 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
   });
 
   const handleValuesChange = () => {
+    if (steps.find((step) => step.id === EditorPWATabs.Design)?.isPassed) {
+      const newSteps = steps.map((step) => {
+        if (step.id === EditorPWATabs.Design) {
+          return {
+            ...step,
+            isPassed: false,
+            icon: getTabIcon(EditorPWATabs.Design, false, false),
+          };
+        }
+        return step;
+      });
+
+      setSteps(newSteps);
+    }
     setPreviewContent({
       ...previewContent,
       appName: form.getFieldValue("appName"),
@@ -491,7 +511,7 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
     ]);
   };
 
-  const onFinish = async () => {
+  const onFinish = async (): Promise<void> => {
     try {
       await form.validateFields();
 
@@ -566,43 +586,50 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
           },
         }),
       };
+
       setPwaContent({
         ...payload,
         ...pwaContent,
       });
-      await form.validateFields();
 
-      const newSteps = steps.map((step) => {
-        if (step.id === EditorPWATabs.Design) {
-          return {
-            ...step,
-            isPassed: true,
-            icon: getTabIcon(EditorPWATabs.Design, true, false),
-          };
-        }
-        return step;
+      return Promise.resolve();
+    } catch (error) {
+      notification.error({
+        message: "Ошибка",
+        description: "Пожалуйста, заполните все поля",
       });
 
-      setSteps(newSteps);
-      const nextStep = newSteps.find((step) => !step.isPassed)
-        ?.id as EditorPWATabs;
-      if (nextStep) {
-        setCurrentTab(nextStep);
+      return Promise.reject(error);
+    }
+  };
+
+  const handleContinue = async () => {
+    await onFinish();
+    const newSteps = steps.map((step) => {
+      if (step.id === EditorPWATabs.Design) {
+        return {
+          ...step,
+          isPassed: true,
+          icon: getTabIcon(EditorPWATabs.Design, true, false),
+        };
       }
-    } catch (error) {
-      if (error && typeof error === "object" && "errorFields" in error) {
-        onFinishFailed(
-          error as { errorFields: { name: (string | number)[] }[] }
-        );
-      } else {
-        console.error(error);
-      }
+      return step;
+    });
+
+    setSteps(newSteps);
+    const nextStep = newSteps.find((step) => !step.isPassed)
+      ?.id as EditorPWATabs;
+    if (nextStep) {
+      setCurrentTab(nextStep);
+    } else {
+      setCurrentTab(EditorPWATabs.Analytics);
     }
   };
 
   const onFinishFailed = (errorInfo: {
     errorFields: { name: (string | number)[] }[];
   }) => {
+    console.log("Failed:");
     form.scrollToField(errorInfo.errorFields[0].name, {
       behavior: "smooth",
       block: "center",
@@ -667,8 +694,6 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
       rating: Math.min(maxTotal, Number(newCountOfStars.toFixed(1))).toString(),
     });
   };
-
-  useSteps(steps, isFinished);
 
   return (
     <>
@@ -1414,8 +1439,17 @@ const DesignOption: React.FC<PwaContentOptionProps> = ({
                   )}
                 </div>
               </div>
-              <div>
-                <ClassicButton onClick={onFinish} text="Продолжить" />
+              <div className="flex gap-9 items-center">
+                <ClassicButton
+                  onClick={handleContinue}
+                  text="Сохранить и продолжить"
+                />
+                <button
+                  className="uppercase text-white text-base hover:underline"
+                  onClick={() => setCurrentTab(EditorPWATabs.Analytics)}
+                >
+                  пропустить шаг
+                </button>
               </div>
             </div>
             <div

@@ -1,5 +1,7 @@
 import IconButton from "@shared/elements/IconButton/IconButton";
-import DesignOption from "./DesignOption/DesignOption.tsx";
+import DesignOption, {
+  DesignOptionFormValues,
+} from "./DesignOption/DesignOption.tsx";
 import { FaSave } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -22,10 +24,12 @@ import {
   useLazyBuildPwaContentQuery,
 } from "@store/apis/pwaApi.ts";
 import useCheckBuildStatus from "@shared/hooks/useCheckBuildStatus";
-import { notification } from "antd";
+import { Form, notification } from "antd";
 import { Hourglass } from "react-loader-spinner";
 import useGetPwaInfo from "@shared/hooks/useGetPwaInfo.ts";
 import AnalyticOption from "./AnalyticOption/AnalyticOption.tsx";
+import { DomainOptions } from "@models/domain.ts";
+import useSteps from "@shared/hooks/useSteps.ts";
 
 const EditorPWA = () => {
   const { pwaId } = useParams();
@@ -52,27 +56,23 @@ const EditorPWA = () => {
   const [isFinished, setIsFinished] = useState(false);
 
   const [deletePwaContent] = useDeletePwaContentMutation();
+  const [designOptionForm] = Form.useForm<DesignOptionFormValues>();
+  const [formForOwnDomain] = Form.useForm<CloudflareData>();
+  const [analyticOptionForm] = Form.useForm();
+  const [formForReadyDomain] = Form.useForm<{ readyDomain: string }>();
+  const [currentDomainTab, setCurrentDomainTab] =
+    useState<DomainOptions | null>(null);
+
+  useSteps(steps, isFinished);
 
   useEffect(() => {
     if (id) {
       setPwaContentId(id);
       setSteps(
-        steps.map((step) => {
-          if (step.id === EditorPWATabs.Domain) {
-            return {
-              ...step,
-              isPassed: true,
-              icon: getTabIcon(EditorPWATabs.Domain, true, false),
-            };
-          } else if (step.id === EditorPWATabs.Analytics) {
-            return {
-              ...step,
-              isPassed: true,
-              icon: getTabIcon(EditorPWATabs.Analytics, true, false),
-            };
-          }
-          return step;
-        })
+        steps.map((step) => ({
+          ...step,
+          isPassed: true,
+        }))
       );
     }
   }, [id]);
@@ -144,7 +144,9 @@ const EditorPWA = () => {
 
   const savePwa = async () => {
     if (!pwaContent) return;
+
     try {
+      await handleNextStep(currentTab);
       setIsLoading(true);
       let domain = undefined;
       if (id) {
@@ -192,17 +194,50 @@ const EditorPWA = () => {
     }
   };
 
-  const handleStepChange = (step: EditorPWATabs) => {
-    const updatedSteps = steps.map((s) => ({
-      ...s,
-      icon: getTabIcon(
-        s.id as EditorPWATabs,
-        s.isPassed ?? false,
-        s.id === step
-      ),
-    }));
-    setSteps(updatedSteps);
-    setCurrentTab(step);
+  const markStepAsPassed = (stepId: EditorPWATabs) => {
+    setSteps(
+      steps.map((s) =>
+        s.id === stepId
+          ? { ...s, isPassed: true, icon: getTabIcon(stepId, true, false) }
+          : s
+      )
+    );
+  };
+
+  const handleNextStep = async (selectedStep: EditorPWATabs) => {
+    try {
+      switch (currentTab) {
+        case EditorPWATabs.Domain:
+          if (currentDomainTab === DomainOptions.OwnDomain) {
+            await formForOwnDomain.validateFields();
+            formForOwnDomain.submit();
+          }
+
+          if (currentDomainTab === DomainOptions.BuyDomain) {
+            await formForReadyDomain.validateFields();
+            formForReadyDomain.submit();
+          }
+          markStepAsPassed(EditorPWATabs.Domain);
+          setCurrentTab(selectedStep);
+          break;
+        case EditorPWATabs.Design:
+          await designOptionForm.validateFields();
+          designOptionForm.submit();
+          markStepAsPassed(EditorPWATabs.Design);
+          setCurrentTab(selectedStep);
+          break;
+        case EditorPWATabs.Analytics:
+          await analyticOptionForm.validateFields();
+          markStepAsPassed(EditorPWATabs.Analytics);
+          setCurrentTab(selectedStep);
+          break;
+      }
+    } catch {
+      notification.error({
+        message: "Ошибка",
+        description: "Пожалуйста, заполните все поля",
+      });
+    }
   };
 
   const getCurrentTab = () => {
@@ -217,7 +252,10 @@ const EditorPWA = () => {
             setSteps={setSteps}
             pwaContentId={pwaContentId}
             setCurrentTab={setCurrentTab}
-            isFinished={isFinished}
+            formForOwnDomain={formForOwnDomain}
+            formForReadyDomain={formForReadyDomain}
+            setCurrentDomainTab={setCurrentDomainTab}
+            currentDomainTab={currentDomainTab}
           />
         );
       case EditorPWATabs.Design:
@@ -228,7 +266,7 @@ const EditorPWA = () => {
             setCurrentTab={setCurrentTab}
             steps={steps}
             setSteps={setSteps}
-            isFinished={isFinished}
+            form={designOptionForm}
           />
         );
       case EditorPWATabs.Analytics:
@@ -239,7 +277,7 @@ const EditorPWA = () => {
             setCurrentTab={setCurrentTab}
             steps={steps}
             setSteps={setSteps}
-            isFinished={isFinished}
+            form={analyticOptionForm}
           />
         );
       default:
@@ -251,7 +289,7 @@ const EditorPWA = () => {
     <>
       <div className="px-[50px] pt-[110px] w-full">
         <h1 className="font-bold text-[28px] leading-8 text-white mb-7">
-          Создание PWA
+          {id ? "Редактирование PWA" : "Создание PWA"}
         </h1>
         <div className="h-[42px] flex justify-between mb-12">
           <div className="flex items-center">
@@ -260,14 +298,17 @@ const EditorPWA = () => {
           <div className="flex gap-5">
             {!isFinished && (
               <IconButton
-                icon={<FaSave color="white" />}
+                icon={<FaSave color={availableToSave ? "#20223B" : "white"} />}
                 disabled={!availableToSave}
                 onclick={savePwa}
                 text="Сохранить"
                 customClass={
                   availableToSave
-                    ? "animate-pulse group hover:animate-none"
+                    ? "animate-pulse group hover:animate-none bg-[#00FF22] "
                     : "animate-none"
+                }
+                textCustomClass={
+                  availableToSave ? "text-[#20223B]" : "text-white"
                 }
               />
             )}
@@ -277,7 +318,7 @@ const EditorPWA = () => {
           <Steps
             steps={steps}
             currentStep={currentTab}
-            onStepChange={(step) => handleStepChange(step as EditorPWATabs)}
+            onStepChange={(step) => handleNextStep(step as EditorPWATabs)}
             showSteps
           />
         </div>
