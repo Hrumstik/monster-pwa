@@ -44,7 +44,7 @@ const EditorPWA = () => {
   const [domainsData, setDomainsData] = useState<CloudflareData>();
   const [availableToSave, setAvailableToSave] = useState(false);
   const [createPwaContent] = useCreatePwaContentMutation();
-  const [buildPwaContent] = useLazyBuildPwaContentQuery();
+  const [buildAndDeployPwaContent] = useLazyBuildPwaContentQuery();
   const { data: readyDomainsData } = useGetReadyDomainsQuery();
   const [addDomain] = useAddDomainMutation();
   const [addReadyDomain] = useAttachReadyDomainMutation();
@@ -97,48 +97,22 @@ const EditorPWA = () => {
     }, 1000);
   };
 
-  const addDomainData = async (pwaContent: PwaContent) => {
+  const getDomainData = (pwaContent: PwaContent) => {
     if (!domainsData || !pwaContent) return;
-    try {
-      if (domainsData.gApiKey) {
-        await addDomain({
-          ...domainsData,
-          pwaId: pwaContent._id!,
-        }).unwrap();
-        setIsFinished(true);
-      } else {
-        const domainId = readyDomainsData?.find(
-          (domain) => domain.domain === domainsData.domain
-        )?._id;
 
-        await addReadyDomain({
-          id: domainId!,
-          pwaId: pwaContent._id!,
-          userId: userData!._id,
-        }).unwrap();
-        notification.success({
-          message: "Успешно",
-          description: "Ваше PWA успешно создано",
-        });
-        setIsFinished(true);
-        setTimeout(async () => {
-          navigate(`/`);
-          await refetch();
-          setIsLoading(false);
-        }, 1000);
-      }
-    } catch (error) {
-      notification.error({
-        message: "Ошибка",
-        description:
-          "Ошибка добавления домена, обратитесь в техническую поддержку",
-      });
-      setTimeout(() => {
-        navigate(`/edit-PWA/${pwaContent._id}`);
-      }, 1000);
-      console.log(error);
-    } finally {
-      setIsLoading(false);
+    if (domainsData.gApiKey) {
+      return {
+        ...domainsData,
+      };
+    } else {
+      const domain = readyDomainsData?.find(
+        (domain) => domain.domain === domainsData.domain
+      );
+
+      return {
+        readyDomainId: domain?._id!,
+        domain: domain?.domain,
+      };
     }
   };
 
@@ -158,29 +132,35 @@ const EditorPWA = () => {
 
       setPwaContentId(pwaContentResponse._id!);
 
-      const buildPayload =
-        id && domain
-          ? {
-              id: pwaContentResponse._id!,
-              body: {
-                domain,
-              },
-            }
-          : { id: pwaContentResponse._id! };
+      const buildPayload = {
+        id: pwaContentResponse._id!,
+        body: {
+          deploy: !domain,
+          ...(domain ? { domain } : getDomainData(pwaContentResponse)),
+        },
+      } as {
+        id: string;
+        body?: {
+          deploy: boolean;
+          domain: string;
+          email?: string;
+          gApiKey?: string;
+          readyDomainId?: string;
+        };
+      };
 
-      const buildResponse = await buildPwaContent(buildPayload).unwrap();
+      const buildResponse = await buildAndDeployPwaContent(
+        buildPayload
+      ).unwrap();
+      setIsLoading(false);
+      navigate("/");
+      await refetch();
       setTimeout(
         () =>
           startPolling({
             jobId: buildResponse.jobId,
-            completedStatusCallback:
-              id && domain
-                ? () => finishEditingPwa()
-                : () => addDomainData(pwaContentResponse),
-            catchCallback:
-              id && domain
-                ? () => setIsLoading(false)
-                : () => addDomainData(pwaContentResponse),
+            completedStatusCallback: () => navigate("/"),
+            catchCallback: () => navigate("/"),
           }),
         10000
       );

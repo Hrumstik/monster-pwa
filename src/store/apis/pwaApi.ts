@@ -105,12 +105,16 @@ export const pwaSlice = createApi({
       {
         id: string;
         body?: {
-          domain?: string;
+          deploy: boolean;
+          domain: string;
+          email?: string;
+          gApiKey?: string;
+          readyDomainId?: string;
         };
       }
     >({
       query: ({ id, body }) => ({
-        url: `/pwa-content/${id}/build`,
+        url: `/pwa-content/${id}/buildAndDeploy`,
         method: "POST",
         body,
       }),
