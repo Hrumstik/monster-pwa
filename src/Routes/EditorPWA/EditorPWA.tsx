@@ -15,15 +15,12 @@ import DomainOption from "./DomainOption.tsx/DomainOption.tsx";
 import { PwaContent } from "@models/pwa";
 import { CloudflareData } from "@models/user";
 import {
-  useAddDomainMutation,
-  useAttachReadyDomainMutation,
   useCreatePwaContentMutation,
   useDeletePwaContentMutation,
   useGetMyUserQuery,
   useGetReadyDomainsQuery,
-  useLazyBuildPwaContentQuery,
+  useBuildPwaContentMutation,
 } from "@store/apis/pwaApi.ts";
-import useCheckBuildStatus from "@shared/hooks/useCheckBuildStatus";
 import { Form, notification } from "antd";
 import { Hourglass } from "react-loader-spinner";
 import useGetPwaInfo from "@shared/hooks/useGetPwaInfo.ts";
@@ -38,22 +35,17 @@ const EditorPWA = () => {
   );
 
   const { id } = useParams();
-  const { data: userData, refetch } = useGetMyUserQuery();
+  const { data: userData } = useGetMyUserQuery();
   const [steps, setSteps] = useState<Step[]>(stepsInitialState);
   const [pwaContent, setPwaContent] = useState<PwaContent>();
   const [domainsData, setDomainsData] = useState<CloudflareData>();
   const [availableToSave, setAvailableToSave] = useState(false);
   const [createPwaContent] = useCreatePwaContentMutation();
-  const [buildAndDeployPwaContent] = useLazyBuildPwaContentQuery();
+  const [buildAndDeployPwaContent] = useBuildPwaContentMutation();
   const { data: readyDomainsData } = useGetReadyDomainsQuery();
-  const [addDomain] = useAddDomainMutation();
-  const [addReadyDomain] = useAttachReadyDomainMutation();
-  const { startPolling } = useCheckBuildStatus();
   const [isLoading, setIsLoading] = useState(false);
-  const { getPwaInfo } = useGetPwaInfo();
   const navigate = useNavigate();
   const [pwaContentId, setPwaContentId] = useState<string | null>(null);
-  const [isFinished, setIsFinished] = useState(false);
 
   const [deletePwaContent] = useDeletePwaContentMutation();
   const [designOptionForm] = Form.useForm<DesignOptionFormValues>();
@@ -63,16 +55,28 @@ const EditorPWA = () => {
   const [currentDomainTab, setCurrentDomainTab] =
     useState<DomainOptions | null>(null);
 
-  useSteps(steps, isFinished);
+  useSteps(steps);
+
+  const { getPwaInfo } = useGetPwaInfo(id);
 
   useEffect(() => {
     if (id) {
       setPwaContentId(id);
       setSteps(
-        steps.map((step) => ({
-          ...step,
-          isPassed: true,
-        }))
+        steps.map((step) => {
+          if (step.id === EditorPWATabs.Design) {
+            return {
+              ...step,
+              isPassed: false,
+              icon: getTabIcon(step.id as EditorPWATabs, false, false),
+            };
+          }
+          return {
+            ...step,
+            isPassed: true,
+            icon: getTabIcon(step.id as EditorPWATabs, true, false),
+          };
+        })
       );
     }
   }, [id]);
@@ -84,34 +88,20 @@ const EditorPWA = () => {
     setAvailableToSave(isAvailableToSave);
   }, [steps]);
 
-  const finishEditingPwa = () => {
-    notification.success({
-      message: "Успешно",
-      description: "PWA успешно изменено",
-    });
-    setIsFinished(true);
-    setTimeout(async () => {
-      navigate(`/`);
-      await refetch();
-      setIsLoading(false);
-    }, 1000);
-  };
-
   const getDomainData = (pwaContent: PwaContent) => {
-    if (!domainsData || !pwaContent) return;
-
+    if (!domainsData || !pwaContent || !readyDomainsData) return null;
     if (domainsData.gApiKey) {
       return {
         ...domainsData,
       };
     } else {
-      const domain = readyDomainsData?.find(
+      const domain = readyDomainsData.find(
         (domain) => domain.domain === domainsData.domain
-      );
+      )!;
 
       return {
-        readyDomainId: domain?._id!,
-        domain: domain?.domain,
+        readyDomainId: domain ? domain._id : undefined,
+        domain: domain.domain,
       };
     }
   };
@@ -124,7 +114,7 @@ const EditorPWA = () => {
       setIsLoading(true);
       let domain = undefined;
       if (id) {
-        domain = getPwaInfo(id).domain;
+        domain = getPwaInfo(id)?.domain;
       }
 
       const pwaContentResponse = await createPwaContent(pwaContent).unwrap();
@@ -136,34 +126,13 @@ const EditorPWA = () => {
         id: pwaContentResponse._id!,
         body: {
           deploy: !domain,
-          ...(domain ? { domain } : getDomainData(pwaContentResponse)),
+          ...(domain ? { domain } : getDomainData(pwaContentResponse)!),
         },
-      } as {
-        id: string;
-        body?: {
-          deploy: boolean;
-          domain: string;
-          email?: string;
-          gApiKey?: string;
-          readyDomainId?: string;
-        };
       };
 
-      const buildResponse = await buildAndDeployPwaContent(
-        buildPayload
-      ).unwrap();
+      await buildAndDeployPwaContent(buildPayload).unwrap();
       setIsLoading(false);
       navigate("/");
-      await refetch();
-      setTimeout(
-        () =>
-          startPolling({
-            jobId: buildResponse.jobId,
-            completedStatusCallback: () => navigate("/"),
-            catchCallback: () => navigate("/"),
-          }),
-        10000
-      );
     } catch (error) {
       notification.error({
         message: "Ошибка",
@@ -277,22 +246,20 @@ const EditorPWA = () => {
             {pwaId && <div className="flex"></div>}
           </div>
           <div className="flex gap-5">
-            {!isFinished && (
-              <IconButton
-                icon={<FaSave color={availableToSave ? "#20223B" : "white"} />}
-                disabled={!availableToSave}
-                onclick={savePwa}
-                text="Сохранить"
-                customClass={
-                  availableToSave
-                    ? "animate-pulse group hover:animate-none bg-[#00FF22] hover:bg-lime-300"
-                    : "animate-none"
-                }
-                textCustomClass={
-                  availableToSave ? "text-[#20223B]" : "text-white"
-                }
-              />
-            )}
+            <IconButton
+              icon={<FaSave color={"white"} />}
+              disabled={!availableToSave}
+              onclick={savePwa}
+              text="Сохранить"
+              customClass={
+                availableToSave
+                  ? "animate-pulse group hover:animate-none"
+                  : "animate-none"
+              }
+              textCustomClass={
+                availableToSave ? "text-[#20223B]" : "text-white"
+              }
+            />
           </div>
         </div>
         <div className="mb-10">

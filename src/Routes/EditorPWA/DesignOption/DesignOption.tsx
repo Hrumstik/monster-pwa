@@ -55,6 +55,7 @@ import ArrowDownIcon from "@icons/ArrowDownIcon.tsx";
 import { motion } from "framer-motion";
 import { useMount } from "react-use";
 import MonsterCheckbox from "@shared/elements/MonsterCheckbox/MonsterCheckbox.tsx";
+import { scrollToTop } from "@shared/helpers/common.ts";
 
 export interface DesignOptionFormValues {
   languages: string[];
@@ -619,6 +620,11 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     setSteps(newSteps);
     const nextStep = newSteps.find((step) => !step.isPassed)
       ?.id as EditorPWATabs;
+    if (id) {
+      scrollToTop(".overflow-auto");
+      return;
+    }
+
     if (nextStep) {
       setCurrentTab(nextStep);
     } else {

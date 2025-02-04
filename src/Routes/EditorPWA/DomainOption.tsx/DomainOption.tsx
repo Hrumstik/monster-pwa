@@ -64,9 +64,9 @@ const DomainOption: React.FC<DomainOptionProps> = ({
   if (pwaContentId) {
     const userPwa = getPwaInfo(pwaContentId);
 
-    savedNsRecords = userPwa.nsRecords;
-    domain = userPwa.domain;
-    readyDomainId = userPwa.readyDomainId;
+    savedNsRecords = userPwa?.nsRecords;
+    domain = userPwa?.domain;
+    readyDomainId = userPwa?.readyDomainId;
   }
 
   useEffect(() => {

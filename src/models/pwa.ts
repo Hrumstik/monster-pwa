@@ -66,10 +66,11 @@ export interface PreparedPWADataItem {
   pwaName?: string;
   appName?: string;
   domain?: string;
-  geo: string;
-  createdAt: Date;
-  status: string;
-  id: string | undefined;
+  geo?: string;
+  createdAt?: string | Date;
+  status?: string;
+  id?: string;
+  pwaTags?: string[];
 }
 
 export enum StatusData {
@@ -77,6 +78,7 @@ export enum StatusData {
   Failed = "failed",
   Pending = "pending",
   Active = "active",
+  Error = "error",
 }
 
 export enum DomainCheckStatus {

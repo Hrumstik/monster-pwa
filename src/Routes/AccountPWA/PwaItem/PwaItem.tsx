@@ -1,4 +1,4 @@
-import { MoreOutlined } from "@ant-design/icons";
+import { LoadingOutlined, MoreOutlined } from "@ant-design/icons";
 import {
   DomainCheckStatus,
   PreparedPWADataItem,
@@ -9,6 +9,7 @@ import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
 import {
   useDeletePwaContentForcedMutation,
   useGetAllPwaContentQuery,
+  useGetMyUserQuery,
   useLazyCheckDomainStatusQuery,
   useUpdatePwaNameMutation,
 } from "@store/apis/pwaApi.ts";
@@ -16,7 +17,7 @@ import { Modal, notification, Spin, Tooltip } from "antd";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { FiFileText } from "react-icons/fi";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdModeEdit } from "react-icons/md";
 import { VscPreview } from "react-icons/vsc";
 import useGetPwaInfo from "@shared/hooks/useGetPwaInfo";
 import { PwaStatus } from "@models/domain";
@@ -26,7 +27,7 @@ import { useNavigate } from "react-router-dom";
 import DomainCell from "@shared/elements/DomainCell/DomainCell.tsx";
 import { useUpdateEffect } from "react-use";
 import PwaTags from "./TagItem/PwaTags.tsx";
-import { MdModeEdit } from "react-icons/md";
+import useCheckBuildStatus from "@shared/hooks/useCheckBuildStatus.ts";
 
 const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
   const { data } = useGetAllPwaContentQuery();
@@ -38,17 +39,43 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
     useUpdatePwaNameMutation();
   const [checkDomainStatus] = useLazyCheckDomainStatusQuery();
   const [pwaStatus, setPwaStatus] = useState<PwaStatus>();
-  const { getPwaInfo } = useGetPwaInfo();
+  const { data: userInfo } = useGetMyUserQuery();
+  const { pwaInfo } = useGetPwaInfo(pwa.id);
+  const [showLoader, setShowLoader] = useState(false);
+  const pwaUserInfo = userInfo?.pwas.find(
+    (pwaUser) => pwaUser.pwaContentId === pwa.id
+  );
 
   useEffect(() => {
-    const actualStatus = getPwaInfo(pwa.id!).status!;
+    if (!pwaInfo) return;
+    const actualStatus = pwaInfo.status;
     setPwaStatus(actualStatus);
-  }, []);
+  }, [userInfo, pwaInfo]);
 
   const navigate = useNavigate();
+  const { startPolling } = useCheckBuildStatus();
+
+  useEffect(() => {
+    if (pwaStatus) setShowLoader(false);
+    if (!pwaStatus && pwa.id && !pwaUserInfo) {
+      setShowLoader(true);
+      console.log("startPolling");
+      startPolling({
+        pwaContentId: pwa.id,
+        completedStatusCallback: () => {
+          setShowLoader(false);
+        },
+        failedStatusCallback: () => {
+          setPwaStatus(PwaStatus.BUILD_FAILED);
+        },
+      });
+    }
+
+    return;
+  }, [pwaStatus, pwa.id, userInfo]);
 
   useUpdateEffect(() => {
-    if (pwaStatus !== PwaStatus.WAITING_NS) return;
+    if (!pwaStatus || pwaStatus !== PwaStatus.WAITING_NS) return;
     let interval: NodeJS.Timeout;
     const getDomainStatus = async (pwaContentID: string) => {
       const status = await checkDomainStatus(pwaContentID).unwrap();
@@ -150,6 +177,8 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
     );
   };
 
+  if (!pwaInfo) return null;
+
   return (
     <>
       <tr
@@ -172,14 +201,25 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         <td className="text-center py-3 truncate ... ">
           {moment(pwa.createdAt).format("DD.MM.YYYY")}
         </td>
-        <td className="py-3 truncate ... text-center">
-          {getPwaStatus(pwaStatus!)}
+        <td className="py-3 truncate ... text-center flex justify-center items-center ">
+          {showLoader ? (
+            <Spin
+              indicator={
+                <LoadingOutlined
+                  style={{
+                    color: "#00FF11",
+                  }}
+                  spin
+                />
+              }
+              size="default"
+            />
+          ) : (
+            getPwaStatus(pwaStatus!)
+          )}
         </td>
         <td className="py-3">
-          <PwaTags
-            pwaTags={getPwaInfo(pwa.id!).pwaTags ?? []}
-            pwaId={pwa.id!}
-          />
+          <PwaTags pwaTags={pwaInfo.pwaTags ?? []} pwaId={pwa.id!} />
         </td>
         <td className="py-3  text-center flex justify-center items-center gap-2">
           <button

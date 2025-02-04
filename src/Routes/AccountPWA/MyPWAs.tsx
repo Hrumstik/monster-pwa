@@ -4,10 +4,12 @@ import MonsterInput from "../../shared/elements/MonsterInput/MonsterInput.tsx";
 
 import { Spin, Empty } from "antd";
 import { useNavigate } from "react-router-dom";
-import { useGetAllPwaContentQuery } from "@store/apis/pwaApi.ts";
+import {
+  useGetAllPwaContentQuery,
+  useGetMyUserQuery,
+} from "@store/apis/pwaApi.ts";
 import { PreparedPWADataItem } from "@models/pwa.ts";
 import Steps from "@shared/elements/Steps/Steps.tsx";
-import useGetPwaInfo from "@shared/hooks/useGetPwaInfo.ts";
 import PwaItem from "./PwaItem/PwaItem.tsx";
 import { PwaStatus } from "@models/domain.ts";
 import { useDispatch } from "react-redux";
@@ -19,15 +21,17 @@ import {
   setPwaTags,
 } from "@store/slices/pwaTagsSlice.ts";
 import { useAppSelector } from "@store/hooks.ts";
+import useGetPwaInfo from "@shared/hooks/useGetPwaInfo.ts";
 
 const MyPWAs = () => {
-  const { data, isLoading } = useGetAllPwaContentQuery();
+  const { data: allPwas, isLoading } = useGetAllPwaContentQuery();
+  const { data: userInfo } = useGetMyUserQuery();
   const dispatch = useDispatch();
   const allPwaTags = useAppSelector(getPwaTags);
   const activePwaTags = useAppSelector(getActiveTags);
 
   useEffect(() => {
-    if (!data) return;
+    if (!allPwas) return;
 
     if (activePwaTags.length === 0) {
       setAvailablePWAs(preparePwaData());
@@ -39,12 +43,12 @@ const MyPWAs = () => {
         activePwaTags.some((tag) => pwa.pwaTags?.includes(tag))
       )
     );
-  }, [activePwaTags, data]);
+  }, [activePwaTags, allPwas]);
 
   useEffect(() => {
-    if (!data) return;
+    if (!allPwas) return;
 
-    const allPwaTags = data
+    const allPwaTags = allPwas
       .filter((pwa) => pwa.pwaTags)
       .map((pwa) => pwa.pwaTags!)
       .flat();
@@ -52,9 +56,7 @@ const MyPWAs = () => {
     const uniquePwaTags = Array.from(new Set(allPwaTags));
 
     dispatch(setPwaTags(uniquePwaTags));
-  }, [data, dispatch]);
-
-  const { getPwaInfo } = useGetPwaInfo();
+  }, [allPwas, dispatch]);
 
   const navigate = useNavigate();
 
@@ -64,22 +66,29 @@ const MyPWAs = () => {
   >(null);
 
   const preparePwaData = () =>
-    data?.map(({ _id }) => {
-      const pwaInfo = getPwaInfo(_id!);
+    allPwas?.map(({ _id }) => {
+      const pwaInfo = allPwas.find((pwa) => pwa._id === _id);
+      const userInfoPwa = userInfo?.pwas.find(
+        (pwa) => pwa.pwaContentId === _id
+      );
       return {
-        pwaName: pwaInfo.pwaName,
-        appName: pwaInfo.appName,
-        domain: pwaInfo.domain,
+        pwaName: pwaInfo?.pwaName,
+        appName: pwaInfo?.appName,
+        domain: userInfoPwa?.domainName,
         geo: "–",
-        createdAt: new Date(pwaInfo.createdAt!),
-        status: getPwaStatus(pwaInfo.status!),
+        createdAt: pwaInfo?.createdAt ? new Date(pwaInfo?.createdAt) : "-",
+        status: userInfoPwa?.status
+          ? getPwaStatus(userInfoPwa.status)
+          : undefined,
         id: _id,
-        pwaTags: pwaInfo.pwaTags,
+        pwaTags: pwaInfo?.pwaTags,
       };
     }) ?? [];
 
+  const { getPwaInfo } = useGetPwaInfo();
+
   useEffect(() => {
-    if (!data) return;
+    if (!allPwas) return;
     switch (currentTab) {
       case MyPWAsTabs.All:
         setAvailablePWAs(preparePwaData());
@@ -87,7 +96,7 @@ const MyPWAs = () => {
       case MyPWAsTabs.Active:
         setAvailablePWAs(
           preparePwaData().filter((pwa) => {
-            const actualStatus = getPwaInfo(pwa.id!).status;
+            const actualStatus = getPwaInfo(pwa.id!)?.status;
             return actualStatus === PwaStatus.ACTIVE;
           })
         );
@@ -95,7 +104,7 @@ const MyPWAs = () => {
       case MyPWAsTabs.Built:
         setAvailablePWAs(
           preparePwaData().filter((pwa) => {
-            const actualStatus = getPwaInfo(pwa.id!).status;
+            const actualStatus = getPwaInfo(pwa.id!)?.status;
             return actualStatus === PwaStatus.BUILDED;
           })
         );
@@ -103,7 +112,7 @@ const MyPWAs = () => {
       case MyPWAsTabs.BuildFailed:
         setAvailablePWAs(
           preparePwaData().filter((pwa) => {
-            const actualStatus = getPwaInfo(pwa.id!).status;
+            const actualStatus = getPwaInfo(pwa.id!)?.status;
             return actualStatus === PwaStatus.BUILD_FAILED;
           })
         );
@@ -111,7 +120,7 @@ const MyPWAs = () => {
       case MyPWAsTabs.WaitingNS:
         setAvailablePWAs(
           preparePwaData().filter((pwa) => {
-            const actualStatus = getPwaInfo(pwa.id!).status;
+            const actualStatus = getPwaInfo(pwa.id!)?.status;
             return actualStatus === PwaStatus.WAITING_NS;
           })
         );
@@ -121,7 +130,7 @@ const MyPWAs = () => {
         break;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTab, data]);
+  }, [currentTab, allPwas, userInfo]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.value.trimEnd()) {

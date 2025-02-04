@@ -2,12 +2,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import baseQuery from "../../middlewares/authBaseQuery";
 import { DomainCheckStatus, PwaContent } from "@models/pwa";
 import { User } from "@models/user";
-import {
-  AddDomainResponse,
-  AttachReadyDomainResponse,
-  DomainData,
-  ReadyDomains,
-} from "@models/domain";
+import { DeploymentConfig, ReadyDomains } from "@models/domain";
 
 export const pwaSlice = createApi({
   reducerPath: "pwaApi",
@@ -100,45 +95,26 @@ export const pwaSlice = createApi({
       query: (id) => `/pwa-content/${id}`,
     }),
 
-    buildPwaContent: builder.query<
-      { jobId: string },
-      {
-        id: string;
-        body?: {
-          deploy: boolean;
-          domain: string;
-          email?: string;
-          gApiKey?: string;
-          readyDomainId?: string;
-        };
-      }
-    >({
+    buildPwaContent: builder.mutation<{ jobId: string }, DeploymentConfig>({
       query: ({ id, body }) => ({
         url: `/pwa-content/${id}/buildAndDeploy`,
         method: "POST",
         body,
       }),
+      invalidatesTags: ["PwaContent", "User"],
     }),
     getPwaContentStatus: builder.query<
       { status: string; url?: string; body?: string },
       string
     >({
-      query: (jobId) => ({
-        url: `/pwa-content/status/${jobId}`,
+      query: (pwaContentId) => ({
+        url: `/pwa-content/status/${pwaContentId}`,
         method: "GET",
       }),
     }),
     getMyUser: builder.query<User, void>({
       query: () => "/user/me",
       providesTags: ["User"],
-    }),
-    addDomain: builder.mutation<AddDomainResponse, DomainData>({
-      query: (data) => ({
-        url: "/domains/add",
-        method: "POST",
-        body: data,
-      }),
-      invalidatesTags: ["User", "PwaContent"],
     }),
     checkDomainStatus: builder.query<DomainCheckStatus, string>({
       query: (pwaContentId) => ({
@@ -150,17 +126,6 @@ export const pwaSlice = createApi({
     }),
     getReadyDomains: builder.query<ReadyDomains[], void>({
       query: () => "/ready-domain",
-    }),
-    attachReadyDomain: builder.mutation<
-      AttachReadyDomainResponse,
-      { id: string; pwaId: string; userId: string }
-    >({
-      query: ({ id, pwaId, userId }) => ({
-        url: `/ready-domain/${id}/attach`,
-        method: "PATCH",
-        body: { pwaId, userId },
-      }),
-      invalidatesTags: ["User", "PwaContent"],
     }),
     generateReviewDate: builder.query<
       {
@@ -210,14 +175,12 @@ export const {
   useDeletePwaContentForcedMutation,
   useCopyPwaContentMutation,
   useLazyGetPwaContentStatusQuery,
-  useLazyBuildPwaContentQuery,
+  useBuildPwaContentMutation,
   useLazyGetPwaContentByIdQuery,
   useGetPwaContentByIdQuery,
   useGetMyUserQuery,
-  useAddDomainMutation,
   useLazyCheckDomainStatusQuery,
   useGetReadyDomainsQuery,
-  useAttachReadyDomainMutation,
   useUpdatePwaTagsMutation,
   useLazyGenerateReviewDateQuery,
   useLazyGenerateAppDescriptionQuery,

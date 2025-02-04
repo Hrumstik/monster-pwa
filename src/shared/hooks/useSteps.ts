@@ -3,12 +3,12 @@ import { scrollToTop } from "@shared/helpers/common";
 import { notification } from "antd";
 import { useEffect, useState } from "react";
 
-const useSteps = (steps: Step[], isFinished: boolean) => {
+const useSteps = (steps: Step[]) => {
   const [notificationIsShowed, setNotificationIsShowed] = useState(false);
 
   useEffect(() => {
     const allStepsPassed = steps.every((step) => step.isPassed);
-    if (allStepsPassed && !isFinished && !notificationIsShowed) {
+    if (allStepsPassed && !notificationIsShowed) {
       scrollToTop(".overflow-auto");
       notification.success({
         message: "Успешно",
@@ -16,7 +16,7 @@ const useSteps = (steps: Step[], isFinished: boolean) => {
       });
       setNotificationIsShowed(true);
     }
-  }, [steps, isFinished, notificationIsShowed]);
+  }, [steps, notificationIsShowed]);
 };
 
 export default useSteps;

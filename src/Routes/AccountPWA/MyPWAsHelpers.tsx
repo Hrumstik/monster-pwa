@@ -36,7 +36,7 @@ export const getPwaStatus = (status: PwaStatus) => {
     case PwaStatus.ACTIVE:
       return "Активен";
     default:
-      return "PWA собран";
+      return undefined;
   }
 };
 

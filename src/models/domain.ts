@@ -23,13 +23,15 @@ export interface ReadyDomains {
   updatedAt: string;
 }
 
-export interface AttachReadyDomainResponse {
-  _id: string;
-  domain: string;
-  pwaId: string;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
+export interface DeploymentConfig {
+  id: string;
+  body?: {
+    deploy: boolean;
+    domain: string;
+    email?: string;
+    gApiKey?: string;
+    readyDomainId?: string;
+  };
 }
 
 export enum PwaStatus {
