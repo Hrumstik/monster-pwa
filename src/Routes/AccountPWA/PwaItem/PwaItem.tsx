@@ -43,18 +43,16 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
 
   useEffect(() => {
     if (pwaInfo === null) return;
-    console.log("here");
-    console.log(pwaInfo.status);
     if (!pwaInfo?.status && pwa.id) {
-      console.log("start polling");
       startPolling({
         pwaContentId: pwa.id,
         completedStatusCallback: () => {
           notification.success({
-            message: `PWA успешно развернуто на домене ${pwa.domain}`,
+            message: `PWA ${
+              pwa.pwaName ?? pwa.appName
+            } успешно разверн на домене ${pwa.domain}`,
           });
         },
-        failedStatusCallback: () => {},
       });
     }
   }, [pwaInfo, pwa.id]);
