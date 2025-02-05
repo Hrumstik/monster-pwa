@@ -9,7 +9,7 @@ export const pwaSlice = createApi({
   keepUnusedDataFor: 3000,
   baseQuery: baseQuery,
   refetchOnFocus: true,
-  tagTypes: ["PwaContent", "User"],
+  tagTypes: ["PwaContent", "User", "ReadyDomains"],
   endpoints: (builder) => ({
     createPwaContent: builder.mutation<PwaContent, PwaContent>({
       query: (data) => ({
@@ -79,7 +79,7 @@ export const pwaSlice = createApi({
         url: `/pwa-content/${id}/force`,
         method: "DELETE",
       }),
-      invalidatesTags: ["PwaContent", "User"],
+      invalidatesTags: ["PwaContent", "User", "ReadyDomains"],
     }),
     copyPwaContent: builder.mutation<void, string>({
       query: (id) => ({
@@ -125,6 +125,7 @@ export const pwaSlice = createApi({
     }),
     getReadyDomains: builder.query<ReadyDomains[], void>({
       query: () => "/ready-domain",
+      providesTags: ["ReadyDomains"],
     }),
     generateReviewDate: builder.query<
       {

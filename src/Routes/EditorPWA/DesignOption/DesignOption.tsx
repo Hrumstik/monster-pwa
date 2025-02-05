@@ -284,7 +284,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       "И получить шанс выиграть подарочную карту Google Play на сумму 50$ Вы можете скачать приложение и получить шанс выиграть подарочную карту Google Play Вы можете скачать приложение и получить шанс выиграть подарочную карту Google Play на сумму 50$",
   });
 
-  const handleValuesChange = () => {
+  const resetStep = () => {
     if (steps.find((step) => step.id === EditorPWATabs.Design)?.isPassed) {
       const newSteps = steps.map((step) => {
         if (step.id === EditorPWATabs.Design) {
@@ -299,6 +299,10 @@ const DesignOption: React.FC<DesignOptionProps> = ({
 
       setSteps(newSteps);
     }
+  };
+
+  const handleValuesChange = () => {
+    resetStep();
     setPreviewContent({
       ...previewContent,
       appName: form.getFieldValue("appName"),
@@ -388,6 +392,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
+    resetStep();
     setAppIcon({ url: null, preview: null });
   };
 
@@ -404,6 +409,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
 
     reader.onload = async () => {
       const response = await uploadImages([file]).unwrap();
+      resetStep();
 
       setAppIcon({
         url: response.imageUrls[0],
@@ -430,7 +436,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
 
     reader.onload = async () => {
       const response = await uploadImages([file]).unwrap();
-
+      resetStep();
       setScreens((prev) => {
         const newScreens = [...prev];
 
@@ -455,6 +461,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
       e.stopPropagation();
+      resetStep();
       setScreens((prev) => {
         const newScreens = [...prev];
         newScreens[index] = { url: null, preview: null };
@@ -726,6 +733,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
           keepActualDateOfReviews: false,
           modalTextButton: "Загрузить",
           showAppHeader: true,
+          simulate_install: false,
         }}
         onValuesChange={handleValuesChange}
         onFieldsChange={(_, allFields) => {

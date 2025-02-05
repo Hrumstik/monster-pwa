@@ -202,13 +202,14 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         </td>
         <td className="py-3  text-center flex justify-center items-center gap-2">
           <button
-            onClick={() => navigate(`/edit-PWA/${pwa.id}`)}
+            onClick={() => pwaInfo.status && navigate(`/edit-PWA/${pwa.id}`)}
             className="details hover:bg-[#20223B] rounded flex items-center justify-center w-[30px] h-[30px] border-none bg-[#383B66] group-hover:bg-[#20223B]"
           >
             <MdModeEdit className="text-white text-base" />
           </button>
           <MonsterDropdown
             trigger={["click"]}
+            disabled={!pwaInfo.status}
             menu={{ items: generateDropDownItems(pwa) }}
           >
             <button
