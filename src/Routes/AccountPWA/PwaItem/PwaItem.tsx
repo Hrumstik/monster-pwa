@@ -49,6 +49,11 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
       console.log("start polling");
       startPolling({
         pwaContentId: pwa.id,
+        completedStatusCallback: () => {
+          notification.success({
+            message: `PWA успешно развернуто на домене ${pwa.domain}`,
+          });
+        },
         failedStatusCallback: () => {},
       });
     }
