@@ -9,7 +9,6 @@ import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
 import {
   useDeletePwaContentForcedMutation,
   useGetAllPwaContentQuery,
-  useGetMyUserQuery,
   useLazyCheckDomainStatusQuery,
   useUpdatePwaNameMutation,
 } from "@store/apis/pwaApi.ts";
@@ -31,51 +30,32 @@ import useCheckBuildStatus from "@shared/hooks/useCheckBuildStatus.ts";
 
 const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
   const { data } = useGetAllPwaContentQuery();
-
   const [renamePwa, setRenamePwa] = useState<PwaContent | null>();
   const [deletePwaContent, { isLoading: deletePwaLoading }] =
     useDeletePwaContentForcedMutation();
   const [updatePwaContent, { isLoading: updatePwaLoading }] =
     useUpdatePwaNameMutation();
   const [checkDomainStatus] = useLazyCheckDomainStatusQuery();
-  const [pwaStatus, setPwaStatus] = useState<PwaStatus>();
-  const { data: userInfo } = useGetMyUserQuery();
   const { pwaInfo } = useGetPwaInfo(pwa.id);
-  const [showLoader, setShowLoader] = useState(false);
-  const pwaUserInfo = userInfo?.pwas.find(
-    (pwaUser) => pwaUser.pwaContentId === pwa.id
-  );
-
-  useEffect(() => {
-    if (!pwaInfo) return;
-    const actualStatus = pwaInfo.status;
-    setPwaStatus(actualStatus);
-  }, [userInfo, pwaInfo]);
 
   const navigate = useNavigate();
   const { startPolling } = useCheckBuildStatus();
 
   useEffect(() => {
-    if (pwaStatus) setShowLoader(false);
-    if (!pwaStatus && pwa.id && !pwaUserInfo) {
-      setShowLoader(true);
-      console.log("startPolling");
+    if (pwaInfo === null) return;
+    console.log("here");
+    console.log(pwaInfo.status);
+    if (!pwaInfo?.status && pwa.id) {
+      console.log("start polling");
       startPolling({
         pwaContentId: pwa.id,
-        completedStatusCallback: () => {
-          setShowLoader(false);
-        },
-        failedStatusCallback: () => {
-          setPwaStatus(PwaStatus.BUILD_FAILED);
-        },
+        failedStatusCallback: () => {},
       });
     }
-
-    return;
-  }, [pwaStatus, pwa.id, userInfo]);
+  }, [pwaInfo, pwa.id]);
 
   useUpdateEffect(() => {
-    if (!pwaStatus || pwaStatus !== PwaStatus.WAITING_NS) return;
+    if (!pwaInfo?.status || pwaInfo?.status !== PwaStatus.WAITING_NS) return;
     let interval: NodeJS.Timeout;
     const getDomainStatus = async (pwaContentID: string) => {
       const status = await checkDomainStatus(pwaContentID).unwrap();
@@ -84,7 +64,6 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         interval = setInterval(async () => {
           const status = await checkDomainStatus(pwaContentID).unwrap();
           if (status === DomainCheckStatus.Active) {
-            setPwaStatus(PwaStatus.ACTIVE);
             clearInterval(interval);
           }
         }, 20000);
@@ -94,7 +73,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
     getDomainStatus(pwa.id!);
 
     return () => clearInterval(interval);
-  }, [pwaStatus]);
+  }, [pwaInfo?.status]);
 
   const handleDelete = async (id: string) => {
     try {
@@ -127,7 +106,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         label: (
           <span
             className={`text-xs text-white  ${
-              pwaStatus !== PwaStatus.ACTIVE
+              pwaInfo?.status !== PwaStatus.ACTIVE
                 ? "cursor-not-allowed"
                 : "cursor-pointer"
             }`}
@@ -141,7 +120,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         onClick: (e: MenuInfo) => {
           e.domEvent.stopPropagation();
           e.domEvent.nativeEvent.stopImmediatePropagation();
-          if (pwaStatus !== PwaStatus.ACTIVE) return;
+          if (pwaInfo?.status !== PwaStatus.ACTIVE) return;
           window.open(`https://${pwa.domain}`, "_blank");
         },
       },
@@ -202,8 +181,11 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
           {moment(pwa.createdAt).format("DD.MM.YYYY")}
         </td>
         <td className="py-3 truncate ... text-center flex justify-center items-center ">
-          {showLoader ? (
+          {pwaInfo.status ? (
+            getPwaStatus(pwaInfo.status)
+          ) : (
             <Spin
+              size="large"
               indicator={
                 <LoadingOutlined
                   style={{
@@ -212,10 +194,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
                   spin
                 />
               }
-              size="default"
             />
-          ) : (
-            getPwaStatus(pwaStatus!)
           )}
         </td>
         <td className="py-3">

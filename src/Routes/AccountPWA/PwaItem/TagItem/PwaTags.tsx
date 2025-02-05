@@ -130,7 +130,7 @@ const TagButton = ({
   ) : (
     <button
       onClick={(e) => addTag(e)}
-      className="border justify-center flex gap-3 h-7 items-center py-1 px-5 border-solid border-[#383B66] group-hover:border-[#515ACA] rounded-[333px]  hover:bg-[#36395A]"
+      className="border justify-center flex gap-3 min-h-7 items-center py-1 px-5 border-solid border-[#383B66] group-hover:border-[#515ACA] rounded-[333px]  hover:bg-[#36395A]"
     >
       Добавить тег
     </button>

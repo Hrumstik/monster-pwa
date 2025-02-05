@@ -20,6 +20,7 @@ import {
   useGetMyUserQuery,
   useGetReadyDomainsQuery,
   useBuildPwaContentMutation,
+  useGetAllPwaContentQuery,
 } from "@store/apis/pwaApi.ts";
 import { Form, notification } from "antd";
 import { Hourglass } from "react-loader-spinner";
@@ -46,6 +47,8 @@ const EditorPWA = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const [pwaContentId, setPwaContentId] = useState<string | null>(null);
+  const { refetch: downloadAllPwa } = useGetAllPwaContentQuery();
+  const { refetch: downloadUserInfo } = useGetMyUserQuery();
 
   const [deletePwaContent] = useDeletePwaContentMutation();
   const [designOptionForm] = Form.useForm<DesignOptionFormValues>();
@@ -131,6 +134,8 @@ const EditorPWA = () => {
       };
 
       await buildAndDeployPwaContent(buildPayload).unwrap();
+      await downloadAllPwa().unwrap();
+      await downloadUserInfo().unwrap();
       setIsLoading(false);
       navigate("/");
     } catch (error) {

@@ -60,6 +60,7 @@ export interface PwaContent {
     content?: Record<string, string>;
     buttonText?: Record<string, string>;
   };
+  simulate_install: boolean;
 }
 
 export interface PreparedPWADataItem {

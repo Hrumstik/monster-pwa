@@ -90,6 +90,7 @@ export interface DesignOptionFormValues {
   modalTextButton?: string;
   modalTitle?: string;
   modalContent?: string;
+  simulate_install: boolean;
 }
 
 export interface DesignOptionProps {
@@ -170,6 +171,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       autoTheme: content.theme?.auto,
       videoUrl: content.videoUrl,
       keepActualDateOfReviews: content.keepActualDateOfReviews,
+      simulate_install: content.simulate_install,
     });
 
     updatedReviews.forEach((review) => {
@@ -251,6 +253,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   const [reviews, setReviews] = useState<Review[]>([]);
   const [sliders, setSliders] = useState<number[]>([3.4, 0.8, 0.3, 0.3, 0.2]);
   const [showModalSettings, setShowModalSettings] = useState(false);
+  const [hasAppIconError, setHasAppIconError] = useState(false);
   const [previewContent, setPreviewContent] = useState<PreviewPwaContent>({
     appName: "Plinko ASMR",
     developerName: "Supercent, Inc.",
@@ -333,6 +336,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     e.preventDefault();
     const { text } = await generateAppDescription().unwrap();
     form.setFieldValue("fullDescription", text);
+    form.validateFields(["fullDescription"]);
   };
 
   const addEmptyReview = (
@@ -467,7 +471,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
           <div
             className={`relative ${
               wideScreensIsActive ? "w-[220px]" : " w-[100px]"
-            } h-[160px] group `}
+            } min-h-[160px] group `}
           >
             <img
               src={screen.preview}
@@ -477,7 +481,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               } h-[160px] object-fill transition-all duration-300 ease-in-out rounded-lg`}
             />
             <button
-              className="absolute opacity-0 top-0 right-0 group-hover:opacity-100 text-white rounded-full w-6 h-6 flex justify-center items-center"
+              className="absolute opacity-0 -top-2 -right-2 group-hover:opacity-100 text-white rounded-full w-6 h-6 flex justify-center items-center"
               onClick={handleRemoveScreen}
             >
               &times;
@@ -576,6 +580,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
           dark: form.getFieldValue("darkTheme"),
         },
         videoUrl: form.getFieldValue("videoUrl"),
+        simulate_install: form.getFieldValue("simulate_install"),
         ...(showModalSettings && {
           customModal: {
             showAppHeader: form.getFieldValue("showAppHeader"),
@@ -723,6 +728,15 @@ const DesignOption: React.FC<DesignOptionProps> = ({
           showAppHeader: true,
         }}
         onValuesChange={handleValuesChange}
+        onFieldsChange={(_, allFields) => {
+          const appIconField = allFields.find(
+            (field) => field.name[0] === "appIcon"
+          );
+
+          if (appIconField?.errors) {
+            setHasAppIconError(appIconField?.errors?.length > 0);
+          }
+        }}
         onFinishFailed={onFinishFailed}
         validateTrigger={["onBlur", "onSubmit"]}
       >
@@ -844,28 +858,36 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                   ]}
                 >
                   <Upload showUploadList={false} beforeUpload={beforeUpload}>
-                    {appIcon.preview ? (
-                      <div className="relative w-[100px] h-[100px] group rounded-xl overflow-hidden">
-                        <img
-                          src={appIcon.preview}
-                          alt="Uploaded"
-                          className="w-[100px] h-[100px] object-fill "
-                        />
+                    <div
+                      style={{
+                        border: hasAppIconError ? "1px solid #ff4d4f" : "none",
+                        borderRadius: "8px",
+                      }}
+                      className="cursor-pointer"
+                    >
+                      {appIcon.preview ? (
+                        <div className="relative w-[100px] h-[100px] group rounded-xl">
+                          <img
+                            src={appIcon.preview}
+                            alt="Uploaded"
+                            className="w-[100px] h-[100px] object-fill rounded-xl"
+                          />
+                          <button
+                            className="absolute  opacity-0 -top-3 -right-3 group-hover:opacity-100  text-white rounded-full w-4 h-4 flex justify-center items-center"
+                            onClick={removeAppIcon}
+                          >
+                            &times;
+                          </button>
+                        </div>
+                      ) : (
                         <button
-                          className="absolute  opacity-0 top-0 right-0 group-hover:opacity-100  text-white rounded-full w-4 h-4 flex justify-center items-center"
-                          onClick={removeAppIcon}
+                          onClick={(e) => e.preventDefault()}
+                          className="border-none hover:border-[#36395a] hover:border hover:border-solid bg-[#161724] rounded-lg w-[100px] h-[100px] flex justify-center items-center cursor-pointer relative"
                         >
-                          &times;
+                          <UploadImageIcon />
                         </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={(e) => e.preventDefault()}
-                        className="border-none hover:border-[#36395a] hover:border hover:border-solid bg-[#161724] rounded-lg w-[100px] h-[100px] flex justify-center items-center cursor-pointer relative"
-                      >
-                        <UploadImageIcon />
-                      </button>
-                    )}
+                      )}
+                    </div>
                   </Upload>
                 </Form.Item>
                 <div className="w-full flex flex-col gap-[19px]">
@@ -1243,6 +1265,14 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                 Дополнительный кастом
               </div>
               <div className="flex flex-col gap-4">
+                <div className="flex gap-4 justify-start items-center">
+                  <Form.Item name="simulate_install" noStyle>
+                    <MonsterSwitch />
+                  </Form.Item>
+                  <div className="text-white text-base leading-5">
+                    Имитировать загрузку приложения
+                  </div>
+                </div>
                 <div className="flex gap-4 justify-start items-center">
                   <Form.Item name="securityUI" noStyle>
                     <MonsterSwitch />

@@ -101,7 +101,6 @@ export const pwaSlice = createApi({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["PwaContent", "User"],
     }),
     getPwaContentStatus: builder.query<
       { status: string; url?: string; body?: string },
