@@ -87,7 +87,7 @@ const EditorPWA = () => {
         }))
       );
     } else if (cloneId && fetchedPwaContent) {
-      setCurrentTab(EditorPWATabs.Domain);
+      setCurrentTab(EditorPWATabs.Design);
 
       setSteps(
         steps.map((step) => ({
