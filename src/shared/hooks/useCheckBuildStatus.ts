@@ -3,7 +3,6 @@ import {
   useGetMyUserQuery,
   useLazyGetPwaContentStatusQuery,
 } from "@store/apis/pwaApi";
-import { notification } from "antd";
 import { useUnmount } from "react-use";
 
 const useCheckBuildStatus = () => {
@@ -42,10 +41,6 @@ const useCheckBuildStatus = () => {
         console.log(e);
         clearInterval(interval);
         catchCallback?.();
-        notification.error({
-          message: "Ошибка",
-          description: "Ошибка проверки статуса сборки",
-        });
       }
     }, 5000);
   };

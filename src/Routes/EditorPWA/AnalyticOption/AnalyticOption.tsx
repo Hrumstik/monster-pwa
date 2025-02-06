@@ -13,7 +13,7 @@ import MonsterSelect from "@shared/elements/Select/MonsterSelect";
 import { generateLabelForFBEvents } from "./AnalyticOptionHelpers";
 import { useMount } from "react-use";
 import CopyIcon from "@icons/CopyIcon";
-import { Form, FormInstance, message } from "antd";
+import { Form, FormInstance, message, Spin } from "antd";
 import { Step } from "@shared/elements/Steps/Steps";
 
 export interface AnalyticOptionProps {
@@ -36,9 +36,11 @@ const AnalyticOption: React.FC<AnalyticOptionProps> = ({
 }) => {
   const [showPixel, setShowPixel] = useState(false);
   const { id } = useParams();
-  const { data: fetchedPwaContent } = useGetPwaContentByIdQuery(id!, {
-    skip: !id,
-  });
+  const { cloneId } = useParams();
+  const { data: fetchedPwaContent, isLoading: pwaContentIsLoading } =
+    useGetPwaContentByIdQuery(id ?? cloneId!, {
+      skip: !id && !cloneId,
+    });
   const [pixels, setPixels] = useState<Pixel[]>([]);
   const facebookEvents = Object.values(FacebookEvent).map((event) => {
     return {
@@ -196,6 +198,7 @@ const AnalyticOption: React.FC<AnalyticOptionProps> = ({
 
   return (
     <Form form={form} onFinish={submitAnalyticData}>
+      <Spin spinning={pwaContentIsLoading} />
       <div className="flex flex-col gap-[30px]">
         <div className="bg-cardColor rounded-lg px-[50px] py-[50px] flex-1 flex flex-col">
           <div className="text-[22px] leading-[18px] text-white mb-3 ">

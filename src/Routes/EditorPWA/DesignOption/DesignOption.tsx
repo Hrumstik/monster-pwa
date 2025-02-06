@@ -113,9 +113,10 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   form,
 }) => {
   const { id } = useParams();
+  const { cloneId } = useParams();
   const { data: fetchedPwaContent, isLoading: pwaContentIsLoading } =
-    useGetPwaContentByIdQuery(id!, {
-      skip: !id,
+    useGetPwaContentByIdQuery(id ?? cloneId!, {
+      skip: !id && !cloneId,
     });
 
   const [
@@ -232,6 +233,9 @@ const DesignOption: React.FC<DesignOptionProps> = ({
 
   useEffect(() => {
     if (id && fetchedPwaContent) setFormValues(fetchedPwaContent);
+    if (cloneId && fetchedPwaContent) {
+      setFormValues(fetchedPwaContent);
+    }
   }, [fetchedPwaContent, id]);
 
   useMount(() => {

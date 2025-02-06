@@ -28,6 +28,10 @@ function App() {
               path: "/edit-PWA/:id",
               element: <EditorPWA />,
             },
+            {
+              path: "/clone-PWA/:cloneId",
+              element: <EditorPWA />,
+            },
           ],
         },
       ],

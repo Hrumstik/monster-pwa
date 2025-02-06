@@ -29,7 +29,6 @@ const DomainCell = ({ domain }: { domain?: string }) => {
         <div className="text-center truncate ...">
           {domain ?? (
             <Spin
-              size="large"
               indicator={
                 <LoadingOutlined
                   style={{

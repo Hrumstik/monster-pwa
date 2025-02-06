@@ -27,6 +27,7 @@ import DomainCell from "@shared/elements/DomainCell/DomainCell.tsx";
 import { useUpdateEffect } from "react-use";
 import PwaTags from "./TagItem/PwaTags.tsx";
 import useCheckBuildStatus from "@shared/hooks/useCheckBuildStatus.ts";
+import { IoDuplicate } from "react-icons/io5";
 
 const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
   const { data } = useGetAllPwaContentQuery();
@@ -44,13 +45,12 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
   useEffect(() => {
     if (pwaInfo === null) return;
     if (!pwaInfo?.status && pwa.id) {
+      console.log("start polling");
       startPolling({
         pwaContentId: pwa.id,
         completedStatusCallback: () => {
           notification.success({
-            message: `PWA ${
-              pwa.pwaName ?? pwa.appName
-            } успешно разверн на домене ${pwa.domain}`,
+            message: `PWA успешно развернут`,
           });
         },
       });
@@ -128,6 +128,20 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         },
       },
       {
+        label: (
+          <span className={`text-xs text-white  cursor-pointer`}>
+            Клонировать PWA
+          </span>
+        ),
+        key: "clone",
+        onClick: (e: MenuInfo) => {
+          e.domEvent.stopPropagation();
+          e.domEvent.nativeEvent.stopImmediatePropagation();
+          navigate(`/clone-PWA/${pwa.id}`);
+        },
+        icon: <IoDuplicate style={{ color: "white" }} />,
+      },
+      {
         label: <span className="text-xs text-red">Удалить</span>,
         key: "delete",
         icon: <MdDelete />,
@@ -187,17 +201,18 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
           {pwaInfo.status ? (
             getPwaStatus(pwaInfo.status)
           ) : (
-            <Spin
-              size="large"
-              indicator={
-                <LoadingOutlined
-                  style={{
-                    color: "#00FF11",
-                  }}
-                  spin
-                />
-              }
-            />
+            <>
+              <Spin
+                indicator={
+                  <LoadingOutlined
+                    style={{
+                      color: "#00FF11",
+                    }}
+                    spin
+                  />
+                }
+              />
+            </>
           )}
         </td>
         <td className="py-3">

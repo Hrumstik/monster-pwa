@@ -21,6 +21,7 @@ import {
   useGetReadyDomainsQuery,
   useBuildPwaContentMutation,
   useGetAllPwaContentQuery,
+  useGetPwaContentByIdQuery,
 } from "@store/apis/pwaApi.ts";
 import { Form, notification } from "antd";
 import { Hourglass } from "react-loader-spinner";
@@ -28,14 +29,16 @@ import useGetPwaInfo from "@shared/hooks/useGetPwaInfo.ts";
 import AnalyticOption from "./AnalyticOption/AnalyticOption.tsx";
 import { DomainOptions } from "@models/domain.ts";
 import useSteps from "@shared/hooks/useSteps.ts";
+import { omit } from "lodash";
 
 const EditorPWA = () => {
-  const { pwaId } = useParams();
   const [currentTab, setCurrentTab] = useState<EditorPWATabs>(
     EditorPWATabs.Design
   );
 
   const { id } = useParams();
+  const { cloneId } = useParams();
+
   const { data: userData } = useGetMyUserQuery();
   const [steps, setSteps] = useState<Step[]>(stepsInitialState);
   const [pwaContent, setPwaContent] = useState<PwaContent>();
@@ -58,6 +61,13 @@ const EditorPWA = () => {
   const [currentDomainTab, setCurrentDomainTab] =
     useState<DomainOptions | null>(null);
 
+  const { data: fetchedPwaContent } = useGetPwaContentByIdQuery(
+    id ?? cloneId!,
+    {
+      skip: !id && !cloneId,
+    }
+  );
+
   useSteps(steps);
 
   const { getPwaInfo } = useGetPwaInfo(id);
@@ -66,23 +76,52 @@ const EditorPWA = () => {
     if (id) {
       setPwaContentId(id);
       setSteps(
-        steps.map((step) => {
-          if (step.id === EditorPWATabs.Design) {
-            return {
-              ...step,
-              isPassed: false,
-              icon: getTabIcon(step.id as EditorPWATabs, false, false),
-            };
-          }
-          return {
-            ...step,
-            isPassed: true,
-            icon: getTabIcon(step.id as EditorPWATabs, true, false),
-          };
-        })
+        steps.map((step) => ({
+          ...step,
+          isPassed: step.id !== EditorPWATabs.Design,
+          icon: getTabIcon(
+            step.id as EditorPWATabs,
+            step.id !== EditorPWATabs.Design,
+            false
+          ),
+        }))
       );
+    } else if (cloneId && fetchedPwaContent) {
+      setCurrentTab(EditorPWATabs.Domain);
+
+      setSteps(
+        steps.map((step) => ({
+          ...step,
+          isPassed: step.id !== EditorPWATabs.Domain,
+          icon: getTabIcon(
+            step.id as EditorPWATabs,
+            step.id !== EditorPWATabs.Domain,
+            false
+          ),
+        }))
+      );
+      const images = fetchedPwaContent.images.map((image) => ({
+        type: image.type,
+        url: image.url,
+      }));
+      const reviews = fetchedPwaContent.reviews.map((review) =>
+        omit(review, ["_id"])
+      );
+      const updatedPwaContent = { ...fetchedPwaContent, images, reviews };
+      const theme = omit(updatedPwaContent.theme, ["_id"]);
+
+      const pwaContent = omit(updatedPwaContent, [
+        "_id",
+        "createdAt",
+        "updatedAt",
+        "__v",
+        "user",
+      ]);
+      pwaContent.theme = theme;
+
+      setPwaContent(pwaContent as PwaContent);
     }
-  }, [id]);
+  }, [id, cloneId, fetchedPwaContent]);
 
   useEffect(() => {
     const isAvailableToSave = Object.values(steps).every(
@@ -247,9 +286,7 @@ const EditorPWA = () => {
           {id ? "Редактирование PWA" : "Создание PWA"}
         </h1>
         <div className="h-[42px] flex justify-between mb-12">
-          <div className="flex items-center">
-            {pwaId && <div className="flex"></div>}
-          </div>
+          <div className="flex items-center"></div>
           <div className="flex gap-5">
             <IconButton
               icon={<FaSave color={"white"} />}
