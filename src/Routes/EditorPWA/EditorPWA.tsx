@@ -100,7 +100,7 @@ const EditorPWA = () => {
           ),
         }))
       );
-      const customModel = omit(fetchedPwaContent.customModal, ["_id"]);
+      const customModal = omit(fetchedPwaContent.customModal, ["_id"]);
 
       const images = fetchedPwaContent.images.map((image) => ({
         type: image.type,
@@ -113,7 +113,7 @@ const EditorPWA = () => {
         ...fetchedPwaContent,
         images,
         reviews,
-        customModel,
+        customModal,
       };
       const theme = omit(updatedPwaContent.theme, ["_id"]);
 
