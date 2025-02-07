@@ -188,7 +188,7 @@ const AnalyticOption: React.FC<AnalyticOptionProps> = ({
 
   const submitAnalyticData = () => {
     const filteredPixels = pixels.filter(
-      (pixel) => pixel.token && pixel.pixelId
+      (pixel) => pixel.token || pixel.pixelId
     );
     setPwaContent({
       ...pwaContent!,
