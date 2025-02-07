@@ -101,6 +101,7 @@ export const pwaSlice = createApi({
         method: "POST",
         body,
       }),
+      invalidatesTags: ["ReadyDomains"],
     }),
     getPwaContentStatus: builder.query<
       { status: string; url?: string; body?: string },
