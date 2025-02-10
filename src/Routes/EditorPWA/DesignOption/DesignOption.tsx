@@ -591,7 +591,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
           dark: form.getFieldValue("darkTheme"),
         },
         videoUrl: form.getFieldValue("videoUrl"),
-        simulate_install: form.getFieldValue("simulate_install"),
+        simulate_install: form.getFieldValue("simulate_install") ?? false,
         ...(showModalSettings && {
           customModal: {
             showAppHeader: form.getFieldValue("showAppHeader"),
