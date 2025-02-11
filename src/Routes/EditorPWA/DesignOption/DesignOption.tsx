@@ -1065,7 +1065,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               Загрузите изображения и видео для отображения на странице
               установки
             </div>
-            <div className="flex flex-row gap-[60px]">
+            <div className="flex flex-col lg:flex-row lg:gap-[60px] gap-[15px]">
               <Form.Item name="videoUrl" className="w-[460px] mb-0">
                 <MonsterInput
                   placeholder="YouTube video URL"
