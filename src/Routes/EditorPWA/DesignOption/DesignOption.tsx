@@ -607,8 +607,8 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       };
 
       setPwaContent({
-        ...payload,
         ...pwaContent,
+        ...payload,
       });
 
       return Promise.resolve();
@@ -755,9 +755,9 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         validateTrigger={["onBlur", "onSubmit"]}
       >
         <div className="flex flex-col gap-[30px] mb-[134px]">
-          <div className="flex lg:flex-row sm:flex-col gap-7">
+          <div className="flex lg:flex-row flex-col gap-7">
             <div className="bg-cardColor flex-1 rounded-lg px-[50px] py-[30px]">
-              <div className="flex gap-[30px] sm:flex-col lg:flex-row sm:items-center">
+              <div className="flex gap-[30px] flex-col lg:flex-row items-center">
                 <div className="flex-1 flex flex-col gap-3">
                   <div className="text-base  font-bold leading-[25px] text-[#E3CC02] ">
                     Ссылка на оффер
@@ -850,7 +850,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               />
             </div>
           </div>
-          <div className="flex lg:flex-row sm:flex-col gap-[30px]">
+          <div className="flex lg:flex-row flex-col gap-[30px]">
             <div className="bg-cardColor rounded-lg px-[50px] py-[30px] flex-1">
               <div className="font-bold text-base leading-[18px] text-orangeSubtitle mb-4">
                 Оформление
@@ -858,7 +858,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               <div className="text-white text-xs leading-4 mb-6">
                 Шапка приложения
               </div>
-              <div className="flex xl:flex-row sm:flex-col gap-[30px]">
+              <div className="flex xl:flex-row flex-col gap-[30px]">
                 <Form.Item
                   name="appIcon"
                   className="mb-0 max-w-[100px]"
@@ -948,7 +948,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               </div>
             </div>
             <div className="bg-cardColor rounded-lg px-[50px] pt-[54px] pb-[30px] flex-1">
-              <div className="flex xl:flex-row sm:flex-col xl:gap-[50px] sm:gap-9">
+              <div className="flex xl:flex-row flex-col xl:gap-[50px] gap-9">
                 <div className="flex flex-1 flex-col gap-9">
                   <div className="relative">
                     <div className="text-[#8F919D] text-xs absolute top-[-24px]">
@@ -1106,7 +1106,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               </div>
             }
           </div>
-          <div className="flex lg:flex-row sm:flex-col gap-[30px]">
+          <div className="flex lg:flex-row flex-col gap-[30px]">
             <div className="bg-cardColor rounded-lg px-[50px] py-[30px] flex-1">
               <div className="font-bold text-orangeSubtitle text-base leading-[18px] mb-5">
                 Описание
@@ -1206,7 +1206,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               </button>
             </div>
           </div>
-          <div className="flex lg:flex-row sm:flex-col gap-[30px]">
+          <div className="flex lg:flex-row flex-col gap-[30px]">
             <div className="bg-cardColor flex-1  rounded-lg px-[50px] py-[30px] gap-5">
               <div className="Оценки и отзывы font-bold text-base leading-[18px] text-orangeSubtitle mb-[25px]">
                 Оценки и отзывы
@@ -1418,7 +1418,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
               </div>
             </div>
           </div>
-          <div className="flex xl:flex-row sm:flex-col  gap-[30px] mb-[30px] relative">
+          <div className="flex xl:flex-row flex-col  gap-[30px] mb-[30px] relative">
             <div className="flex flex-col gap-[30px] flex-1">
               <div className="overflow-y-auto bg-cardColor flex flex-col gap-5 rounded-lg py-[30px] px-[50px]">
                 <div className="flex justify-between items-center">

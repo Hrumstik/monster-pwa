@@ -73,7 +73,7 @@ const EditorPWA = () => {
   const { getPwaInfo } = useGetPwaInfo(id);
 
   useEffect(() => {
-    if (id) {
+    if (id && fetchedPwaContent) {
       setPwaContentId(id);
       setSteps(
         steps.map((step) => ({
@@ -86,6 +86,33 @@ const EditorPWA = () => {
           ),
         }))
       );
+      const customModal = omit(fetchedPwaContent.customModal, ["_id"]);
+
+      const images = fetchedPwaContent.images.map((image) => ({
+        type: image.type,
+        url: image.url,
+      }));
+      const reviews = fetchedPwaContent.reviews.map((review) =>
+        omit(review, ["_id"])
+      );
+      const updatedPwaContent = {
+        ...fetchedPwaContent,
+        images,
+        reviews,
+        customModal,
+      };
+      const theme = omit(updatedPwaContent.theme, ["_id"]);
+
+      const pwaContent = omit(updatedPwaContent, [
+        "_id",
+        "createdAt",
+        "updatedAt",
+        "__v",
+        "user",
+      ]);
+      pwaContent.theme = theme;
+
+      setPwaContent(pwaContent as PwaContent);
     } else if (cloneId && fetchedPwaContent) {
       setCurrentTab(EditorPWATabs.Design);
 
