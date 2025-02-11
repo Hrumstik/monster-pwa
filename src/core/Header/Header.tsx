@@ -1,15 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import MonsterDropdown from "../../shared/elements/Dropdown/Dropdown";
 import { createAuthProvider } from "../../middlewares/authProvider";
-import { useGetMyUserQuery } from "@store/apis/pwaApi";
+import { useGetMyUserQuery, pwaSlice } from "@store/apis/pwaApi";
+import { useDispatch } from "react-redux";
 
 const Header = () => {
   const navigate = useNavigate();
   const { logout } = createAuthProvider();
   const userInfo = useGetMyUserQuery().data;
+  const dispatch = useDispatch();
 
   const handleLogout = () => {
     logout();
+    dispatch(pwaSlice.util.resetApiState());
     navigate("/login");
   };
   const dropdownItems = [

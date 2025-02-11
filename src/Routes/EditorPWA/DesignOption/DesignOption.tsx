@@ -543,9 +543,11 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         tags,
         securityUI: form.getFieldValue("securityUI"),
         lastUpdate: new Date().toISOString(),
-        pwaLink: form.getFieldValue("pwaLink").includes("https://")
-          ? form.getFieldValue("pwaLink")
-          : `https://${form.getFieldValue("pwaLink")}`,
+        pwaLink:
+          form.getFieldValue("pwaLink").includes("https://") ||
+          form.getFieldValue("pwaLink").includes("http://")
+            ? form.getFieldValue("pwaLink")
+            : `https://${form.getFieldValue("pwaLink")}`,
         hasPaidContentTitle: form.getFieldValue("hasPaidContentTitle"),
         rating: "4.9",
         countOfReviewsFull: form.getFieldValue("countOfReviews"),
