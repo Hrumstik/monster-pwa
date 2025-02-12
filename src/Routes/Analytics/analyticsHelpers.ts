@@ -11,4 +11,8 @@ export const periodOptions = [
     label: "Последние 30 дней",
     value: 30,
   },
+  {
+    label: "Все время",
+    value: 0,
+  },
 ];
