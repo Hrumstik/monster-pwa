@@ -4,6 +4,7 @@
   box-sizing: border-box;
   border-radius: 8px;
   color: white;
+  border-color: #383b66 !important;
 
   min-height: 42px;
 
@@ -26,9 +27,6 @@
     border: none;
     color: white;
 
-    display: flex; /* Flex-контейнер */
-    align-items: center; /* Центрирование содержимого по вертикали */
-    min-height: 42px; /* Убедитесь, что это соответствует высоте */
     padding-top: 0;
     padding-bottom: 0;
   }

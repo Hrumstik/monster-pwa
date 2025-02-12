@@ -6,6 +6,8 @@ import EditorPWA from "./Routes/EditorPWA/EditorPWA";
 import { Provider } from "react-redux";
 import store from "./store/store";
 import ProtectedRoutes from "./Routes/protected-routes";
+import Analytics from "./Routes/Analytics/Analytics";
+import { ConfigProvider } from "antd";
 
 function App() {
   const router = createBrowserRouter([
@@ -32,6 +34,10 @@ function App() {
               path: "/clone-PWA/:cloneId",
               element: <EditorPWA />,
             },
+            {
+              path: "/analytics",
+              element: <Analytics />,
+            },
           ],
         },
       ],
@@ -43,9 +49,29 @@ function App() {
   ]);
 
   return (
-    <Provider store={store}>
-      <RouterProvider router={router} />
-    </Provider>
+    <ConfigProvider
+      theme={{
+        components: {
+          Table: {
+            bodySortBg: "#20223B",
+            headerBg: "#515ACA",
+            borderColor: "#20223B",
+            colorBgContainer: "#20223B",
+            colorText: "#FFFFFF",
+            headerColor: "#FFFFFF",
+            headerSplitColor: "none",
+            rowHoverBg: "#383B66",
+          },
+          Select: {
+            colorBorder: "#383B66",
+          },
+        },
+      }}
+    >
+      <Provider store={store}>
+        <RouterProvider router={router} />
+      </Provider>
+    </ConfigProvider>
   );
 }
 

@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import MenuItem from "./MenuItem";
 import DocumentationIcon from "@icons/Documentation";
 import { IoLogoPwa } from "react-icons/io5";
+import { MdOutlineAnalytics } from "react-icons/md";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -32,9 +33,18 @@ const Sidebar = () => {
           onClick={() =>
             window.open(
               "https://vibegamesteam.notion.site/PWA-Monster-506fc22fe0ec4b99a2cb47420a17e324",
-              "_blank",
+              "_blank"
             )
           }
+        />
+        <MenuItem
+          icon={
+            <MdOutlineAnalytics color="white" style={{ fontSize: "28px" }} />
+          }
+          text="Аналитика"
+          defaultTextColor="white"
+          path="/analytics"
+          onClick={() => navigate("/analytics")}
         />
       </div>
     </div>

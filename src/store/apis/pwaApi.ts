@@ -153,6 +153,25 @@ export const pwaSlice = createApi({
         url: "/content-generation/generate-review-text",
       }),
     }),
+    getDomainAnalytics: builder.query<
+      {
+        opens: number;
+        installs: number;
+        registrations: number;
+        deposits: number;
+      },
+      {
+        pwaContentId: string;
+        since?: string;
+      }
+    >({
+      query: ({ pwaContentId, since }) => ({
+        url: since
+          ? `/pwa-event-log/stats?pwaContentId=${pwaContentId}&since=${since}`
+          : `/pwa-event-log/stats?pwaContentId=${pwaContentId}`,
+        method: "GET",
+      }),
+    }),
     generateResponseText: builder.mutation<
       { text: string },
       {
@@ -187,4 +206,5 @@ export const {
   useLazyGenerateAppDescriptionQuery,
   useLazyGenerateReviewTextQuery,
   useGenerateResponseTextMutation,
+  useLazyGetDomainAnalyticsQuery,
 } = pwaSlice;
