@@ -807,7 +807,7 @@ const PushEditor = () => {
                       </div>
                     </div>
                     {content?.icon && (
-                      <div className="rounded-full bg-[#515ACA] h-[23px] w-[23px] flex items-center justify-center overflow-hidden">
+                      <div className="w-8 h-8 flex items-center justify-center overflow-hidden">
                         <img
                           src={content.icon}
                           alt="badge"
