@@ -4,7 +4,6 @@
   box-sizing: border-box;
   border-radius: 8px;
   color: white;
-  border-color: #383b66 !important;
 
   min-height: 42px;
 
@@ -34,8 +33,6 @@
   .ant-select-selection-placeholder {
     color: #5f6280;
 
-    /* Эти стили центруют текст */
-    line-height: 42px; /* Совпадает с высотой */
     display: block;
     white-space: nowrap;
   }
@@ -79,7 +76,7 @@
 .monster-select.ant-select.ant-select-multiple .ant-select-selector {
   display: flex;
   align-items: center;
-  min-height: 42px;
+  box-sizing: border-box !important;
   padding-top: 0;
   padding-bottom: 0;
 }
@@ -87,8 +84,7 @@
 .monster-select.ant-select.ant-select-multiple
   .ant-select-selection-placeholder {
   color: #5f6280;
-
-  line-height: 42px; /* Устанавливаем высоту строки */
+  box-sizing: border-box !important;
   display: block;
   white-space: nowrap;
 }
@@ -99,4 +95,10 @@
 
 .monster-select.ant-select .ant-select-selection-item-remove:hover {
   color: #7678d8 !important;
+}
+
+.monster-select.ant-select.ant-select-multiple .ant-select-selector {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
 }

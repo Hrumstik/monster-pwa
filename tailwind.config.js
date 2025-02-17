@@ -7,12 +7,14 @@ export default {
       fontFamily: {
         reemkufi: ["Reem Kufi Ink"],
         roboto: ["Roboto"],
+        inter: ["Inter"],
       },
       colors: {
         cardColor: "#20223B",
         cardBorder: "#121320",
         orangeSubtitle: "#E3CC02",
         defaultButton: "#515ACA",
+        yellowTitle: "#E3CC02",
         green: {
           DEFAULT: "#45B172",
         },

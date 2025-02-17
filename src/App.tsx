@@ -7,7 +7,9 @@ import { Provider } from "react-redux";
 import store from "./store/store";
 import ProtectedRoutes from "./Routes/protected-routes";
 import Analytics from "./Routes/Analytics/Analytics";
-import { ConfigProvider } from "antd";
+import { ConfigProvider, Empty } from "antd";
+import PushDashboard from "./Routes/PushDashbord/PushDashbord";
+import PushEditor from "./Routes/PushEditor/PushEditor";
 
 function App() {
   const router = createBrowserRouter([
@@ -38,6 +40,18 @@ function App() {
               path: "/analytics",
               element: <Analytics />,
             },
+            {
+              path: "/push-dashboard",
+              element: <PushDashboard />,
+            },
+            {
+              path: "/create-push",
+              element: <PushEditor />,
+            },
+            {
+              path: "/edit-push/:id",
+              element: <PushEditor />,
+            },
           ],
         },
       ],
@@ -50,20 +64,43 @@ function App() {
 
   return (
     <ConfigProvider
+      renderEmpty={() => (
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description={<div className="text-white">Нет данных</div>}
+        />
+      )}
       theme={{
         components: {
           Table: {
-            bodySortBg: "#20223B",
             headerBg: "#515ACA",
             borderColor: "#20223B",
             colorBgContainer: "#20223B",
             colorText: "#FFFFFF",
             headerColor: "#FFFFFF",
             headerSplitColor: "none",
-            rowHoverBg: "#383B66",
           },
           Select: {
             colorBorder: "#383B66",
+            multipleItemBorderColorDisabled: "#383B66",
+            multipleItemColorDisabled: "#FFFFFF",
+          },
+          Checkbox: {
+            colorPrimaryHover: "#161724",
+            colorPrimary: "#515ACA",
+            colorBorder: "#383B66",
+            controlOutline: "#515ACA",
+          },
+          Radio: {
+            colorPrimary: "#515ACA",
+            colorText: "#FFFFFF",
+            buttonSolidCheckedColor: "#00FF08",
+            buttonCheckedBg: "#515ACA",
+            colorBgContainer: "#161724",
+            colorPrimaryHover: "#161724",
+            colorBorder: "#383B66",
+            radioSize: 24,
+            dotSize: 12,
           },
         },
       }}

@@ -1,4 +1,10 @@
 .monster-checkbox {
+  &:hover .ant-checkbox-inner {
+    border-color: lighten(#515aca, 10%) !important;
+  }
+
+  display: flex;
+  align-items: center;
   .ant-checkbox {
     &-inner {
       background-color: #161724;
@@ -8,6 +14,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      transition: border-color 0.2s ease-in-out;
     }
 
     &-checked {
@@ -15,6 +22,7 @@
         background-color: #161724;
         border-color: #161724;
         position: relative;
+        transition: border-color 0.2s ease-in-out;
 
         &::after {
           content: "";
@@ -29,62 +37,6 @@
           left: 10px;
         }
       }
-
-      &:hover .ant-checkbox-inner {
-        border-color: lighten(#02e314, 10%) !important;
-      }
-    }
-
-    &:hover .ant-checkbox-inner {
-      border-color: lighten(#515aca, 10%) !important;
     }
   }
-}
-
-:where(.css-dev-only-do-not-override-11lehqq).ant-checkbox-wrapper:not(
-    .ant-checkbox-wrapper-disabled
-  ):hover
-  .ant-checkbox-checked:not(.ant-checkbox-disabled)
-  .ant-checkbox-inner {
-  background-color: #161724 !important;
-  border-color: lighten(#515aca, 10%) !important;
-}
-
-:where(.css-11lehqq).ant-checkbox-wrapper:not(
-    .ant-checkbox-wrapper-disabled
-  ):hover
-  .ant-checkbox-inner,
-:where(.css-11lehqq).ant-checkbox:not(.ant-checkbox-disabled):hover
-  .ant-checkbox-inner {
-  border-color: lighten(#515aca, 10%) !important;
-}
-
-:where(.css-11lehqq).ant-checkbox-wrapper:not(
-    .ant-checkbox-wrapper-disabled
-  ):hover
-  .ant-checkbox-checked:not(.ant-checkbox-disabled)
-  .ant-checkbox-inner {
-  background-color: #161724 !important;
-  border-color: lighten(#515aca, 10%) !important;
-}
-
-:where(.css-dev-only-do-not-override-11lehqq).ant-checkbox-wrapper {
-  display: flex !important;
-  align-items: center !important;
-}
-
-:where(.css-dev-only-do-not-override-11lehqq).ant-checkbox-wrapper:not(
-    .ant-checkbox-wrapper-disabled
-  ):hover
-  .ant-checkbox-inner,
-:where(.css-dev-only-do-not-override-11lehqq).ant-checkbox:not(
-    .ant-checkbox-disabled
-  ):hover
-  .ant-checkbox-inner {
-  border-color: lighten(#515aca, 10%) !important;
-}
-
-:where(.css-11lehqq).ant-checkbox-wrapper {
-  display: flex !important;
-  align-items: center !important;
 }

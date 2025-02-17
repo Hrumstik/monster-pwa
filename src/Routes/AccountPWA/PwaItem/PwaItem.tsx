@@ -221,7 +221,6 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
             <MdModeEdit className="text-white text-base" />
           </button>
           <MonsterDropdown
-            trigger={["click"]}
             disabled={!pwaInfo.status}
             menu={{ items: generateDropDownItems(pwa) }}
           >
