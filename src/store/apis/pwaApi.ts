@@ -162,13 +162,15 @@ export const pwaSlice = createApi({
       },
       {
         pwaContentId: string;
-        since?: string;
+        startDate?: string;
+        endDate?: string;
       }
     >({
-      query: ({ pwaContentId, since }) => ({
-        url: since
-          ? `/pwa-event-log/stats?pwaContentId=${pwaContentId}&since=${since}`
-          : `/pwa-event-log/stats?pwaContentId=${pwaContentId}`,
+      query: ({ pwaContentId, startDate, endDate }) => ({
+        url:
+          startDate && endDate
+            ? `/pwa-event-log/stats?pwaContentId=${pwaContentId}&startDate=${startDate}&endDate=${endDate}`
+            : `/pwa-event-log/stats?pwaContentId=${pwaContentId}`,
         method: "GET",
       }),
     }),

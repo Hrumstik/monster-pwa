@@ -1,15 +1,17 @@
-import MonsterSelect from "@shared/elements/Select/MonsterSelect";
-import { Spin, Table } from "antd";
-import { periodOptions } from "./analyticsHelpers";
+import { DatePicker, Spin, Table } from "antd";
 import { useEffect, useState } from "react";
 import {
   useGetMyUserQuery,
   useLazyGetDomainAnalyticsQuery,
 } from "@store/apis/pwaApi";
+import dayjs from "dayjs";
+
+const { RangePicker } = DatePicker;
 
 const Analytics = () => {
   const { data: userInfo, isLoading: userInfoIsLoading } = useGetMyUserQuery();
-  const [period, setPeriod] = useState<number | undefined>();
+  const [startDate, setStartDate] = useState<undefined | string>();
+  const [endDate, setEndDate] = useState<undefined | string>();
   const [getDomainAnalytic] = useLazyGetDomainAnalyticsQuery();
   const [domainAnalytics, setDomainAnalytics] = useState<
     | {
@@ -30,7 +32,8 @@ const Analytics = () => {
         userInfo.pwas.map(async (pwa) => {
           const data = await getDomainAnalytic({
             pwaContentId: pwa.pwaContentId,
-            since: period?.toString(),
+            startDate,
+            endDate,
           }).unwrap();
           return {
             pwaContentId: pwa.pwaContentId,
@@ -45,7 +48,7 @@ const Analytics = () => {
     };
 
     fetchData();
-  }, [period, userInfo]);
+  }, [userInfo, startDate, endDate]);
 
   const dataSource =
     userInfo?.pwas.map((pwa) => {
@@ -105,12 +108,22 @@ const Analytics = () => {
         <h1 className="font-bold text-[28px] leading-8 text-white mb-7">
           Аналитика
         </h1>
-        <MonsterSelect
-          className="h-10 w-[350px]"
-          placeholder="Выберите период"
-          options={periodOptions}
-          value={period}
-          onChange={(value) => setPeriod(value)}
+        <RangePicker
+          showTime
+          size="large"
+          format="DD.MM.YYYY HH:mm"
+          allowClear={false}
+          value={
+            startDate && endDate
+              ? [dayjs(startDate), dayjs(endDate)]
+              : undefined
+          }
+          onChange={(dates) => {
+            if (dates && dates.length === 2 && dates[0] && dates[1]) {
+              setStartDate(dates[0].toISOString());
+              setEndDate(dates[1].toISOString());
+            }
+          }}
         />
       </div>
       <Table columns={columns} dataSource={dataSource} pagination={false} />

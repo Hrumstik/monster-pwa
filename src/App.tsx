@@ -10,6 +10,15 @@ import Analytics from "./Routes/Analytics/Analytics";
 import { ConfigProvider, Empty } from "antd";
 import PushDashboard from "./Routes/PushDashbord/PushDashbord";
 import PushEditor from "./Routes/PushEditor/PushEditor";
+import locale from "antd/es/locale/ru_RU";
+import "dayjs/locale/ru";
+import updateLocale from "dayjs/plugin/updateLocale";
+import dayjs from "dayjs";
+
+dayjs.extend(updateLocale);
+dayjs.updateLocale("ru", {
+  weekStart: 1,
+});
 
 function App() {
   const router = createBrowserRouter([
@@ -64,6 +73,7 @@ function App() {
 
   return (
     <ConfigProvider
+      locale={locale}
       renderEmpty={() => (
         <Empty
           image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -81,7 +91,6 @@ function App() {
             headerSplitColor: "none",
           },
           Select: {
-            colorBorder: "#383B66",
             multipleItemBorderColorDisabled: "#383B66",
             multipleItemColorDisabled: "#FFFFFF",
           },
@@ -101,6 +110,22 @@ function App() {
             colorBorder: "#383B66",
             radioSize: 24,
             dotSize: 12,
+          },
+          DatePicker: {
+            colorBgContainer: "#20223B",
+            colorBorder: "#20223B",
+            hoverBorderColor: "#383B66",
+            activeBorderColor: "#383B66",
+            colorPrimary: "#9254de",
+            colorText: "#FFFFFF",
+            colorTextHeading: "#FFFFFF",
+            colorTextPlaceholder: "#FFFFFF",
+            colorBgElevated: "#20223B",
+            cellHoverBg: "#9254de",
+            controlItemBgActive: "#391085",
+            colorTextDisabled: "#919191",
+            colorIcon: "#515ACA",
+            colorIconHover: "#515ACA",
           },
         },
       }}

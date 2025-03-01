@@ -85,7 +85,8 @@ export function convertSeconds(seconds: number): string {
       `${secs} ${getPluralForm(secs, "секунда", "секунды", "секунд")}`
     );
 
-  return parts.join(" ");
+  if (parts.length === 0) return "Без задержки";
+  return parts.join(" ").trim();
 }
 
 export function getPushTriggerEventName(event: TriggerEvent): string {

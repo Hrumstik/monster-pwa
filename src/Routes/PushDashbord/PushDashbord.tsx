@@ -67,7 +67,7 @@ const PushDashboard = () => {
   const dataSource = data?.map((push) => ({
     key: push._id,
     name: push.systemName,
-    delay: convertSeconds(push.delay),
+    delay: convertSeconds(push.delay) ?? "Без задержки",
     triggerEvent: getPushTriggerEventName(push.triggerEvent),
     status: push.active ? "Активен" : "Не активен",
     actions: (

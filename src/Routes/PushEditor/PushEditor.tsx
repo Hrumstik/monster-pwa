@@ -54,8 +54,8 @@ export interface PushEvent {
   delay: number;
   content: {
     languages: string[];
-    title: string;
-    description: string;
+    title: Record<string, string>;
+    description: Record<string, string>;
     badge: string;
     icon: string;
     picture: string;
@@ -272,6 +272,7 @@ const PushEditor = () => {
         ...values,
         delay,
       };
+
       const pwas = selectedPwas
         .map((pwaId) => {
           const pwaInfo = getPwaInfo(pwaId);
@@ -285,7 +286,6 @@ const PushEditor = () => {
       payload.recipients[0].pwas = pwas;
 
       if (id) {
-        console.log(payload);
         await editPush({ id, data: payload }).unwrap();
         message.success("Пуш успешно отредактирован");
         navigate("/push-dashboard");
@@ -536,7 +536,7 @@ const PushEditor = () => {
                 </h2>
                 <p className="text-xs text-white mb-2.5">Заголовок</p>
                 <Form.Item
-                  name={["content", "title"]}
+                  name={["content", "title", "originalLanguage"]}
                   className="mb-5"
                   rules={[requiredValidator("Введите заголовок")]}
                 >
@@ -547,7 +547,7 @@ const PushEditor = () => {
                 </Form.Item>
                 <p className="text-xs text-white mb-2.5">Текст пуша</p>
                 <Form.Item
-                  name={["content", "description"]}
+                  name={["content", "description", "originalLanguage"]}
                   className="mb-5"
                   rules={[requiredValidator("Введите текст пуша")]}
                 >
@@ -817,10 +817,10 @@ const PushEditor = () => {
                     )}
                   </div>
                   <div className="font-inter text-xs font-bold mb-3">
-                    {content?.title || "Заголовок пуша"}
+                    {content?.title.originalLanguage || "Заголовок пуша"}
                   </div>
                   <div className="font-inter text-xs text-[#20223B] mb-[35px]">
-                    {content?.description ||
+                    {content?.description.originalLanguage ||
                       "That looks like a Jira Cloud link. Would you like to install the Jira Cloud app from the"}
                   </div>
                   {content?.picture && (
