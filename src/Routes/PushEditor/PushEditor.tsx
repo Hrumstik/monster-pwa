@@ -74,10 +74,10 @@ export interface PushEvent {
 }
 
 const triggerEventsOptions = [
-  {
-    label: "Установка",
-    value: TriggerEvent.Install,
-  },
+  // {
+  //   label: "Установка",
+  //   value: TriggerEvent.Install,
+  // },
   {
     label: "Регистрация",
     value: TriggerEvent.Registration,
