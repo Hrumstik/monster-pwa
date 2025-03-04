@@ -715,17 +715,7 @@ const PushEditor = () => {
                   не будет заполнено, то будет использована ссылка на оффер из
                   настроек PWA.{" "}
                 </p>
-                <Form.Item
-                  name={["content", "url"]}
-                  className="mb-5"
-                  rules={[
-                    requiredValidator("Введите URL"),
-                    {
-                      type: "url",
-                      message: "Введите корректный URL",
-                    },
-                  ]}
-                >
+                <Form.Item name={["content", "url"]} className="mb-5">
                   <MonsterInput
                     placeholder="Введите URL"
                     className="w-[460px] h-[42px]"
