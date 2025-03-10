@@ -136,7 +136,7 @@ export const pwaSlice = createApi({
       },
       void
     >({
-      query: () => "/chat-gpt/generate-review",
+      query: () => "/content-generation/generate-review",
     }),
     generateAppDescription: builder.query<
       {
@@ -145,12 +145,12 @@ export const pwaSlice = createApi({
       void
     >({
       query: () => ({
-        url: "/chat-gpt/generate-app-description",
+        url: "/content-generation/generate-app-description",
       }),
     }),
     generateReviewText: builder.query<{ text: string }, void>({
       query: () => ({
-        url: "/chat-gpt/generate-review-text",
+        url: "/content-generation/generate-review-text",
       }),
     }),
     getDomainAnalytics: builder.query<
@@ -181,7 +181,7 @@ export const pwaSlice = createApi({
       }
     >({
       query: ({ text }) => ({
-        url: "/chat-gpt/generate-review-response-text",
+        url: "/content-generation/generate-review-response-text",
         method: "POST",
         body: { text },
       }),
