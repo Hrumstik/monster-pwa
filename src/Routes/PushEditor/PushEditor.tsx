@@ -76,7 +76,7 @@ export interface PushEvent {
 const triggerEventsOptions = [
   {
     label: "Установка",
-    value: TriggerEvent.Install,
+    value: TriggerEvent.OpenPwa,
   },
   {
     label: "Регистрация",
@@ -115,24 +115,31 @@ const PushEditor = () => {
     if (pushData) {
       form.setFieldsValue(pushData);
       const delay = pushData.delay;
+
+      const days = Math.floor(delay / 86400);
+      const hours = Math.floor((delay % 86400) / 3600);
+      const minutes = Math.floor((delay % 3600) / 60);
+      const seconds = delay % 60;
+
       setTimeOptions([
         {
           label: "Дней",
-          value: Math.floor(delay / 86400),
+          value: days * 86400,
         },
         {
           label: "Часов",
-          value: Math.floor((delay % 86400) / 3600),
+          value: hours * 3600,
         },
         {
           label: "Минут",
-          value: Math.floor((delay % 3600) / 60),
+          value: minutes * 60,
         },
         {
           label: "Секунд",
-          value: delay % 60,
+          value: seconds,
         },
       ]);
+
       setSelectedPwas(pushData.recipients[0].pwas.map((pwa) => pwa.id));
     }
   }, [pushData]);

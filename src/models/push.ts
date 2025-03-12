@@ -1,5 +1,5 @@
 export enum TriggerEvent {
-  Install = "Install",
+  OpenPwa = "OpenPWA",
   Registration = "Registration",
   Deposit = "Deposit",
 }

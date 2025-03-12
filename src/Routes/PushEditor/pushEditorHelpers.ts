@@ -95,7 +95,7 @@ export function getPushTriggerEventName(event: TriggerEvent): string {
       return "Регистрация";
     case TriggerEvent.Deposit:
       return "Депозит";
-    case TriggerEvent.Install:
+    case TriggerEvent.OpenPwa:
       return "Установка";
   }
 }
