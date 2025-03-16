@@ -40,9 +40,11 @@ import {
   useCreatePushMutation,
   useEditPushMutation,
   useGetPushQuery,
+  useTestPushMutation,
 } from "@store/apis/pushApi";
 import useGetPwaInfo from "@shared/hooks/useGetPwaInfo";
 import ring from "@icons/ring.svg";
+import { GrTest } from "react-icons/gr";
 
 export interface PushEvent {
   _id?: string;
@@ -110,6 +112,8 @@ const PushEditor = () => {
   const { data: pushData, isLoading: isPushLoading } = useGetPushQuery(id!, {
     skip: !id,
   });
+  const [sendTestPush, { isLoading: sendTestPushIsLoading }] =
+    useTestPushMutation();
 
   useEffect(() => {
     if (pushData) {
@@ -312,6 +316,19 @@ const PushEditor = () => {
     }
   };
 
+  const sendTestPushHandler = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    if (!id) return;
+    try {
+      await sendTestPush({ id }).unwrap();
+      message.success("Тестовый пуш отправлен");
+    } catch {
+      message.error("Ошибка при отправке тестового пуша");
+    }
+  };
+
   return (
     <div className="px-[50px] ">
       <Spin
@@ -320,7 +337,8 @@ const PushEditor = () => {
           arePwasLoading ||
           isPushCreating ||
           isPushLoading ||
-          isPushEditing
+          isPushEditing ||
+          sendTestPushIsLoading
         }
         fullscreen
       />
@@ -388,15 +406,25 @@ const PushEditor = () => {
                     },
                   ]}
                 />
-                <MonsterSelect
-                  mode="multiple"
-                  placeholder="Выберите PWA"
-                  options={pwaOptions}
-                  className="h-[42px] min-w-[460px]"
-                  value={selectedPwas}
-                  onChange={handlePwaChange}
-                  disabled={pwasChoice === "allPwa"}
-                />
+                <div className="flex justify-between gap-5">
+                  <MonsterSelect
+                    mode="multiple"
+                    placeholder="Выберите PWA"
+                    options={pwaOptions}
+                    className="h-[42px] min-w-[460px]"
+                    value={selectedPwas}
+                    onChange={handlePwaChange}
+                    disabled={pwasChoice === "allPwa"}
+                  />
+                  {id && (
+                    <IconButton
+                      icon={<GrTest color="white" />}
+                      customClass="bg-[#0602E3] hover:bg-red"
+                      text="Тестовый PUSH "
+                      onclick={sendTestPushHandler}
+                    />
+                  )}
+                </div>
               </div>
               <div className="bg-cardColor p-[50px] rounded-lg">
                 <h2 className="text-yellowTitle text-base leading-[18px] font-bold mb-4">

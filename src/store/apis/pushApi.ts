@@ -46,6 +46,12 @@ export const pushSlice = createApi({
       query: (id) => `/push/${id}`,
       providesTags: ["Push"],
     }),
+    testPush: builder.mutation<void, { id: string }>({
+      query: ({ id }) => ({
+        url: `/push/test/${id}`,
+        method: "POST",
+      }),
+    }),
   }),
 });
 
@@ -56,4 +62,5 @@ export const {
   useDeletePushMutation,
   useDuplicatePushMutation,
   useGetPushQuery,
+  useTestPushMutation,
 } = pushSlice;

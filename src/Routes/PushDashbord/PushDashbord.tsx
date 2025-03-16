@@ -8,13 +8,15 @@ import {
   useDuplicatePushMutation,
   useEditPushMutation,
   useGetPushesQuery,
+  useTestPushMutation,
 } from "@store/apis/pushApi";
-import { Button, Spin, Table } from "antd";
+import { Button, message, Spin, Table } from "antd";
 import { useNavigate } from "react-router-dom";
 import MonsterDropdown from "@shared/elements/Dropdown/Dropdown";
 import { FaStopCircle } from "react-icons/fa";
 import { MdDelete, MdModeEdit } from "react-icons/md";
 import { IoDuplicate } from "react-icons/io5";
+import { GrTest } from "react-icons/gr";
 
 const PushDashboard = () => {
   const navigate = useNavigate();
@@ -24,6 +26,8 @@ const PushDashboard = () => {
     useDuplicatePushMutation();
   const [deletePush, { isLoading: deletePushIsLoading }] =
     useDeletePushMutation();
+  const [sendTestPush, { isLoading: sendTestPushIsLoading }] =
+    useTestPushMutation();
 
   const columns = [
     {
@@ -62,16 +66,34 @@ const PushDashboard = () => {
     isLoading ||
     editPushIsLoading ||
     deletePushIsLoading ||
-    duplicatePushIsLoading;
+    duplicatePushIsLoading ||
+    sendTestPushIsLoading;
 
   const dataSource = data?.map((push) => ({
     key: push._id,
     name: push.systemName,
     delay: convertSeconds(push.delay) ?? "Без задержки",
     triggerEvent: getPushTriggerEventName(push.triggerEvent),
-    status: push.active ? "Активен" : "Не активен",
+    status: push.active ? (
+      <span className="text-green-500">Активен</span>
+    ) : (
+      <span className="text-red-500">Остановлен</span>
+    ),
     actions: (
       <div className="flex items-center justify-center gap-2">
+        <Button
+          type="text"
+          onClick={async () => {
+            try {
+              await sendTestPush({ id: push._id! }).unwrap();
+              message.success("Тестовый пуш отправлен");
+            } catch {
+              message.error("Ошибка при отправке тестового пуша");
+            }
+          }}
+          className="bg-[#161724] hover:!bg-[#515ACA] text-white"
+          icon={<GrTest style={{ color: "white", fontSize: "15px" }} />}
+        ></Button>
         <Button
           onClick={() => navigate(`/edit-push/${push._id}`)}
           type="text"
