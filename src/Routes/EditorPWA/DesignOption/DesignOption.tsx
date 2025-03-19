@@ -358,7 +358,6 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         reviewAuthorName: "Без имени",
         reviewAuthorIcon: "",
         reviewAuthorRating: 5,
-        reviewIconColor: "",
         avatarTitle: "",
         reviewText:
           "Комментарий пока не сохранен. Введите данные и сохраните его.",
