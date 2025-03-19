@@ -86,7 +86,6 @@ const EditorPWA = () => {
           ),
         }))
       );
-      const customModal = omit(fetchedPwaContent.customModal, ["_id"]);
 
       const images = fetchedPwaContent.images.map((image) => ({
         type: image.type,
