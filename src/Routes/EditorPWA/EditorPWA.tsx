@@ -99,7 +99,11 @@ const EditorPWA = () => {
         ...fetchedPwaContent,
         images,
         reviews,
-        customModal,
+        customModal:
+          Object.keys(customModal).length === 0 ||
+          Object.keys(customModal).length === 1
+            ? customModal
+            : undefined,
       };
       const theme = omit(updatedPwaContent.theme, ["_id"]);
 
