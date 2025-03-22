@@ -70,7 +70,9 @@ const PushDashboard = () => {
     sendTestPushIsLoading;
 
   const dataSource = data
-    ?.filter((push) => !push.recordedSchedules?.length)
+    ?.filter(
+      (push) => !push.recordedSchedules || push.recordedSchedules.length === 0
+    )
     .map((push) => ({
       key: push._id,
       name: push.systemName,

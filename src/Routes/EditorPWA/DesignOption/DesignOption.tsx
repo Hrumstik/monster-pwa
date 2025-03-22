@@ -233,6 +233,8 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       content: content.customModal?.content?.originalLanguage,
       showAppHeader: content.customModal?.showAppHeader,
       buttonText: content.customModal?.buttonText?.originalLanguage,
+      mainThemeColor: content.mainThemeColor,
+      installButtonTextColor: content.installButtonTextColor,
     });
   };
 
