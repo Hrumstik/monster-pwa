@@ -3,7 +3,13 @@ import BooksIcon from "@icons/BooksIcon";
 import GamesIcon from "@icons/GamesIcon";
 import SearchIcon from "@icons/SearchIcon";
 
-const PwaMenu = ({ dark }: { dark: boolean }) => {
+const PwaMenu = ({
+  dark,
+  mainThemeColor,
+}: {
+  dark: boolean;
+  mainThemeColor: string;
+}) => {
   return (
     <div className="h-[70px] z-10 transition-all duration-200 absolute -bottom-3 left-0 w-full">
       <div
@@ -20,9 +26,12 @@ const PwaMenu = ({ dark }: { dark: boolean }) => {
           </div>
         </div>
         <div className="flex-1 flex flex-col items-center">
-          <AppsIcon dark={dark} />
+          <AppsIcon dark={dark} mainThemeColor={mainThemeColor} />
           <div
-            style={{ fontWeight: 600, color: dark ? "#A8C8FB" : "#056890" }}
+            style={{
+              fontWeight: 600,
+              color: mainThemeColor || (dark ? "#A8C8FB" : "#056890"),
+            }}
             className="font-medium text-xs"
           >
             Приложения

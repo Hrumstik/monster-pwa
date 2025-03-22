@@ -57,6 +57,7 @@ const ReviewsView: React.FC<Props> = ({
                   previewPwaContent.keepActualDateOfReviews
                 }
                 devResponse={review.devResponse}
+                mainThemeColor={previewPwaContent.mainThemeColor}
               />
             );
           })}

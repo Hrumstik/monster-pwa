@@ -13,6 +13,8 @@ import {
   Upload,
   message,
   Spin,
+  DatePicker,
+  Checkbox,
 } from "antd";
 
 import { useEffect, useState } from "react";
@@ -21,18 +23,14 @@ import { FaSave } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   depositFiltersOptions,
-  generateDaysOptions,
-  generateHoursOptions,
-  generateMinutesOptions,
-  generateSecondsOptions,
   registrationFiltersOptions,
-} from "../../shared/helpers/pushEditorHelpers";
+} from "@shared/helpers/pushEditorHelpers";
 import UploadImageIcon from "@icons/UploadImageIcon";
 import {
   allowedExtensions,
   allowedExtensionsErrorMessage,
   languages,
-} from "../../Routes/EditorPWA/DesignOption/DesignOptionHelpers";
+} from "../EditorPWA/DesignOption/DesignOptionHelpers";
 import { useUploadImagesMutation } from "@store/apis/filesApi";
 import { useWatch } from "antd/es/form/Form";
 import ClassicButton from "@shared/elements/ClassicButton/ClassibButton";
@@ -45,59 +43,26 @@ import {
 import useGetPwaInfo from "@shared/hooks/useGetPwaInfo";
 import ring from "@icons/ring.svg";
 import { GrTest } from "react-icons/gr";
+import MonsterRadio from "@shared/elements/Radio/MonsterRadio";
+import {
+  defaultTimezone,
+  generateDates,
+  timezones,
+} from "./scheduledPushEditorHelpers";
+import dayjs from "dayjs";
+import MonsterCheckbox from "@shared/elements/MonsterCheckbox/MonsterCheckbox";
+import { TimePosition } from "@models/time";
+import { PushEvent } from "@Routes/PushEditor/PushEditor";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
-export interface PushEvent {
-  _id?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  systemName: string;
-  active: boolean;
-  triggerEvent: TriggerEvent;
-  delay: number;
-  schedules: string[];
-  recordedSchedules: string[];
-  color: string;
-  timeZone?: string;
-  content: {
-    languages: string[];
-    title: Record<string, string>;
-    description: Record<string, string>;
-    badge: string;
-    icon: string;
-    picture: string;
-    url: string;
-  };
-  recipients: {
-    pwas: {
-      id: string;
-      domain: string;
-    }[];
-    filters: {
-      event: TriggerEvent;
-      sendTo: "all" | "with" | "without";
-    }[];
-  }[];
-}
-
-const triggerEventsOptions = [
-  {
-    label: "Установка",
-    value: TriggerEvent.OpenPwa,
-  },
-  {
-    label: "Регистрация",
-    value: TriggerEvent.Registration,
-  },
-  {
-    label: "Депозит",
-    value: TriggerEvent.Deposit,
-  },
-];
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const { TextArea } = Input;
 
-const PushEditor = () => {
-  const { id } = useParams();
+const ScheduledPushEditor = () => {
+  const { id, date } = useParams();
   const [pwasChoice, setPwasChoice] = useState<"allPwa" | "specificPwa">(
     "allPwa"
   );
@@ -108,87 +73,85 @@ const PushEditor = () => {
     useUploadImagesMutation();
   const { data: allPwas, isLoading: arePwasLoading } =
     useGetAllPwaContentQuery();
-  const daysOptions = generateDaysOptions(29);
-  const hoursOptions = generateHoursOptions(23);
-  const minutesOptions = generateMinutesOptions(59);
-  const secondsOptions = generateSecondsOptions(59);
   const { getPwaInfo } = useGetPwaInfo();
   const { data: pushData, isLoading: isPushLoading } = useGetPushQuery(id!, {
     skip: !id,
   });
+  const [selectedTimeZone, setSelectedTimeZone] = useState(
+    defaultTimezone?.value
+  );
+  const [scheduleOption, setScheduleOption] = useState<"once" | "regular">(
+    "once"
+  );
   const [sendTestPush, { isLoading: sendTestPushIsLoading }] =
     useTestPushMutation();
+  const [schedules, setSchedules] = useState<string[]>([dayjs().toISOString()]);
+  const [regularOptions, setRegularOptions] = useState({
+    hours: 0,
+    minutes: 0,
+    days: [1, 3, 0],
+    start: dayjs().toISOString(),
+    end: dayjs().toISOString(),
+  });
+
+  useEffect(() => {
+    if (!date) return;
+    setRegularOptions({
+      ...regularOptions,
+      start: dayjs(date).toISOString(),
+      end: dayjs(date).toISOString(),
+    });
+    setSchedules([dayjs(date).toISOString()]);
+  }, [date]);
 
   useEffect(() => {
     if (pushData) {
-      form.setFieldsValue(pushData);
-      const delay = pushData.delay;
-
-      const days = Math.floor(delay / 86400);
-      const hours = Math.floor((delay % 86400) / 3600);
-      const minutes = Math.floor((delay % 3600) / 60);
-      const seconds = delay % 60;
-
-      setTimeOptions([
-        {
-          label: "Дней",
-          value: days * 86400,
+      form.setFieldsValue({
+        systemName: pushData.systemName,
+        color: pushData.color,
+        active: pushData.active,
+        content: {
+          languages: pushData.content.languages,
+          title: pushData.content.title,
+          description: pushData.content.description,
+          badge: pushData.content.badge,
+          icon: pushData.content.icon,
+          picture: pushData.content.picture,
+          url: pushData.content.url,
         },
-        {
-          label: "Часов",
-          value: hours * 3600,
-        },
-        {
-          label: "Минут",
-          value: minutes * 60,
-        },
-        {
-          label: "Секунд",
-          value: seconds,
-        },
-      ]);
-
-      setSelectedPwas(pushData.recipients[0].pwas.map((pwa) => pwa.id));
+        recipients: pushData.recipients,
+      });
+      setSelectedTimeZone(pushData.timeZone ?? defaultTimezone?.value);
+      if (pushData.schedules.length === 1) {
+        setScheduleOption("once");
+        const tzDate = dayjs(pushData.recordedSchedules[0])
+          .tz(pushData.timeZone)
+          .format("YYYY-MM-DDTHH:mm:ss");
+        setSchedules([tzDate]);
+      } else {
+        setScheduleOption("regular");
+        const startDate = pushData.recordedSchedules[0];
+        const endDate =
+          pushData.recordedSchedules[pushData.recordedSchedules.length - 1];
+        const hours = dayjs(startDate).tz(pushData.timeZone).hour();
+        const minutes = dayjs(startDate).tz(pushData.timeZone).minute();
+        const days = pushData.recordedSchedules.map((schedule) =>
+          dayjs(schedule).day()
+        );
+        setRegularOptions({
+          hours,
+          minutes,
+          days,
+          start: dayjs(startDate)
+            .tz(pushData.timeZone)
+            .format("YYYY-MM-DDTHH:mm:ss"),
+          end: dayjs(endDate)
+            .tz(pushData.timeZone)
+            .format("YYYY-MM-DDTHH:mm:ss"),
+        });
+      }
     }
   }, [pushData]);
-
-  const [timeOptions, setTimeOptions] = useState<
-    [
-      {
-        label: "Дней";
-        value: number;
-      },
-      {
-        label: "Часов";
-        value: number;
-      },
-      {
-        label: "Минут";
-        value: number;
-      },
-      {
-        label: "Секунд";
-        value: number;
-      }
-    ]
-  >([
-    {
-      label: "Дней",
-      value: 0,
-    },
-    {
-      label: "Часов",
-      value: 0,
-    },
-    {
-      label: "Минут",
-      value: 0,
-    },
-    {
-      label: "Секунд",
-      value: 0,
-    },
-  ]);
 
   const pwaOptions =
     allPwas?.map((pwa) => ({
@@ -282,12 +245,11 @@ const PushEditor = () => {
     try {
       await form.validateFields();
       const values = form.getFieldsValue();
-      const delay = timeOptions.reduce((acc, curr) => acc + curr.value, 0);
+
       const payload = {
         ...values,
-        delay,
       };
-
+      payload.triggerEvent = TriggerEvent.OpenPwa;
       const pwas = selectedPwas
         .map((pwaId) => {
           const pwaInfo = getPwaInfo(pwaId);
@@ -299,17 +261,36 @@ const PushEditor = () => {
         .filter((pwa) => pwa.domain);
 
       payload.recipients[0].pwas = pwas;
+      payload.timeZone = selectedTimeZone;
+
+      if (scheduleOption === "once") {
+        const dateWithZone = dayjs(schedules[0]).tz(selectedTimeZone, true);
+        payload.schedules = [dateWithZone.toISOString()];
+        payload.recordedSchedules = [dateWithZone.toISOString()];
+      } else if (scheduleOption === "regular" && selectedTimeZone) {
+        const dates = generateDates({
+          hours: regularOptions.hours,
+          minutes: regularOptions.minutes,
+          days: regularOptions.days,
+          start: regularOptions.start,
+          end: regularOptions.end,
+          timeZone: selectedTimeZone,
+        });
+
+        payload.schedules = dates;
+        payload.recordedSchedules = dates;
+      }
 
       if (id) {
         await editPush({ id, data: payload }).unwrap();
         message.success("Пуш успешно отредактирован");
-        navigate("/push-dashboard");
+        navigate("/push-calendar");
         return;
       }
 
       await createPush(payload).unwrap();
       message.success("Пуш успешно создан");
-      navigate("/push-dashboard");
+      navigate("/push-calendar");
     } catch (error) {
       console.log("Failed:", error);
       if (error && typeof error === "object" && "errorFields" in error) {
@@ -331,6 +312,26 @@ const PushEditor = () => {
     } catch {
       message.error("Ошибка при отправке тестового пуша");
     }
+  };
+
+  const handleDatePickerChange = (pickedDate: dayjs.Dayjs) => {
+    if (!pickedDate) return;
+
+    const localDateTime = pickedDate.format("YYYY-MM-DDTHH:mm:ss");
+    setSchedules([localDateTime]);
+  };
+
+  const handleRegularPickerChange = (
+    pickedDate: dayjs.Dayjs,
+    timePosition: TimePosition
+  ) => {
+    if (!pickedDate) return;
+
+    const localDateTime = pickedDate.format("YYYY-MM-DDTHH:mm:ss");
+    setRegularOptions({
+      ...regularOptions,
+      [timePosition]: localDateTime,
+    });
   };
 
   return (
@@ -359,6 +360,7 @@ const PushEditor = () => {
             picture: "",
             url: "",
           },
+          color: "#00A76F",
           active: true,
           recipients: [
             {
@@ -489,84 +491,190 @@ const PushEditor = () => {
                     <MonsterSwitch />
                   </Form.Item>
                 </div>
-                <div className="text-base text-white mb-3">
-                  Триггер отправки
+                <div className="text-base leading-5 mb-2 text-white">
+                  Цвет события:
                 </div>
-                <Form.Item
-                  name={"triggerEvent"}
-                  className="mb-7 w-[460px]"
-                  rules={[requiredValidator("Выберите триггер отправки")]}
-                >
-                  <MonsterSelect
-                    options={triggerEventsOptions}
-                    className="h-[42px]"
-                    placeholder="Выберите триггер отправки"
-                  />
+                <div className="text-sm text-white mb-4 leading-5">
+                  Цвет ни на что не влияет. Это просто для удобного отображения
+                  в календаре.
+                </div>
+                <Form.Item name={["color"]} className="mb-0">
+                  <Radio.Group>
+                    <MonsterRadio className="green" value={"#00A76F"} />
+                    <MonsterRadio className="purple" value={"#8E33FF"} />
+                    <MonsterRadio className="blue" value={"#00B8D9"} />
+                    <MonsterRadio className="orange" value={"#FFAB00"} />
+                    <MonsterRadio className="red" value={"#FF5630"} />
+                    <MonsterRadio className="lime" value={"#D0FF00"} />
+                  </Radio.Group>
                 </Form.Item>
-                <div className="text-white text-base mb-3">
-                  Задержка отправки
+              </div>
+              <div className="bg-cardColor p-[50px] rounded-lg">
+                <div className="text-base font-bold text-[#E3CC02] leading-5 mb-4">
+                  Расписание
                 </div>
-                <div className="flex gap-5">
-                  <div className="flex flex-col gap-[9px] flex-1">
-                    <div className="text-white text-xs">Дней</div>
-                    <MonsterSelect
-                      options={daysOptions}
-                      value={timeOptions[0].value}
-                      onChange={(value) => {
-                        setTimeOptions((prev) => [
-                          { ...prev[0], value },
-                          prev[1],
-                          prev[2],
-                          prev[3],
-                        ]);
-                      }}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-[9px] flex-1">
-                    <div className="text-white text-xs">Часов</div>
-                    <MonsterSelect
-                      options={hoursOptions}
-                      value={timeOptions[1].value}
-                      onChange={(value) => {
-                        setTimeOptions((prev) => [
-                          prev[0],
-                          { ...prev[1], value },
-                          prev[2],
-                          prev[3],
-                        ]);
-                      }}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-[9px] flex-1">
-                    <div className="text-white text-xs">Минут</div>
-                    <MonsterSelect
-                      options={minutesOptions}
-                      value={timeOptions[2].value}
-                      onChange={(value) => {
-                        setTimeOptions((prev) => [
-                          prev[0],
-                          prev[1],
-                          { ...prev[2], value },
-                          prev[3],
-                        ]);
-                      }}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-[9px] flex-1">
-                    <div className="text-white text-xs">Секунд</div>
-                    <MonsterSelect
-                      options={secondsOptions}
-                      value={timeOptions[3].value}
-                      onChange={(value) => {
-                        setTimeOptions((prev) => [
-                          prev[0],
-                          prev[1],
-                          prev[2],
-                          { ...prev[3], value },
-                        ]);
-                      }}
-                    />
-                  </div>
+                <div className="text-sm text-white mb-7">
+                  Когда будет отправляться этот пуш
+                </div>
+                <div className="text-base text-white leading-5 mb-2">
+                  Выбор часового пояса
+                </div>
+                <div className="text-white text-sm leading-5 mb-5">
+                  По какому часовому поясу будем отправлять пуши в выбранное
+                  время
+                </div>
+                <MonsterSelect
+                  value={selectedTimeZone}
+                  onChange={(value) => setSelectedTimeZone(value)}
+                  className="w-[460px] mb-[50px]"
+                  options={timezones}
+                />
+                <div>
+                  <Radio.Group
+                    value={scheduleOption}
+                    onChange={(e) => setScheduleOption(e.target.value)}
+                    className="mb-7"
+                    options={[
+                      {
+                        label: "Однократно",
+                        value: "once",
+                      },
+                      {
+                        label: "Регулярно",
+                        value: "regular",
+                      },
+                    ]}
+                  ></Radio.Group>
+                  {scheduleOption === "once" ? (
+                    <div>
+                      <DatePicker
+                        showTime
+                        format="DD.MM.YYYY HH:mm"
+                        className="bg-[#161724] hover:border-[#383B66] h-[42px] w-[460px] hover:!bg-[#161724] focus-within:!bg-[#161724]"
+                        value={schedules[0] ? dayjs(schedules[0]) : undefined}
+                        onChange={handleDatePickerChange}
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex flex-col">
+                      <div className="text-white text-base leading-5 mb-4">
+                        Во сколько отправляем
+                      </div>
+                      <div className="flex gap-[50px] mb-[30px]">
+                        <div className="flex flex-col gap-4">
+                          <div className="text-white text-sm leading-4">
+                            Часов
+                          </div>
+                          <MonsterSelect
+                            options={Array.from({ length: 24 }, (_, i) => ({
+                              label: i.toString().length === 1 ? `0${i}` : i,
+                              value: i,
+                            }))}
+                            className="w-[211px]"
+                            value={regularOptions.hours}
+                            onChange={(value) =>
+                              setRegularOptions({
+                                ...regularOptions,
+                                hours: value,
+                              })
+                            }
+                          />
+                        </div>
+                        <div className="flex flex-col gap-4">
+                          <div className="text-white text-sm leading-4">
+                            Минут
+                          </div>
+                          <MonsterSelect
+                            options={Array.from({ length: 60 }, (_, i) => ({
+                              label: i.toString().length === 1 ? `0${i}` : i,
+                              value: i,
+                            }))}
+                            className="w-[211px]"
+                            value={regularOptions.minutes}
+                            onChange={(value) =>
+                              setRegularOptions({
+                                ...regularOptions,
+                                minutes: value,
+                              })
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div className="text-white text-base leading-4 mb-4">
+                        По каким дням{" "}
+                      </div>
+                      <Checkbox.Group
+                        className="flex gap-5 mb-7"
+                        value={regularOptions.days}
+                        onChange={(value) =>
+                          setRegularOptions({
+                            ...regularOptions,
+                            days: value,
+                          })
+                        }
+                      >
+                        <MonsterCheckbox value={1}>
+                          <span className="text-white text-sm">Пн</span>
+                        </MonsterCheckbox>
+                        <MonsterCheckbox value={2}>
+                          <span className="text-white text-sm">Вт</span>
+                        </MonsterCheckbox>
+                        <MonsterCheckbox value={3}>
+                          <span className="text-white text-sm">Ср</span>
+                        </MonsterCheckbox>
+                        <MonsterCheckbox value={4}>
+                          <span className="text-white text-sm">Чт</span>
+                        </MonsterCheckbox>
+                        <MonsterCheckbox value={5}>
+                          <span className="text-white text-sm">Пт</span>
+                        </MonsterCheckbox>
+                        <MonsterCheckbox value={6}>
+                          <span className="text-white text-sm">Сб</span>
+                        </MonsterCheckbox>
+                        <MonsterCheckbox value={0}>
+                          <span className="text-white text-sm">Вс</span>
+                        </MonsterCheckbox>
+                      </Checkbox.Group>
+                      <div className="text-white text-base leading-4 mb-4">
+                        Период отправки
+                      </div>
+                      <div className="flex gap-[50px]">
+                        <div className="flex flex-col gap-4">
+                          <div className="text-white text-sm leading-4">
+                            Начало повторения
+                          </div>
+
+                          <DatePicker
+                            showTime
+                            format="DD.MM.YYYY HH:mm"
+                            className="bg-[#161724] hover:border-[#383B66] h-[42px] w-[211px] hover:!bg-[#161724] focus-within:!bg-[#161724]"
+                            value={dayjs(regularOptions.start)}
+                            onChange={(value) =>
+                              handleRegularPickerChange(
+                                value,
+                                TimePosition.Start
+                              )
+                            }
+                          />
+                        </div>
+                        <div className="flex flex-col gap-4">
+                          <div className="text-white text-sm leading-4">
+                            Конец повторения
+                          </div>
+
+                          <DatePicker
+                            showTime
+                            format="DD.MM.YYYY HH:mm"
+                            value={dayjs(regularOptions.end)}
+                            onChange={(value) =>
+                              handleRegularPickerChange(value, TimePosition.End)
+                            }
+                            className="bg-[#161724] hover:border-[#383B66] h-[42px] w-[211px] hover:!bg-[#161724] focus-within:!bg-[#161724]"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="bg-cardColor p-[50px] rounded-lg">
@@ -869,4 +977,4 @@ const PushEditor = () => {
   );
 };
 
-export default PushEditor;
+export default ScheduledPushEditor;

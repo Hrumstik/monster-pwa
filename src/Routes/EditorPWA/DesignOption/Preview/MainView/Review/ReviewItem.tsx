@@ -12,6 +12,7 @@ interface ReviewProps {
   developerName?: string;
   dark: boolean;
   keepActualDateOfReviews?: boolean;
+  mainThemeColor?: string;
 }
 
 const ReviewItem: React.FC<ReviewProps> = ({
@@ -25,6 +26,7 @@ const ReviewItem: React.FC<ReviewProps> = ({
   developerName,
   dark,
   keepActualDateOfReviews,
+  mainThemeColor,
 }) => {
   const avatarName = name
     .split(" ")
@@ -66,8 +68,11 @@ const ReviewItem: React.FC<ReviewProps> = ({
         <div className="flex gap-[0.5em] items-center">
           <Rate
             value={stars}
-            style={{ color: dark ? "#A8C8FB" : "#1357CD", fontSize: "14px" }}
             disabled
+            style={{
+              color: mainThemeColor || (dark ? "#A8C8FB" : "#1357CD"),
+              fontSize: "14px",
+            }}
           />
           <div
             style={dark ? { color: "#DFDFDF" } : {}}

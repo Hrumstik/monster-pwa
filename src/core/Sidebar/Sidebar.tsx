@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import MenuItem from "./MenuItem";
 import DocumentationIcon from "@icons/Documentation";
 import { IoLogoPwa, IoNotificationsSharp } from "react-icons/io5";
+import { FaCalendarCheck } from "react-icons/fa6";
 import { MdOutlineAnalytics } from "react-icons/md";
 
 const Sidebar = () => {
@@ -30,10 +31,17 @@ const Sidebar = () => {
           icon={
             <IoNotificationsSharp color="white" style={{ fontSize: "24px" }} />
           }
-          text="Push уведомления"
+          text="Push по событиям"
           defaultTextColor="white"
           path="/push-dashboard"
           onClick={() => navigate("/push-dashboard")}
+        />
+        <MenuItem
+          icon={<FaCalendarCheck color="white" style={{ fontSize: "24px" }} />}
+          text="Push по расписанию"
+          defaultTextColor="white"
+          path="/push-calendar"
+          onClick={() => navigate("/push-calendar")}
         />
         <MenuItem
           icon={

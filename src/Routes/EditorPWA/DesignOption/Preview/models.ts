@@ -38,4 +38,6 @@ export interface PreviewPwaContent {
   title?: string;
   content?: string;
   buttonText?: string;
+  mainThemeColor?: string;
+  installButtonTextColor?: string;
 }

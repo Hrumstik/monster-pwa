@@ -14,6 +14,8 @@ import locale from "antd/es/locale/ru_RU";
 import "dayjs/locale/ru";
 import updateLocale from "dayjs/plugin/updateLocale";
 import dayjs from "dayjs";
+import PushCalendar from "./Routes/PushCalendar/PushCalendar";
+import ScheduledPushEditor from "./Routes/SceduledPusheEditor/SceduledPusheEditor";
 
 dayjs.extend(updateLocale);
 dayjs.updateLocale("ru", {
@@ -60,6 +62,22 @@ function App() {
             {
               path: "/edit-push/:id",
               element: <PushEditor />,
+            },
+            {
+              path: "/push-calendar",
+              element: <PushCalendar />,
+            },
+            {
+              path: "/create-schedule-push/",
+              element: <ScheduledPushEditor />,
+            },
+            {
+              path: "/schedule-push/:id",
+              element: <ScheduledPushEditor />,
+            },
+            {
+              path: "/schedule-push-create/:date",
+              element: <ScheduledPushEditor />,
             },
           ],
         },
@@ -110,6 +128,15 @@ function App() {
             colorBorder: "#383B66",
             radioSize: 24,
             dotSize: 12,
+          },
+          Calendar: {
+            fullBg: "#20223B",
+            itemActiveBg: "#22075e",
+            colorText: "#09D913",
+            colorTextDisabled: "#919191",
+            colorSplit: "#8c8c8c",
+            colorPrimary: "#9254de",
+            controlItemBgHover: "#391085",
           },
           DatePicker: {
             colorBgContainer: "#20223B",

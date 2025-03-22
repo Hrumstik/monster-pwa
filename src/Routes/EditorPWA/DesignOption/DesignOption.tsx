@@ -1,4 +1,5 @@
 import {
+  ColorPicker,
   Form,
   Input,
   message,
@@ -91,6 +92,8 @@ export interface DesignOptionFormValues {
   modalTitle?: string;
   modalContent?: string;
   simulate_install: boolean;
+  mainThemeColor: string;
+  installButtonTextColor: string;
 }
 
 export interface DesignOptionProps {
@@ -173,6 +176,8 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       videoUrl: content.videoUrl,
       keepActualDateOfReviews: content.keepActualDateOfReviews,
       simulate_install: content.simulate_install,
+      mainThemeColor: content.mainThemeColor,
+      installButtonTextColor: content.installButtonTextColor,
     });
 
     updatedReviews.forEach((review) => {
@@ -286,6 +291,8 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     title: "Вы можете скачать приложение и получить что нибудь",
     content:
       "И получить шанс выиграть подарочную карту Google Play на сумму 50$ Вы можете скачать приложение и получить шанс выиграть подарочную карту Google Play Вы можете скачать приложение и получить шанс выиграть подарочную карту Google Play на сумму 50$",
+    mainThemeColor: "#1357CD",
+    installButtonTextColor: "#1357CD",
   });
 
   const resetStep = () => {
@@ -335,6 +342,8 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         form.getFieldValue("showAppHeader") ?? previewContent.showAppHeader,
       buttonText:
         form.getFieldValue("modalTextButton") ?? previewContent.buttonText,
+      mainThemeColor: form.getFieldValue("mainThemeColor"),
+      installButtonTextColor: form.getFieldValue("installButtonTextColor"),
     });
   };
 
@@ -592,6 +601,8 @@ const DesignOption: React.FC<DesignOptionProps> = ({
           dark: form.getFieldValue("darkTheme"),
         },
         videoUrl: form.getFieldValue("videoUrl"),
+        mainThemeColor: form.getFieldValue("mainThemeColor"),
+        installButtonTextColor: form.getFieldValue("installButtonTextColor"),
         simulate_install: form.getFieldValue("simulate_install") ?? false,
         ...(showModalSettings && {
           customModal: {
@@ -739,6 +750,8 @@ const DesignOption: React.FC<DesignOptionProps> = ({
           modalTextButton: "Загрузить",
           showAppHeader: true,
           simulate_install: false,
+          mainThemeColor: "#1357CD",
+          installButtonTextColor: "#FFFFFF",
         }}
         onValuesChange={handleValuesChange}
         onFieldsChange={(_, allFields) => {
@@ -1045,7 +1058,14 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                       <div className="text-sm text-white leading-4 items-center flex gap-[10px] justify-start">
                         Verified?
                       </div>
-                      <VerifiedIcon />
+                      <VerifiedIcon
+                        color={
+                          previewContent.mainThemeColor ||
+                          (form.getFieldValue("darkTheme")
+                            ? "#A8C8FB"
+                            : "#1357CD")
+                        }
+                      />
                     </div>
 
                     <Form.Item name="verified" noStyle>
@@ -1318,6 +1338,36 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                     Меню внизу экрана
                   </div>
                 </div>
+                <div className="flex gap-4 justify-start flex-col items-start">
+                  <Form.Item
+                    name="mainThemeColor"
+                    valuePropName="value"
+                    getValueFromEvent={(color) => color.toHexString()}
+                    noStyle
+                  >
+                    <ColorPicker
+                      className="!bg-[#20223B]  border-none active:border-none focus:border-none"
+                      showText={() => (
+                        <span className="text-white">Цвет темы PWA</span>
+                      )}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="installButtonTextColor"
+                    valuePropName="value"
+                    getValueFromEvent={(color) => color.toHexString()}
+                    noStyle
+                  >
+                    <ColorPicker
+                      className="!bg-[#20223B]  border-none active:border-none focus:border-none"
+                      showText={() => (
+                        <span className="text-white">
+                          Цвет кнопки установки
+                        </span>
+                      )}
+                    />
+                  </Form.Item>
+                </div>
                 <div className="flex gap-4 justify-start items-center">
                   <Form.Item name="darkTheme" noStyle>
                     <MonsterSwitch />
@@ -1517,7 +1567,10 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                 setPreviewContent={setPreviewContent}
               />
               {previewContent.hasMenu && (
-                <PwaMenu dark={form.getFieldValue("darkTheme")} />
+                <PwaMenu
+                  dark={form.getFieldValue("darkTheme")}
+                  mainThemeColor={form.getFieldValue("mainThemeColor")}
+                />
               )}
             </div>
           </div>

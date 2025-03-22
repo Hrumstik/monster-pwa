@@ -27,7 +27,7 @@ const MenuItem = ({
       onClick={onClick}
       className={`${
         isActive ? "bg-[#0d421d]" : ""
-      } group hover:bg-[#20223B] h-[42px] rounded  cursor-pointer p-3 flex items-center justify-between`}
+      } group hover:bg-[#20223B] h-[42px] rounded  cursor-pointer p-3 px-1 flex items-center justify-between`}
     >
       <div className="flex gap-[14px] h-full  items-center justify-between">
         {icon ?? (
@@ -35,7 +35,7 @@ const MenuItem = ({
         )}
 
         <div
-          className="text-base text-[#00FF11] group-hover:text-white leading-5"
+          className="text-base text-[#00FF11] group-hover:text-white leading-5 truncate ..."
           style={{ color: defaultTextColor ?? undefined }}
         >
           {text}

@@ -91,6 +91,7 @@ const Preview = ({
             dark={dark}
             appIcon={appIcon}
             setPreviewContent={setPreviewContent}
+            mainThemeColor={previewPwaContent.mainThemeColor}
           />
         </div>
       </div>

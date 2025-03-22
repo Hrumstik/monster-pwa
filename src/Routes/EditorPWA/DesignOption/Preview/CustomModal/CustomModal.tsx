@@ -14,6 +14,7 @@ const ModalMenu = ({
   dark: boolean;
   appIcon: Picture;
   setPreviewContent: (content: PreviewPwaContent) => void;
+  mainThemeColor?: string;
 }) => {
   return (
     <Modal

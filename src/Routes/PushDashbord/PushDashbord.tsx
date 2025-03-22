@@ -2,7 +2,7 @@ import { MoreOutlined } from "@ant-design/icons";
 import {
   convertSeconds,
   getPushTriggerEventName,
-} from "../PushEditor/pushEditorHelpers";
+} from "../../shared/helpers/pushEditorHelpers";
 import {
   useDeletePushMutation,
   useDuplicatePushMutation,
@@ -69,79 +69,90 @@ const PushDashboard = () => {
     duplicatePushIsLoading ||
     sendTestPushIsLoading;
 
-  const dataSource = data?.map((push) => ({
-    key: push._id,
-    name: push.systemName,
-    delay: convertSeconds(push.delay) ?? "Без задержки",
-    triggerEvent: getPushTriggerEventName(push.triggerEvent),
-    status: push.active ? (
-      <span className="text-green-500">Активен</span>
-    ) : (
-      <span className="text-red-500">Остановлен</span>
-    ),
-    actions: (
-      <div className="flex items-center justify-center gap-2">
-        <Button
-          type="text"
-          onClick={async () => {
-            try {
-              await sendTestPush({ id: push._id! }).unwrap();
-              message.success("Тестовый пуш отправлен");
-            } catch {
-              message.error("Ошибка при отправке тестового пуша");
-            }
-          }}
-          className="bg-[#161724] hover:!bg-[#515ACA] text-white"
-          icon={<GrTest style={{ color: "white", fontSize: "15px" }} />}
-        ></Button>
-        <Button
-          onClick={() => navigate(`/edit-push/${push._id}`)}
-          type="text"
-          className="bg-[#161724] hover:!bg-[#515ACA] text-white"
-          icon={<MdModeEdit style={{ color: "white", fontSize: "15px" }} />}
-        ></Button>
-        <MonsterDropdown
-          menu={{
-            items: [
-              {
-                key: "stop",
-                label: <span className="text-xs text-white">Остановить</span>,
-                onClick: () => {
-                  editPush({ id: push._id!, data: { active: false } });
-                },
-                icon: (
-                  <FaStopCircle style={{ color: "white", fontSize: "15px" }} />
-                ),
-              },
-              {
-                key: "duplicate",
-                label: <span className="text-xs text-white">Дублировать</span>,
-                onClick: () => {
-                  duplicatePush(push._id!).unwrap();
-                },
-                icon: <IoDuplicate style={{ color: "white" }} />,
-              },
-              {
-                key: "delete",
-                label: <span className="text-xs text-red">Удалить</span>,
-                onClick: () => {
-                  deletePush(push._id!).unwrap();
-                },
-                icon: <MdDelete />,
-                danger: true,
-              },
-            ],
-          }}
-        >
+  const dataSource = data
+    ?.filter((push) => !push.recordedSchedules?.length)
+    .map((push) => ({
+      key: push._id,
+      name: push.systemName,
+      delay: convertSeconds(push.delay) ?? "Без задержки",
+      triggerEvent: getPushTriggerEventName(push.triggerEvent),
+      status: push.active ? (
+        <span className="text-green-500">Активен</span>
+      ) : (
+        <span className="text-red-500">Остановлен</span>
+      ),
+      actions: (
+        <div className="flex items-center justify-center gap-2">
           <Button
             type="text"
+            onClick={async () => {
+              try {
+                await sendTestPush({ id: push._id! }).unwrap();
+                message.success("Тестовый пуш отправлен");
+              } catch {
+                message.error("Ошибка при отправке тестового пуша");
+              }
+            }}
             className="bg-[#161724] hover:!bg-[#515ACA] text-white"
-            icon={<MoreOutlined style={{ color: "white", fontSize: "15px" }} />}
-          />
-        </MonsterDropdown>
-      </div>
-    ),
-  }));
+            icon={<GrTest style={{ color: "white", fontSize: "15px" }} />}
+          ></Button>
+          <Button
+            onClick={() => navigate(`/edit-push/${push._id}`)}
+            type="text"
+            className="bg-[#161724] hover:!bg-[#515ACA] text-white"
+            icon={<MdModeEdit style={{ color: "white", fontSize: "15px" }} />}
+          ></Button>
+          <MonsterDropdown
+            menu={{
+              items: [
+                {
+                  key: "stop",
+                  label: <span className="text-xs text-white">Остановить</span>,
+                  onClick: () => {
+                    editPush({
+                      id: push._id!,
+                      data: { active: false },
+                    }).unwrap();
+                  },
+                  icon: (
+                    <FaStopCircle
+                      style={{ color: "white", fontSize: "15px" }}
+                    />
+                  ),
+                },
+                {
+                  key: "duplicate",
+                  label: (
+                    <span className="text-xs text-white">Дублировать</span>
+                  ),
+                  onClick: () => {
+                    duplicatePush(push._id!).unwrap();
+                  },
+                  icon: <IoDuplicate style={{ color: "white" }} />,
+                },
+                {
+                  key: "delete",
+                  label: <span className="text-xs text-red">Удалить</span>,
+                  onClick: () => {
+                    deletePush(push._id!).unwrap();
+                  },
+                  icon: <MdDelete />,
+                  danger: true,
+                },
+              ],
+            }}
+          >
+            <Button
+              type="text"
+              className="bg-[#161724] hover:!bg-[#515ACA] text-white"
+              icon={
+                <MoreOutlined style={{ color: "white", fontSize: "15px" }} />
+              }
+            />
+          </MonsterDropdown>
+        </div>
+      ),
+    }));
 
   return showSpinner ? (
     <Spin fullscreen />

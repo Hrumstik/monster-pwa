@@ -127,14 +127,27 @@ const MainView = ({
           </div>
           <div className="flex gap-1 items-center mb-2">
             <div
-              style={dark ? { color: "#A8C8FB" } : {}}
+              style={
+                previewPwaContent.mainThemeColor
+                  ? { color: previewPwaContent.mainThemeColor }
+                  : dark
+                  ? { color: "#A8C8FB" }
+                  : {}
+              }
               className="font-medium text-[#1357CD] leading-4 text-[14px]"
             >
               {previewPwaContent.developerName
                 ? previewPwaContent.developerName
                 : "Supercent, Inc."}
             </div>
-            {previewPwaContent.verified && <VerifiedIcon />}
+            {previewPwaContent.verified && (
+              <VerifiedIcon
+                color={
+                  previewPwaContent.mainThemeColor ||
+                  (dark ? "#A8C8FB" : "#1357CD")
+                }
+              />
+            )}
           </div>
           {previewPwaContent.hasPaidContentTitle && (
             <div className="flex gap-1 text-[10px] text-[#444444] items-center">
@@ -232,8 +245,20 @@ const MainView = ({
 
       <button
         onClick={(e) => e.preventDefault()}
-        style={dark ? { background: "#A8C8FB", color: "rgb(6, 41, 97)" } : {}}
         className="bg-[#1357CD] rounded-[60px] h-9 w-full text-white mb-5"
+        style={
+          previewPwaContent.mainThemeColor
+            ? {
+                background: previewPwaContent.mainThemeColor,
+                color: previewPwaContent.installButtonTextColor,
+              }
+            : dark
+            ? {
+                background: "#A8C8FB",
+                color: "#062961",
+              }
+            : {}
+        }
       >
         Установить
       </button>
@@ -308,7 +333,12 @@ const MainView = ({
           <Rate
             value={adjustRating(Number(previewPwaContent.rating))}
             allowHalf
-            style={{ color: dark ? "#A8C8FB" : "#1357CD", fontSize: "14px" }}
+            style={{
+              color:
+                previewPwaContent.mainThemeColor ||
+                (dark ? "#A8C8FB" : "#1357CD"),
+              fontSize: "14px",
+            }}
             disabled
           />
         </div>
@@ -344,7 +374,9 @@ const MainView = ({
                   className="absolute h-[0.5em] min-w-[0.1em] bg-[#1357CD] rounded-[0.5em]"
                   style={{
                     width: `${(data * 100) / 5 || 0}%`,
-                    ...(dark && { background: "#A8C8FB" }),
+                    background:
+                      previewPwaContent.mainThemeColor ||
+                      (dark ? "#A8C8FB" : undefined),
                   }}
                 />
               </div>
@@ -369,12 +401,16 @@ const MainView = ({
               keepActualDateOfReviews={
                 previewPwaContent.keepActualDateOfReviews
               }
+              mainThemeColor={previewPwaContent.mainThemeColor}
             />
           );
         })}
       </div>
       <div
-        style={dark ? { color: "#A8C8FB" } : {}}
+        style={{
+          color:
+            previewPwaContent.mainThemeColor || (dark ? "#A8C8FB" : undefined),
+        }}
         className="text-[#1357CD] leading-5 text-[14px] font-medium hover:underline cursor-pointer pb-[30px]"
         onClick={() => {
           setView(PwaViews.Reviews);

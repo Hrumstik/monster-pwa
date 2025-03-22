@@ -1,13 +1,57 @@
-.monster-rate {
-  .ant-rate-star {
-    margin-right: 5px;
+.monster-radio {
+  .ant-radio-inner {
+    background-color: #fff !important;
   }
 
-  .ant-rate-star-zero .anticon {
-    color: #353861;
+  .ant-radio-checked .ant-radio-inner::after {
+    background-color: #fff !important;
   }
+}
 
-  .ant-rate-star-full .anticon {
-    color: #ed8a19;
-  }
+.green .ant-radio-inner {
+  background-color: #00a76f !important;
+}
+.green.ant-radio-checked .ant-radio-inner {
+  background-color: #00a76f !important;
+  border-color: #00a76f !important;
+}
+
+.purple .ant-radio-inner {
+  background-color: #8e33ff !important;
+}
+.purple.ant-radio-checked .ant-radio-inner {
+  background-color: #8e33ff !important;
+  border-color: #8e33ff !important;
+}
+
+.blue .ant-radio-inner {
+  background-color: #00b8d9 !important;
+}
+.blue.ant-radio-checked .ant-radio-inner {
+  background-color: #00b8d9 !important;
+  border-color: #00b8d9 !important;
+}
+
+.orange .ant-radio-inner {
+  background-color: #ffab00 !important;
+}
+.orange.ant-radio-checked .ant-radio-inner {
+  background-color: #ffab00 !important;
+  border-color: #ffab00 !important;
+}
+
+.red .ant-radio-inner {
+  background-color: #ff5630 !important;
+}
+.red.ant-radio-checked .ant-radio-inner {
+  background-color: #ff5630 !important;
+  border-color: #ff5630 !important;
+}
+
+.lime .ant-radio-inner {
+  background-color: #d0ff00 !important;
+}
+.lime.ant-radio-checked .ant-radio-inner {
+  background-color: #d0ff00 !important;
+  border-color: #d0ff00 !important;
 }

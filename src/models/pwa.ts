@@ -61,6 +61,8 @@ export interface PwaContent {
     buttonText?: Record<string, string>;
   };
   simulate_install: boolean;
+  mainThemeColor?: string;
+  installButtonTextColor?: string;
 }
 
 export interface PreparedPWADataItem {
