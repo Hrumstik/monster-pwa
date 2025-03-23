@@ -40,7 +40,9 @@ const PushCalendar = () => {
 
   const dateCellRender = (value: Dayjs) => {
     const pushes = scheduledPushes?.filter((push) =>
-      push.schedules.some((schedule) => dayjs(schedule).isSame(value, "day"))
+      push.recordedSchedules.some((schedule) =>
+        dayjs(schedule).isSame(value, "day")
+      )
     );
 
     if (!pushes?.length) {
@@ -76,7 +78,7 @@ const PushCalendar = () => {
                       }
                     />
                   </Tooltip>
-                  <Tooltip title="Тестовый пуш">
+                  <Tooltip title="Клонировать">
                     <Button
                       type="text"
                       onClick={async () => {
@@ -90,7 +92,7 @@ const PushCalendar = () => {
                       }
                     />
                   </Tooltip>
-                  <Tooltip title="Клонировать">
+                  <Tooltip title="Тестовый пуш">
                     <Button
                       type="text"
                       onClick={async () => {
@@ -149,7 +151,9 @@ const PushCalendar = () => {
                 color={push.color}
               >
                 {push.systemName}{" "}
-                {dayjs(push.schedules[0]).tz(push.timeZone).format("HH:mm")}
+                {dayjs(push.recordedSchedules[0])
+                  .tz(push.timeZone)
+                  .format("HH:mm")}
               </Tag>
             </MonsterPopover>
           </li>
