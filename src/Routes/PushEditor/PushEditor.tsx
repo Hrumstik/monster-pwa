@@ -610,16 +610,7 @@ const PushEditor = () => {
                 <div className="flex gap-7">
                   <div className="flex flex-col gap-4">
                     <p className="text-white text-xs leading-4">Бейдж</p>
-                    <Form.Item
-                      name={["content", "badge"]}
-                      className="mb-5"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Загрузите бейдж",
-                        },
-                      ]}
-                    >
+                    <Form.Item name={["content", "badge"]} className="mb-5">
                       <Upload
                         beforeUpload={(file) =>
                           handleBeforeScreensUpload(file, "badge")
@@ -655,16 +646,7 @@ const PushEditor = () => {
                   </div>
                   <div className="flex flex-col gap-4">
                     <p className="text-white text-xs leading-4">Иконка</p>
-                    <Form.Item
-                      name={["content", "icon"]}
-                      className="mb-5"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Загрузите иконку",
-                        },
-                      ]}
-                    >
+                    <Form.Item name={["content", "icon"]} className="mb-5">
                       <Upload
                         beforeUpload={(file) =>
                           handleBeforeScreensUpload(file, "icon")
@@ -700,16 +682,7 @@ const PushEditor = () => {
                   </div>
                   <div className="flex flex-col gap-4">
                     <p className="text-white text-xs leading-4">Изображение</p>
-                    <Form.Item
-                      name={["content", "picture"]}
-                      className="mb-5"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Загрузите картинку",
-                        },
-                      ]}
-                    >
+                    <Form.Item name={["content", "picture"]} className="mb-5">
                       <Upload
                         beforeUpload={(file) =>
                           handleBeforeScreensUpload(file, "picture")
