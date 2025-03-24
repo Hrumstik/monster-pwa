@@ -17,6 +17,7 @@ import { FaStopCircle } from "react-icons/fa";
 import { MdDelete, MdModeEdit } from "react-icons/md";
 import { IoDuplicate } from "react-icons/io5";
 import { GrTest } from "react-icons/gr";
+import { MdOutlineNotStarted } from "react-icons/md";
 
 const PushDashboard = () => {
   const navigate = useNavigate();
@@ -109,14 +110,22 @@ const PushDashboard = () => {
               items: [
                 {
                   key: "stop",
-                  label: <span className="text-xs text-white">Остановить</span>,
+                  label: (
+                    <span className="text-xs text-white">
+                      {push.active ? "Остановить" : "Запустить"}
+                    </span>
+                  ),
                   onClick: () => {
                     editPush({
                       id: push._id!,
-                      data: { active: false },
+                      data: { ...push, active: !push.active },
                     }).unwrap();
                   },
-                  icon: (
+                  icon: push.active ? (
+                    <MdOutlineNotStarted
+                      style={{ color: "white", fontSize: "15px" }}
+                    />
+                  ) : (
                     <FaStopCircle
                       style={{ color: "white", fontSize: "15px" }}
                     />

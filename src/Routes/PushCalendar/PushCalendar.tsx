@@ -10,6 +10,7 @@ import { Button, Spin, Calendar, Tag, message, Tooltip } from "antd";
 import dayjs, { Dayjs } from "dayjs";
 import { FaArrowLeft, FaStopCircle } from "react-icons/fa";
 import { FaArrowRight } from "react-icons/fa";
+import { MdOutlineNotStarted } from "react-icons/md";
 
 import CalendarIcon from "@icons/CalendarIcon";
 import MonsterSelect from "@shared/elements/Select/MonsterSelect";
@@ -109,20 +110,26 @@ const PushCalendar = () => {
                       }
                     />
                   </Tooltip>
-                  <Tooltip title="Остановить">
+                  <Tooltip title={push.active ? "Остановить" : "Запустить"}>
                     <Button
                       type="text"
                       onClick={() =>
                         editPush({
                           id: push._id!,
-                          data: { active: false },
+                          data: { ...push, active: !push.active },
                         }).unwrap()
                       }
                       className="bg-[#161724] hover:!bg-[#515ACA] text-white"
                       icon={
-                        <FaStopCircle
-                          style={{ color: "white", fontSize: "15px" }}
-                        />
+                        push.active ? (
+                          <FaStopCircle
+                            style={{ color: "white", fontSize: "15px" }}
+                          />
+                        ) : (
+                          <MdOutlineNotStarted
+                            style={{ color: "white", fontSize: "15px" }}
+                          />
+                        )
                       }
                     />
                   </Tooltip>
