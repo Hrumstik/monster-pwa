@@ -19,10 +19,14 @@ const LoginPage = () => {
 
   const handleSubmit = async () => {
     try {
+      const rawCredentials = form.getFieldsValue();
+      const credentials = {
+        email: rawCredentials.email?.trim() || "",
+        password: rawCredentials.password?.trim() || "",
+      };
+
       setLoading(true);
-      const loginResponce = await submitCredentials(
-        form.getFieldsValue()
-      ).unwrap();
+      const loginResponce = await submitCredentials(credentials).unwrap();
       login(loginResponce.access_token);
       navigate("/");
     } catch (e) {
