@@ -148,6 +148,7 @@ const EditorPWA = () => {
         "updatedAt",
         "__v",
         "user",
+        "customModal",
       ]);
       pwaContent.theme = theme;
 

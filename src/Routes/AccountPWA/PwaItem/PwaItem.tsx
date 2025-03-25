@@ -220,10 +220,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
           >
             <MdModeEdit className="text-white text-base" />
           </button>
-          <MonsterDropdown
-            disabled={!pwaInfo.status}
-            menu={{ items: generateDropDownItems(pwa) }}
-          >
+          <MonsterDropdown menu={{ items: generateDropDownItems(pwa) }}>
             <button
               onClick={(e) => e.stopPropagation()}
               className="rounded flex items-center justify-center w-[30px] h-[30px] border-none bg-[#383B66] group-hover:bg-[#20223B]"
