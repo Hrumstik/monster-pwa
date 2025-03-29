@@ -64,7 +64,7 @@ const { TextArea } = Input;
 const ScheduledPushEditor = () => {
   const { id, date } = useParams();
   const [pwasChoice, setPwasChoice] = useState<"allPwa" | "specificPwa">(
-    "allPwa"
+    "specificPwa"
   );
   const [createPush, { isLoading: isPushCreating }] = useCreatePushMutation();
   const [editPush, { isLoading: isPushEditing }] = useEditPushMutation();
@@ -122,6 +122,12 @@ const ScheduledPushEditor = () => {
         recipients: pushData.recipients,
       });
       setSelectedTimeZone(pushData.timeZone ?? defaultTimezone?.value);
+      setSelectedPwas(pushData.recipients[0].pwas.map((pwa) => pwa.id));
+      if (pushData.recipients[0].pwas.length === allPwas?.length) {
+        setPwasChoice("allPwa");
+      } else {
+        setPwasChoice("specificPwa");
+      }
       if (pushData.schedules.length === 1) {
         setScheduleOption("once");
         const tzDate = dayjs(pushData.recordedSchedules[0])
@@ -177,13 +183,6 @@ const ScheduledPushEditor = () => {
       setSelectedPwas(allPwasIds);
     }
   };
-
-  useEffect(() => {
-    if (pwasChoice === "allPwa" && allPwas) {
-      const allPwasIds = allPwas.map((pwa) => pwa._id!);
-      setSelectedPwas(allPwasIds);
-    }
-  }, [allPwas]);
 
   const [form] = Form.useForm<PushEvent>();
 
@@ -417,7 +416,7 @@ const ScheduledPushEditor = () => {
                     mode="multiple"
                     placeholder="Выберите PWA"
                     options={pwaOptions}
-                    className="h-[42px] min-w-[460px]"
+                    className="min-h-[42px] min-w-[460px]"
                     value={selectedPwas}
                     onChange={handlePwaChange}
                     disabled={pwasChoice === "allPwa"}

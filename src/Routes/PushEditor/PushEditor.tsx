@@ -99,7 +99,7 @@ const { TextArea } = Input;
 const PushEditor = () => {
   const { id } = useParams();
   const [pwasChoice, setPwasChoice] = useState<"allPwa" | "specificPwa">(
-    "allPwa"
+    "specificPwa"
   );
   const [createPush, { isLoading: isPushCreating }] = useCreatePushMutation();
   const [editPush, { isLoading: isPushEditing }] = useEditPushMutation();
@@ -120,7 +120,7 @@ const PushEditor = () => {
     useTestPushMutation();
 
   useEffect(() => {
-    if (pushData) {
+    if (pushData && allPwas) {
       form.setFieldsValue(pushData);
       const delay = pushData.delay;
 
@@ -149,8 +149,13 @@ const PushEditor = () => {
       ]);
 
       setSelectedPwas(pushData.recipients[0].pwas.map((pwa) => pwa.id));
+      if (pushData.recipients[0].pwas.length === allPwas?.length) {
+        setPwasChoice("allPwa");
+      } else {
+        setPwasChoice("specificPwa");
+      }
     }
-  }, [pushData]);
+  }, [pushData, allPwas]);
 
   const [timeOptions, setTimeOptions] = useState<
     [
@@ -214,13 +219,6 @@ const PushEditor = () => {
       setSelectedPwas(allPwasIds);
     }
   };
-
-  useEffect(() => {
-    if (pwasChoice === "allPwa" && allPwas) {
-      const allPwasIds = allPwas.map((pwa) => pwa._id!);
-      setSelectedPwas(allPwasIds);
-    }
-  }, [allPwas]);
 
   const [form] = Form.useForm<PushEvent>();
 
@@ -415,7 +413,7 @@ const PushEditor = () => {
                     mode="multiple"
                     placeholder="Выберите PWA"
                     options={pwaOptions}
-                    className="h-[42px] min-w-[460px]"
+                    className="min-h-[42px] min-w-[460px]"
                     value={selectedPwas}
                     onChange={handlePwaChange}
                     disabled={pwasChoice === "allPwa"}
@@ -752,7 +750,7 @@ const PushEditor = () => {
                 >
                   <MonsterSelect
                     options={registrationFiltersOptions}
-                    className="h-[42px]"
+                    className="min-h-[42px]"
                     placeholder="Выберите событие"
                   />
                 </Form.Item>
@@ -764,7 +762,7 @@ const PushEditor = () => {
                 >
                   <MonsterSelect
                     options={depositFiltersOptions}
-                    className="h-[42px]"
+                    className="min-h-[42px]"
                     placeholder="Выберите событие"
                   />
                 </Form.Item>
