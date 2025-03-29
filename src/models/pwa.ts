@@ -1,3 +1,5 @@
+import { PwaStatus } from "./domain";
+
 export interface Picture {
   url: string | null;
   preview: string | null;
@@ -66,14 +68,10 @@ export interface PwaContent {
 }
 
 export interface PreparedPWADataItem {
-  pwaName?: string;
-  appName?: string;
-  domain?: string;
-  geo?: string;
-  createdAt?: string | Date;
-  status?: string;
-  id?: string;
-  pwaTags?: string[];
+  pwaContent: PwaContent;
+  domain: string;
+  status: PwaStatus;
+  loading: boolean;
 }
 
 export enum StatusData {
@@ -122,4 +120,11 @@ export interface Pixel {
   token: string;
   pixelId: string;
   events: { triggerEvent: PwaEvents; sentEvent: FacebookEvent }[];
+}
+
+export interface PwaDashboardItem {
+  pwaContent: PwaContent;
+  domain: string;
+  status: PwaStatus;
+  loading: boolean;
 }

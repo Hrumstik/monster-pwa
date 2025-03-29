@@ -2,7 +2,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import baseQuery from "../../middlewares/authBaseQuery";
 import { DomainCheckStatus, PwaContent } from "@models/pwa";
 import { User } from "@models/user";
-import { DeploymentConfig, ReadyDomains } from "@models/domain";
+import { DeploymentConfig, PwaStatus, ReadyDomains } from "@models/domain";
 
 export const pwaSlice = createApi({
   reducerPath: "pwaApi",
@@ -17,6 +17,18 @@ export const pwaSlice = createApi({
         method: "POST",
         body: data,
       }),
+    }),
+    getPwaForDashboard: builder.query<
+      {
+        pwaContent: PwaContent;
+        domain: string;
+        status: PwaStatus;
+        loading: boolean;
+      }[],
+      void
+    >({
+      query: () => "/pwa-content/pwas",
+      providesTags: ["PwaContent"],
     }),
     updatePwaName: builder.mutation<
       PwaContent,
@@ -47,12 +59,12 @@ export const pwaSlice = createApi({
       async onQueryStarted({ id, pwaTags }, { dispatch, queryFulfilled }) {
         const patchResult = dispatch(
           pwaSlice.util.updateQueryData(
-            "getAllPwaContent",
+            "getPwaForDashboard",
             undefined,
             (draft) => {
               draft?.forEach((pwa) => {
-                if (pwa._id === id) {
-                  pwa.pwaTags = [...pwaTags];
+                if (pwa.pwaContent._id === id) {
+                  pwa.pwaContent.pwaTags = pwaTags;
                 }
               });
             }
@@ -72,7 +84,6 @@ export const pwaSlice = createApi({
         url: `/pwa-content/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["PwaContent", "User"],
     }),
     deletePwaContentForced: builder.mutation<void, string>({
       query: (id) => ({
@@ -101,7 +112,7 @@ export const pwaSlice = createApi({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["ReadyDomains"],
+      invalidatesTags: ["ReadyDomains", "PwaContent"],
     }),
     getPwaContentStatus: builder.query<
       { status: string; url?: string; body?: string },
@@ -174,6 +185,24 @@ export const pwaSlice = createApi({
         method: "GET",
       }),
     }),
+    getAllDomainsAnalytics: builder.query<
+      {
+        opens: number;
+        installs: number;
+        registrations: number;
+        deposits: number;
+      }[],
+      {
+        startDate?: string;
+        endDate?: string;
+      }
+    >({
+      query: ({ startDate, endDate }) => ({
+        url: `/pwa-event-log/stats/all?startDate=${startDate}&endDate=${endDate}`,
+        method: "GET",
+      }),
+    }),
+
     generateResponseText: builder.mutation<
       { text: string },
       {
@@ -209,4 +238,8 @@ export const {
   useLazyGenerateReviewTextQuery,
   useGenerateResponseTextMutation,
   useLazyGetDomainAnalyticsQuery,
+  useGetPwaForDashboardQuery,
+  useLazyGetPwaForDashboardQuery,
+  useGetAllDomainsAnalyticsQuery,
+  useLazyGetAllDomainsAnalyticsQuery,
 } = pwaSlice;

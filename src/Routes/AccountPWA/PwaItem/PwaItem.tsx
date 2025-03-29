@@ -1,32 +1,24 @@
 import { LoadingOutlined, MoreOutlined } from "@ant-design/icons";
-import {
-  DomainCheckStatus,
-  PreparedPWADataItem,
-  PwaContent,
-} from "@models/pwa";
+import { PreparedPWADataItem, PwaContent } from "@models/pwa";
 import MonsterDropdown from "@shared/elements/Dropdown/Dropdown";
 import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
 import {
   useDeletePwaContentForcedMutation,
   useGetAllPwaContentQuery,
-  useLazyCheckDomainStatusQuery,
   useUpdatePwaNameMutation,
 } from "@store/apis/pwaApi.ts";
 import { Modal, notification, Spin, Tooltip } from "antd";
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FiFileText } from "react-icons/fi";
 import { MdDelete, MdModeEdit } from "react-icons/md";
 import { VscPreview } from "react-icons/vsc";
-import useGetPwaInfo from "@shared/hooks/useGetPwaInfo";
 import { PwaStatus } from "@models/domain";
 import { getPwaStatus } from "../MyPWAsHelpers.tsx";
 import type { MenuInfo } from "rc-menu/lib/interface";
 import { useNavigate } from "react-router-dom";
 import DomainCell from "@shared/elements/DomainCell/DomainCell.tsx";
-import { useUpdateEffect } from "react-use";
 import PwaTags from "./TagItem/PwaTags.tsx";
-import useCheckBuildStatus from "@shared/hooks/useCheckBuildStatus.ts";
 import { IoDuplicate } from "react-icons/io5";
 
 const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
@@ -36,42 +28,8 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
     useDeletePwaContentForcedMutation();
   const [updatePwaContent, { isLoading: updatePwaLoading }] =
     useUpdatePwaNameMutation();
-  const [checkDomainStatus] = useLazyCheckDomainStatusQuery();
-  const { pwaInfo } = useGetPwaInfo(pwa.id);
 
   const navigate = useNavigate();
-  const { startPolling } = useCheckBuildStatus();
-
-  useEffect(() => {
-    if (pwaInfo === null) return;
-    if (!pwaInfo?.status && pwa.id) {
-      console.log("start polling");
-      startPolling({
-        pwaContentId: pwa.id,
-      });
-    }
-  }, [pwaInfo, pwa.id]);
-
-  useUpdateEffect(() => {
-    if (!pwaInfo?.status || pwaInfo?.status !== PwaStatus.WAITING_NS) return;
-    let interval: NodeJS.Timeout;
-    const getDomainStatus = async (pwaContentID: string) => {
-      const status = await checkDomainStatus(pwaContentID).unwrap();
-
-      if (status === DomainCheckStatus.Pending) {
-        interval = setInterval(async () => {
-          const status = await checkDomainStatus(pwaContentID).unwrap();
-          if (status === DomainCheckStatus.Active) {
-            clearInterval(interval);
-          }
-        }, 20000);
-      }
-    };
-
-    getDomainStatus(pwa.id!);
-
-    return () => clearInterval(interval);
-  }, [pwaInfo?.status]);
 
   const handleDelete = async (id: string) => {
     try {
@@ -93,7 +51,9 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         onClick: (e: MenuInfo) => {
           e.domEvent.stopPropagation();
           e.domEvent.nativeEvent.stopImmediatePropagation();
-          const renamePwa = (data || []).find(({ _id }) => _id === pwa.id);
+          const renamePwa = (data || []).find(
+            ({ _id }) => _id === pwa.pwaContent._id
+          );
           setRenamePwa({
             ...renamePwa,
             pwaName: renamePwa?.pwaName ?? renamePwa?.appName,
@@ -104,7 +64,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         label: (
           <span
             className={`text-xs text-white  ${
-              pwaInfo?.status !== PwaStatus.ACTIVE
+              pwa?.status !== PwaStatus.ACTIVE
                 ? "cursor-not-allowed"
                 : "cursor-pointer"
             }`}
@@ -118,7 +78,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         onClick: (e: MenuInfo) => {
           e.domEvent.stopPropagation();
           e.domEvent.nativeEvent.stopImmediatePropagation();
-          if (pwaInfo?.status !== PwaStatus.ACTIVE) return;
+          if (pwa?.status !== PwaStatus.ACTIVE) return;
           window.open(`https://${pwa.domain}`, "_blank");
         },
       },
@@ -132,7 +92,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         onClick: (e: MenuInfo) => {
           e.domEvent.stopPropagation();
           e.domEvent.nativeEvent.stopImmediatePropagation();
-          navigate(`/clone-PWA/${pwa.id}`);
+          navigate(`/clone-PWA/${pwa.pwaContent._id}/`);
         },
         icon: <IoDuplicate style={{ color: "white" }} />,
       },
@@ -144,7 +104,7 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
         onClick: (e: MenuInfo) => {
           e.domEvent.stopPropagation();
           e.domEvent.nativeEvent.stopImmediatePropagation();
-          handleDelete(pwa.id as string);
+          handleDelete(pwa.pwaContent._id as string);
         },
       },
     ];
@@ -168,54 +128,56 @@ const PwaItem = ({ pwa }: { pwa: PreparedPWADataItem }) => {
     );
   };
 
-  if (!pwaInfo) return null;
-
   return (
     <>
       <tr
-        key={pwa.id}
+        key={pwa.pwaContent._id}
         className="hover:bg-[#383B66] group text-xs focus:bg-gray-300 w-full text-white"
       >
         <Tooltip
           color="grey"
           placement="topRight"
-          title={pwa.pwaName ?? pwa.appName}
+          title={pwa.pwaContent.pwaName ?? pwa.pwaContent.appName}
         >
           <td className="px-8 py-3 truncate overflow-hidden whitespace-nowrap">
             <Spin spinning={deletePwaLoading || updatePwaLoading} fullscreen />
             <div className="flex justify-center">
-              {pwa.pwaName ?? pwa.appName}
+              {pwa.pwaContent.pwaName ?? pwa.pwaContent.appName}
             </div>
           </td>
         </Tooltip>
         <DomainCell domain={pwa.domain} />
         <td className="text-center py-3 truncate ... ">
-          {moment(pwa.createdAt).format("DD.MM.YYYY")}
+          {moment(pwa.pwaContent.createdAt).format("DD.MM.YYYY")}
         </td>
         <td className="py-3 truncate ... text-center flex justify-center items-center ">
-          {pwaInfo.status ? (
-            getPwaStatus(pwaInfo.status)
+          {!pwa.loading ? (
+            getPwaStatus(pwa.status)
           ) : (
-            <>
-              <Spin
-                indicator={
-                  <LoadingOutlined
-                    style={{
-                      color: "#00FF11",
-                    }}
-                    spin
-                  />
-                }
-              />
-            </>
+            <Spin
+              indicator={
+                <LoadingOutlined
+                  style={{
+                    color: "#00FF11",
+                  }}
+                  spin
+                />
+              }
+            />
           )}
         </td>
         <td className="py-3">
-          <PwaTags pwaTags={pwaInfo.pwaTags ?? []} pwaId={pwa.id!} />
+          <PwaTags
+            pwaTags={pwa.pwaContent.pwaTags ?? []}
+            pwaId={pwa.pwaContent._id!}
+          />
         </td>
         <td className="py-3  text-center flex justify-center items-center gap-2">
           <button
-            onClick={() => pwaInfo.status && navigate(`/edit-PWA/${pwa.id}`)}
+            onClick={() =>
+              pwa.status &&
+              navigate(`/edit-PWA/${pwa.pwaContent._id}/${pwa.domain}`)
+            }
             className="details hover:bg-[#20223B] rounded flex items-center justify-center w-[30px] h-[30px] border-none bg-[#383B66] group-hover:bg-[#20223B]"
           >
             <MdModeEdit className="text-white text-base" />

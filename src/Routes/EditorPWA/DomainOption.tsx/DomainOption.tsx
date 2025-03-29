@@ -20,7 +20,6 @@ interface DomainOptionProps {
   domainsData?: CloudflareData;
   steps: Step[];
   setSteps: (steps: Step[]) => void;
-  pwaContentId: string | null;
   cfAccounts?: { email: string; gApiKey: string }[];
   setCurrentTab: (tab: EditorPWATabs) => void;
   formForOwnDomain: FormInstance<CloudflareData>;
@@ -37,20 +36,19 @@ const DomainOption: React.FC<DomainOptionProps> = ({
   steps,
   setSteps,
   domainsData,
-  pwaContentId,
   setCurrentTab,
   formForOwnDomain,
   formForReadyDomain,
   currentDomainTab,
   setCurrentDomainTab,
 }) => {
+  const { domainName, id } = useParams();
   const [api, contextHolder] = notification.useNotification();
   const { data: readyDomainsData } = useGetReadyDomainsQuery();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { getPwaInfo } = useGetPwaInfo();
   const [readyDomains, setReadyDomains] = useState<DefaultOptionType[]>([]);
-  const { id } = useParams();
 
   let savedNsRecords:
     | {
@@ -61,8 +59,8 @@ const DomainOption: React.FC<DomainOptionProps> = ({
   let domain;
   let readyDomainId;
 
-  if (pwaContentId) {
-    const userPwa = getPwaInfo(pwaContentId);
+  if (id) {
+    const userPwa = getPwaInfo(id);
 
     savedNsRecords = userPwa?.nsRecords;
     domain = userPwa?.domain;
@@ -219,12 +217,12 @@ const DomainOption: React.FC<DomainOptionProps> = ({
     <>
       {contextHolder}
       <Spin spinning={isLoading} fullscreen />
-      {domain ? (
+      {domainName ? (
         <Result
           status="success"
           title={
             <h1 className="font-bold text-base leading-5 text-[#00FF11] cursor-default mb-4">
-              Домен <span className="underline cursor-auto">{domain}</span>{" "}
+              Домен <span className="underline cursor-auto">{domainName}</span>{" "}
               успешно добавлен!
             </h1>
           }

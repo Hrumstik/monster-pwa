@@ -20,7 +20,6 @@ import {
   useGetMyUserQuery,
   useGetReadyDomainsQuery,
   useBuildPwaContentMutation,
-  useGetAllPwaContentQuery,
   useGetPwaContentByIdQuery,
 } from "@store/apis/pwaApi.ts";
 import { Form, notification } from "antd";
@@ -36,7 +35,7 @@ const EditorPWA = () => {
     EditorPWATabs.Design
   );
 
-  const { id } = useParams();
+  const { id, domainName } = useParams();
   const { cloneId } = useParams();
 
   const { data: userData } = useGetMyUserQuery();
@@ -49,9 +48,6 @@ const EditorPWA = () => {
   const { data: readyDomainsData } = useGetReadyDomainsQuery();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const [pwaContentId, setPwaContentId] = useState<string | null>(null);
-  const { refetch: downloadAllPwa } = useGetAllPwaContentQuery();
-  const { refetch: downloadUserInfo } = useGetMyUserQuery();
 
   const [deletePwaContent] = useDeletePwaContentMutation();
   const [designOptionForm] = Form.useForm<DesignOptionFormValues>();
@@ -74,7 +70,6 @@ const EditorPWA = () => {
 
   useEffect(() => {
     if (id && fetchedPwaContent) {
-      setPwaContentId(id);
       setSteps(
         steps.map((step) => ({
           ...step,
@@ -185,7 +180,6 @@ const EditorPWA = () => {
     if (!pwaContent) return;
 
     try {
-      await handleNextStep(currentTab);
       setIsLoading(true);
       let domain = undefined;
       if (id) {
@@ -193,21 +187,20 @@ const EditorPWA = () => {
       }
 
       const pwaContentResponse = await createPwaContent(pwaContent).unwrap();
-      if (id) deletePwaContent(id);
-
-      setPwaContentId(pwaContentResponse._id!);
+      if (id) await deletePwaContent(id).unwrap();
 
       const buildPayload = {
         id: pwaContentResponse._id!,
         body: {
           deploy: !domain,
-          ...(domain ? { domain } : getDomainData(pwaContentResponse)!),
+          ...(domainName
+            ? { domain: domainName }
+            : getDomainData(pwaContentResponse)!),
         },
       };
 
       await buildAndDeployPwaContent(buildPayload).unwrap();
-      await downloadAllPwa().unwrap();
-      await downloadUserInfo().unwrap();
+
       setIsLoading(false);
       navigate("/");
     } catch (error) {
@@ -277,7 +270,6 @@ const EditorPWA = () => {
             domainsData={domainsData}
             steps={steps}
             setSteps={setSteps}
-            pwaContentId={pwaContentId}
             setCurrentTab={setCurrentTab}
             formForOwnDomain={formForOwnDomain}
             formForReadyDomain={formForReadyDomain}

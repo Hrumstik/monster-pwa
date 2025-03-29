@@ -40,7 +40,7 @@ function App() {
               element: <EditorPWA />,
             },
             {
-              path: "/edit-PWA/:id",
+              path: "/edit-PWA/:id/:domainName",
               element: <EditorPWA />,
             },
             {
