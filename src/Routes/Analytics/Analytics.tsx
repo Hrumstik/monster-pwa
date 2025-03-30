@@ -29,20 +29,22 @@ const Analytics = () => {
 
     const fetchData = async () => {
       const analyticsData = await Promise.all(
-        userInfo.pwas.map(async (pwa) => {
-          const data = await getDomainAnalytic({
-            pwaContentId: pwa.pwaContentId,
-            startDate,
-            endDate,
-          }).unwrap();
-          return {
-            pwaContentId: pwa.pwaContentId,
-            opens: data.opens,
-            installs: data.installs,
-            registrations: data.registrations,
-            deposits: data.deposits,
-          };
-        })
+        userInfo.pwas
+          .filter((pwa) => pwa.pwaContentId)
+          .map(async (pwa) => {
+            const data = await getDomainAnalytic({
+              pwaContentId: pwa.pwaContentId,
+              startDate,
+              endDate,
+            }).unwrap();
+            return {
+              pwaContentId: pwa.pwaContentId,
+              opens: data.opens,
+              installs: data.installs,
+              registrations: data.registrations,
+              deposits: data.deposits,
+            };
+          })
       );
       setDomainAnalytics(analyticsData);
     };
@@ -51,19 +53,21 @@ const Analytics = () => {
   }, [userInfo, startDate, endDate]);
 
   const dataSource =
-    userInfo?.pwas.map((pwa) => {
-      const data = domainAnalytics?.find(
-        (item) => item.pwaContentId === pwa.pwaContentId
-      );
-      return {
-        key: pwa.pwaContentId,
-        domain: pwa.domainName,
-        opens: data?.opens,
-        installs: data?.installs,
-        registrations: data?.registrations,
-        deposits: data?.deposits,
-      };
-    }) || [];
+    userInfo?.pwas
+      .filter((pwa) => pwa.pwaContentId)
+      .map((pwa) => {
+        const data = domainAnalytics?.find(
+          (item) => item.pwaContentId === pwa.pwaContentId
+        );
+        return {
+          key: pwa.pwaContentId,
+          domain: pwa.domainName,
+          opens: data?.opens,
+          installs: data?.installs,
+          registrations: data?.registrations,
+          deposits: data?.deposits,
+        };
+      }) || [];
 
   const columns = [
     {
