@@ -349,3 +349,21 @@ export const gerRandomImageUrl = (sex: keyof AvatarUrls): string => {
   const urls = avatarUrls[sex];
   return urls[Math.floor(Math.random() * urls.length)];
 };
+
+export const generateTimeoutOptions = (
+  start: number,
+  end: number,
+  step: number = 1000
+) => {
+  return Array.from({ length: (end - start) / step + 1 }, (_, i) => {
+    const value = start + i * step;
+    const seconds = value / 1000;
+    const label =
+      seconds === 1
+        ? "1 секунда"
+        : seconds >= 2 && seconds <= 4
+        ? `${seconds} секунды`
+        : `${seconds} секунд`;
+    return { value, label };
+  });
+};

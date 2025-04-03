@@ -93,6 +93,13 @@ const EditorPWA = () => {
         ...fetchedPwaContent,
         images,
         reviews,
+        customModal: {
+          showAppHeader: fetchedPwaContent.customModal?.showAppHeader,
+          timeout: fetchedPwaContent.customModal?.timeout,
+          title: fetchedPwaContent.customModal?.title,
+          content: fetchedPwaContent.customModal?.content,
+          buttonText: fetchedPwaContent.customModal?.buttonText,
+        },
       };
       const theme = omit(updatedPwaContent.theme, ["_id"]);
 
@@ -102,7 +109,6 @@ const EditorPWA = () => {
         "updatedAt",
         "__v",
         "user",
-        "customModal",
       ]);
       pwaContent.theme = theme;
 
@@ -133,7 +139,13 @@ const EditorPWA = () => {
         ...fetchedPwaContent,
         images,
         reviews,
-        customModal: undefined,
+        customModal: {
+          showAppHeader: fetchedPwaContent.customModal?.showAppHeader,
+          timeout: fetchedPwaContent.customModal?.timeout,
+          title: fetchedPwaContent.customModal?.title,
+          content: fetchedPwaContent.customModal?.content,
+          buttonText: fetchedPwaContent.customModal?.buttonText,
+        },
       };
       const theme = omit(updatedPwaContent.theme, ["_id"]);
 
@@ -143,7 +155,6 @@ const EditorPWA = () => {
         "updatedAt",
         "__v",
         "user",
-        "customModal",
       ]);
       pwaContent.theme = theme;
 

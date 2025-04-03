@@ -58,9 +58,14 @@ export interface PwaContent {
   keepActualDateOfReviews?: boolean;
   customModal?: {
     showAppHeader?: boolean;
+    timeout?: number;
     title?: Record<string, string>;
     content?: Record<string, string>;
     buttonText?: Record<string, string>;
+  };
+  offerPreloader?: {
+    background?: string;
+    loader?: string;
   };
   simulate_install: boolean;
   mainThemeColor?: string;

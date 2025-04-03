@@ -21,6 +21,7 @@ import {
   countOfReviews,
   developerValue,
   generateRandomValue,
+  generateTimeoutOptions,
   languages,
   sizeValues,
 } from "./DesignOptionHelpers";
@@ -94,6 +95,11 @@ export interface DesignOptionFormValues {
   simulate_install: boolean;
   mainThemeColor: string;
   installButtonTextColor: string;
+  modalTimeout: number;
+  offerPreloader?: {
+    background?: string;
+    loader?: string;
+  };
 }
 
 export interface DesignOptionProps {
@@ -145,6 +151,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
         modalContent: content.customModal.content.originalLanguage,
         modalTextButton: content.customModal?.buttonText?.originalLanguage,
         showAppHeader: content.customModal.showAppHeader,
+        modalTimeout: content.customModal.timeout,
       });
     }
 
@@ -178,6 +185,10 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       simulate_install: content.simulate_install,
       mainThemeColor: content.mainThemeColor,
       installButtonTextColor: content.installButtonTextColor,
+      offerPreloader: {
+        background: content.offerPreloader?.background ?? "#000000",
+        loader: content.offerPreloader?.loader ?? "#FF8C00",
+      },
     });
 
     updatedReviews.forEach((review) => {
@@ -254,11 +265,15 @@ const DesignOption: React.FC<DesignOptionProps> = ({
   const [uploadImages, { isLoading: areImagesLoading }] =
     useUploadImagesMutation();
   useWatch("countOfStars", form);
+  const l = useWatch("offerPreloader", form);
+  console.log("l", l);
   const wideScreensIsActive = useWatch("wideScreens", form);
   const [appIcon, setAppIcon] = useState<Picture>({
     url: null,
     preview: null,
   });
+
+  const timeoutOptions = generateTimeoutOptions(1000, 30000);
 
   const [tags, setTags] = useState<string[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -614,8 +629,13 @@ const DesignOption: React.FC<DesignOptionProps> = ({
             buttonText: {
               originalLanguage: form.getFieldValue("modalTextButton"),
             },
+            timeout: form.getFieldValue("modalTimeout"),
           },
         }),
+        offerPreloader: {
+          background: form.getFieldValue(["offerPreloader", "background"]),
+          loader: form.getFieldValue(["offerPreloader", "loader"]),
+        },
       };
 
       setPwaContent({
@@ -754,6 +774,11 @@ const DesignOption: React.FC<DesignOptionProps> = ({
           simulate_install: false,
           mainThemeColor: "#1357CD",
           installButtonTextColor: "#FFFFFF",
+          modalTimeout: 5000,
+          offerPreloader: {
+            background: "#000000",
+            loader: "#FF8C00",
+          },
         }}
         onValuesChange={handleValuesChange}
         onFieldsChange={(_, allFields) => {
@@ -1340,36 +1365,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                     Меню внизу экрана
                   </div>
                 </div>
-                <div className="flex gap-4 justify-start flex-col items-start">
-                  <Form.Item
-                    name="mainThemeColor"
-                    valuePropName="value"
-                    getValueFromEvent={(color) => color.toHexString()}
-                    noStyle
-                  >
-                    <ColorPicker
-                      className="!bg-[#20223B]  border-none active:border-none focus:border-none"
-                      showText={() => (
-                        <span className="text-white">Цвет темы PWA</span>
-                      )}
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name="installButtonTextColor"
-                    valuePropName="value"
-                    getValueFromEvent={(color) => color.toHexString()}
-                    noStyle
-                  >
-                    <ColorPicker
-                      className="!bg-[#20223B]  border-none active:border-none focus:border-none"
-                      showText={() => (
-                        <span className="text-white">
-                          Цвет кнопки установки
-                        </span>
-                      )}
-                    />
-                  </Form.Item>
-                </div>
+
                 <div className="flex gap-4 justify-start items-center">
                   <Form.Item name="darkTheme" noStyle>
                     <MonsterSwitch />
@@ -1462,10 +1458,137 @@ const DesignOption: React.FC<DesignOptionProps> = ({
                             <MonsterInput className="!bg-[#161724] !h-[42px]" />
                           </Form.Item>
                         </div>
+                        <div className="flex flex-col gap-3">
+                          <div className="text-white text-xs">
+                            Задержка открытия модального окна
+                          </div>
+                          <Form.Item name={"modalTimeout"} className="mb-0">
+                            <MonsterSelect
+                              options={timeoutOptions}
+                              className="!bg-[#161724] !h-[42px]"
+                            />
+                          </Form.Item>
+                        </div>
                       </div>
                     </div>
                   </>
                 )}
+
+                <div className="flex gap-4 justify-start flex-col items-start">
+                  <Form.Item
+                    name="mainThemeColor"
+                    valuePropName="value"
+                    getValueFromEvent={(color) => color.toHexString()}
+                    noStyle
+                  >
+                    <ColorPicker
+                      className="!bg-[#20223B]  border-none active:border-none focus:border-none"
+                      showText={() => (
+                        <div className="text-white flex items-center gap-2">
+                          Цвет темы PWA
+                          <div
+                            className="cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              form.setFieldValue(["mainThemeColor"], "#1357CD");
+                              setPreviewContent({
+                                ...previewContent,
+                                mainThemeColor: "#1357CD",
+                              });
+                            }}
+                          >
+                            <GenerateIcon />
+                          </div>
+                        </div>
+                      )}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="installButtonTextColor"
+                    valuePropName="value"
+                    getValueFromEvent={(color) => color.toHexString()}
+                    noStyle
+                  >
+                    <ColorPicker
+                      className="!bg-[#20223B]  border-none active:border-none focus:border-none"
+                      showText={() => (
+                        <div className="text-white flex items-center gap-2">
+                          Цвет кнопки установки
+                          <div
+                            className="cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              form.setFieldValue(
+                                ["installButtonTextColor"],
+                                "#FFFFFF"
+                              );
+                              setPreviewContent({
+                                ...previewContent,
+                                installButtonTextColor: "#FFFFFF",
+                              });
+                            }}
+                          >
+                            <GenerateIcon />
+                          </div>
+                        </div>
+                      )}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name={["offerPreloader", "background"]}
+                    valuePropName="value"
+                    getValueFromEvent={(color) => color.toHexString()}
+                    noStyle
+                  >
+                    <ColorPicker
+                      className="!bg-[#20223B]  border-none active:border-none focus:border-none"
+                      showText={() => (
+                        <div className="text-white flex items-center gap-2">
+                          Цвет фона при открытии оффера
+                          <div
+                            className="cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              form.setFieldValue(
+                                ["offerPreloader", "background"],
+                                "#000000"
+                              );
+                            }}
+                          >
+                            <GenerateIcon />
+                          </div>
+                        </div>
+                      )}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name={["offerPreloader", "loader"]}
+                    valuePropName="value"
+                    getValueFromEvent={(color) => color.toHexString()}
+                    noStyle
+                  >
+                    <ColorPicker
+                      className="!bg-[#20223B]  border-none active:border-none focus:border-none"
+                      showText={() => (
+                        <div className="text-white flex items-center gap-2">
+                          Цвет лоудера при открытии оффера
+                          <div
+                            className="cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              form.setFieldValue(
+                                ["offerPreloader", "loader"],
+                                "#FF8C00"
+                              );
+                            }}
+                          >
+                            <GenerateIcon />
+                          </div>
+                        </div>
+                      )}
+                    />
+                  </Form.Item>
+                </div>
               </div>
             </div>
           </div>
