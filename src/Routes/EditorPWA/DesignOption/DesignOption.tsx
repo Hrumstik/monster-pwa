@@ -273,7 +273,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
     preview: null,
   });
 
-  const timeoutOptions = generateTimeoutOptions(1000, 30000);
+  const timeoutOptions = generateTimeoutOptions(1000, 60000);
 
   const [tags, setTags] = useState<string[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -774,7 +774,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
           simulate_install: false,
           mainThemeColor: "#1357CD",
           installButtonTextColor: "#FFFFFF",
-          modalTimeout: 5000,
+          modalTimeout: 10000,
           offerPreloader: {
             background: "#000000",
             loader: "#FF8C00",
