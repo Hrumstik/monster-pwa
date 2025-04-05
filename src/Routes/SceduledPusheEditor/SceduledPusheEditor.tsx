@@ -248,7 +248,7 @@ const ScheduledPushEditor = () => {
       const payload = {
         ...values,
       };
-      payload.triggerEvent = TriggerEvent.OpenPwa;
+
       const pwas = selectedPwas
         .map((pwaId) => {
           const pwaInfo = getPwaInfo(pwaId);
