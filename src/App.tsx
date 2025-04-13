@@ -107,6 +107,7 @@ function App() {
             colorText: "#FFFFFF",
             headerColor: "#FFFFFF",
             headerSplitColor: "none",
+            rowHoverBg: "#383B66",
           },
           Select: {
             multipleItemBorderColorDisabled: "#383B66",

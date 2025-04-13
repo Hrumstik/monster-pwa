@@ -127,3 +127,10 @@
   > textarea.ant-input {
   background-color: #161724 !important;
 }
+
+.monster-input-success,
+.monster-input-success.ant-input,
+.monster-input-success.ant-input-textarea,
+.monster-input-success.ant-input-affix-wrapper {
+  border-color: #383b66 !important;
+}

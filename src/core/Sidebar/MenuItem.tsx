@@ -27,7 +27,7 @@ const MenuItem = ({
       onClick={onClick}
       className={`${
         isActive ? "bg-[#0d421d]" : ""
-      } group hover:bg-[#20223B] h-[42px] rounded  cursor-pointer p-3 px-1 flex items-center justify-between`}
+      } group hover:bg-[#20223B] h-[42px] rounded  cursor-pointer p-3 px-5 flex items-center justify-between`}
     >
       <div className="flex gap-[14px] h-full  items-center justify-between">
         {icon ?? (

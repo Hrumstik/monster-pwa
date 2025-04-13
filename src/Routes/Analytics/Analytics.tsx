@@ -5,6 +5,19 @@ import {
   useLazyGetDomainAnalyticsQuery,
 } from "@store/apis/pwaApi";
 import dayjs from "dayjs";
+import type { ColumnsType } from "antd/es/table";
+
+interface AnalyticsRow {
+  key: string;
+  domain: string;
+  opens: number;
+  installs: number;
+  registrations: number;
+  deposits: number;
+  baseOpens: number;
+  baseInstalls: number;
+  baseRegistrations: number;
+}
 
 const { RangePicker } = DatePicker;
 
@@ -52,53 +65,81 @@ const Analytics = () => {
     fetchData();
   }, [userInfo, startDate, endDate]);
 
-  const dataSource =
+  const dataSource: AnalyticsRow[] =
     userInfo?.pwas
       .filter((pwa) => pwa.pwaContentId)
       .map((pwa) => {
         const data = domainAnalytics?.find(
           (item) => item.pwaContentId === pwa.pwaContentId
         );
+
+        const opens = data?.opens ?? 0;
+        const installs = data?.installs ?? 0;
+        const registrations = data?.registrations ?? 0;
+        const deposits = data?.deposits ?? 0;
+
         return {
           key: pwa.pwaContentId,
-          domain: pwa.domainName,
-          opens: data?.opens,
-          installs: data?.installs,
-          registrations: data?.registrations,
-          deposits: data?.deposits,
+          domain: pwa.domainName || "",
+          opens,
+          installs,
+          registrations,
+          deposits,
+          baseOpens: opens,
+          baseInstalls: installs,
+          baseRegistrations: registrations,
         };
       }) || [];
 
-  const columns = [
+  const formatValue = (value: number, base: number) =>
+    base > 0 ? (
+      <div className="flex gap-2 items-center justify-center">
+        <div>{value}</div>
+        <div style={{ fontSize: 12, color: "#999" }}>
+          {((value / base) * 100).toFixed(1)}%
+        </div>
+      </div>
+    ) : (
+      <div>{value}</div>
+    );
+
+  const columns: ColumnsType<AnalyticsRow> = [
     {
       title: "Домен",
       dataIndex: "domain",
       key: "domain",
-      align: "center" as const,
+      align: "center",
     },
     {
       title: "Открытия",
       dataIndex: "opens",
       key: "opens",
-      align: "center" as const,
+      align: "center",
+      render: (value: number) => <div>{value}</div>,
     },
     {
       title: "Установки",
       dataIndex: "installs",
       key: "installs",
-      align: "center" as const,
+      align: "center",
+      render: (_: number, row: AnalyticsRow) =>
+        formatValue(row.installs, row.baseOpens),
     },
     {
       title: "Регистрации",
       dataIndex: "registrations",
       key: "registrations",
-      align: "center" as const,
+      align: "center",
+      render: (_: number, row: AnalyticsRow) =>
+        formatValue(row.registrations, row.baseInstalls),
     },
     {
       title: "Депозиты",
       dataIndex: "deposits",
       key: "deposits",
-      align: "center" as const,
+      align: "center",
+      render: (_: number, row: AnalyticsRow) =>
+        formatValue(row.deposits, row.baseRegistrations),
     },
   ];
 
@@ -130,7 +171,11 @@ const Analytics = () => {
           }}
         />
       </div>
-      <Table columns={columns} dataSource={dataSource} pagination={false} />
+      <Table<AnalyticsRow>
+        columns={columns}
+        dataSource={dataSource}
+        pagination={false}
+      />
     </div>
   );
 };

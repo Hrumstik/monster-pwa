@@ -18,8 +18,11 @@ import { MdDelete, MdModeEdit } from "react-icons/md";
 import { IoDuplicate } from "react-icons/io5";
 import { GrTest } from "react-icons/gr";
 import { MdOutlineNotStarted } from "react-icons/md";
+import { useState } from "react";
+import MonsterInput from "@shared/elements/MonsterInput/MonsterInput";
 
 const PushDashboard = () => {
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const { data, isLoading } = useGetPushesQuery();
   const [editPush, { isLoading: editPushIsLoading }] = useEditPushMutation();
@@ -72,7 +75,9 @@ const PushDashboard = () => {
 
   const dataSource = data
     ?.filter(
-      (push) => !push.recordedSchedules || push.recordedSchedules.length === 0
+      (push) =>
+        (!push.recordedSchedules || push.recordedSchedules.length === 0) &&
+        push.systemName.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .map((push) => ({
       key: push._id,
@@ -171,12 +176,21 @@ const PushDashboard = () => {
     <div className="px-[50px] pt-[110px] pb-[40px]">
       <div className="flex justify-between items-center mb-7">
         <span className="text-xl font-bold leading-8 text-white">Мои пуши</span>
-        <button
-          onClick={() => navigate("/create-push")}
-          className="bg-[#02E314] text-[#161724] flex items-center justify-center px-3 rounded box-border h-[42px] hover:opacity-80 hover:shadow-sm"
-        >
-          + Создать пуш
-        </button>
+        <div className="flex gap-3 items-center">
+          <MonsterInput
+            placeholder="Поиск по названию"
+            allowClear
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-[250px] monster-input-success"
+          />
+          <button
+            onClick={() => navigate("/create-push")}
+            className="bg-[#02E314] text-[#161724] flex items-center justify-center px-3 rounded box-border h-[42px] hover:opacity-80 hover:shadow-sm"
+          >
+            + Создать пуш
+          </button>
+        </div>
       </div>
       <Table columns={columns} dataSource={dataSource} pagination={false} />
     </div>

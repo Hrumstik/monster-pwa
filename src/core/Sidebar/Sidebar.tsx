@@ -8,7 +8,7 @@ import { MdOutlineAnalytics } from "react-icons/md";
 const Sidebar = () => {
   const navigate = useNavigate();
   return (
-    <div className="min-w-[250px] h-full bg-[#121320] pt-[70px] px-5">
+    <div className="min-w-[250px] h-full bg-[#121320] pt-[70px] px-4">
       <div className="flex justify-center font-normal font-reemkufi text-[18px] text-[#00FF11] leading-[27px] mb-[107px]">
         Monster PWA
       </div>

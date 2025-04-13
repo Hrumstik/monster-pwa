@@ -228,8 +228,15 @@ const PushEditor = () => {
   ) => {
     const extension = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
 
-    if (!allowedExtensions.includes(extension)) {
+    if (!allowedExtensions.includes(extension) && key !== "badge") {
       message.error(allowedExtensionsErrorMessage);
+      return false;
+    }
+
+    if (key === "badge" && extension !== ".png") {
+      message.error(
+        "Бейдж должен быть в формате PNG. Пожалуйста, загрузите файл с расширением .png"
+      );
       return false;
     }
 
