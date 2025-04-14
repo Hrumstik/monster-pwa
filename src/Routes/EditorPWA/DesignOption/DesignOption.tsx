@@ -160,6 +160,7 @@ const DesignOption: React.FC<DesignOptionProps> = ({
       appName: content.appName,
       developerName: content.developerName,
       countOfDownloads: content.countOfDownloads.originalLanguage,
+      hasPaidContentTitle: content.hasPaidContentTitle,
       countOfReviews: content.countOfReviews,
       size: content.size,
       verified: content.verified,
