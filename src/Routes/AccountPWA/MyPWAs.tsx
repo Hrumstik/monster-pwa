@@ -39,7 +39,7 @@ const MyPWAs = () => {
 
   useEffect(() => {
     const somePwaIsLoading = pwasDashboardData?.some(
-      (pwa) => pwa.loading === true
+      (pwa) => pwa.loading === true || pwa.status === PwaStatus.WAITING_NS
     );
     let intervalId: NodeJS.Timeout | null = null;
     const checkStatus = async () => {
@@ -48,6 +48,8 @@ const MyPWAs = () => {
           const data = await getPwaDashboardData().unwrap();
           setAvailablePwas(data);
           refetch().unwrap();
+        } else {
+          clearInterval(intervalId!);
         }
       }, 30000);
     };
